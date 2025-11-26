@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "sh ./scripts/render-start.sh",
+    "start": "bash ./scripts/render-start.sh",
     "lint": "eslint"
   },
   "dependencies": {
