@@ -67,7 +67,17 @@ export async function POST(request: NextRequest) {
         );
       }
 
-      // If this is a registration payment, complete the registration first
+      // Update transaction first so subsequent registration completion sees the updated status
+      await prisma.transaction.update({
+        where: { id: transaction.id },
+        data: {
+          status: 'completed',
+          mpesaRef,
+          description: `Payment completed - M-Pesa Ref: ${mpesaRef}`,
+        },
+      });
+
+      // If this is a registration payment, complete the registration now
       if (transaction.type === 'registration') {
         try {
           const registrationResult = await completeRegistrationAfterPayment(transaction.id);
@@ -80,15 +90,6 @@ export async function POST(request: NextRequest) {
           console.error('Error completing registration after payment:', regError);
         }
       }
-
-      await prisma.transaction.update({
-        where: { id: transaction.id },
-        data: {
-          status: 'completed',
-          mpesaRef,
-          description: `Payment completed - M-Pesa Ref: ${mpesaRef}`,
-        },
-      });
 
       console.log(`✅ Payment successful for transaction ${transaction.id}`);
     } else {

@@ -140,19 +140,56 @@ export async function completeRegistrationAfterPayment(transactionId: string) {
       };
     }
 
-    const metadata = transaction.metadata as any;
+    const metadata = (transaction.metadata ?? {}) as any;
     const { email, hashedPassword, firstName, lastName, phone } = metadata;
 
-    // Create the actual user now
-    const user = await prisma.user.create({
-      data: {
-        email,
-        password: hashedPassword,
-        firstName,
-        lastName,
-        phone,
-      },
-    });
+    if (!email || !hashedPassword) {
+      console.error('Registration metadata missing required fields', { transactionId, metadata });
+      return {
+        success: false,
+        error: 'Missing registration metadata',
+      };
+    }
+
+    // If a user with this email already exists (race or manual), link the transaction
+    let user = await prisma.user.findUnique({ where: { email } });
+
+    if (user) {
+      try {
+        // Update basic profile fields if they're missing on the existing user
+        const updates: any = {};
+        if (firstName && !user.firstName) updates.firstName = firstName;
+        if (lastName && !user.lastName) updates.lastName = lastName;
+        if (phone && !user.phone) updates.phone = phone;
+
+        if (Object.keys(updates).length > 0) {
+          user = await prisma.user.update({ where: { id: user.id }, data: updates });
+        }
+
+        // Link transaction to existing user
+        await prisma.transaction.update({ where: { id: transactionId }, data: { userId: user.id } });
+      } catch (err) {
+        console.error('Error linking transaction to existing user', err);
+        return { success: false, error: 'Failed to link registration to existing user' };
+      }
+    } else {
+      // Create the actual user now
+      user = await prisma.user.create({
+        data: {
+          email,
+          password: hashedPassword,
+          firstName,
+          lastName,
+          phone,
+        },
+      });
+
+      // Update transaction with user ID
+      await prisma.transaction.update({
+        where: { id: transactionId },
+        data: { userId: user.id },
+      });
+    }
 
     // Update transaction with user ID
     await prisma.transaction.update({
