@@ -36,7 +36,7 @@ export async function POST(request: NextRequest) {
     // Find transaction by checkout request ID
     const transaction = await prisma.transaction.findFirst({
       where: {
-        mpesaCheckoutId: CheckoutRequestID,
+        checkoutRequestId: CheckoutRequestID,
       },
     });
 
@@ -67,18 +67,7 @@ export async function POST(request: NextRequest) {
         );
       }
 
-      await prisma.transaction.update({
-        where: { id: transaction.id },
-        data: {
-          status: 'completed',
-          mpesaRef,
-          description: `Payment completed - M-Pesa Ref: ${mpesaRef}`,
-        },
-      });
-
-      console.log(`✅ Payment successful for transaction ${transaction.id}`);
-
-      // If this is a registration payment, complete the registration
+      // If this is a registration payment, complete the registration first
       if (transaction.type === 'registration') {
         try {
           const registrationResult = await completeRegistrationAfterPayment(transaction.id);
@@ -91,6 +80,17 @@ export async function POST(request: NextRequest) {
           console.error('Error completing registration after payment:', regError);
         }
       }
+
+      await prisma.transaction.update({
+        where: { id: transaction.id },
+        data: {
+          status: 'completed',
+          mpesaRef,
+          description: `Payment completed - M-Pesa Ref: ${mpesaRef}`,
+        },
+      });
+
+      console.log(`✅ Payment successful for transaction ${transaction.id}`);
     } else {
       // Payment failed or cancelled
       await prisma.transaction.update({

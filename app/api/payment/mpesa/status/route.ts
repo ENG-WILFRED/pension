@@ -9,25 +9,6 @@ import { verifyToken } from '@/app/lib/auth';
  */
 export async function GET(request: NextRequest) {
   try {
-    // Verify authentication
-    const authHeader = request.headers.get('authorization');
-    const token = authHeader?.replace('Bearer ', '');
-
-    if (!token) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
-    }
-
-    const decoded = verifyToken(token);
-    if (!decoded) {
-      return NextResponse.json(
-        { error: 'Invalid token' },
-        { status: 401 }
-      );
-    }
-
     // Get transaction ID from query params
     const { searchParams } = new URL(request.url);
     const transactionId = searchParams.get('transactionId');
@@ -45,9 +26,10 @@ export async function GET(request: NextRequest) {
       select: {
         id: true,
         userId: true,
+        type: true,
         amount: true,
         status: true,
-        mpesaCheckoutId: true,
+        checkoutRequestId: true,
         mpesaRef: true,
         description: true,
         createdAt: true,
@@ -61,12 +43,34 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Verify the transaction belongs to the user
-    if (transaction.userId !== decoded.userId) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 403 }
-      );
+    // Allow unauthenticated access for pending registration transactions
+    // Require authentication for other transactions
+    if (transaction.type !== 'registration') {
+      const authHeader = request.headers.get('authorization');
+      const token = authHeader?.replace('Bearer ', '');
+
+      if (!token) {
+        return NextResponse.json(
+          { error: 'Unauthorized' },
+          { status: 401 }
+        );
+      }
+
+      const decoded = verifyToken(token);
+      if (!decoded) {
+        return NextResponse.json(
+          { error: 'Invalid token' },
+          { status: 401 }
+        );
+      }
+
+      // Verify the transaction belongs to the user
+      if (transaction.userId !== decoded.userId) {
+        return NextResponse.json(
+          { error: 'Unauthorized' },
+          { status: 403 }
+        );
+      }
     }
 
     // If status is already completed or failed, return cached status
@@ -78,9 +82,9 @@ export async function GET(request: NextRequest) {
     }
 
     // Query M-Pesa for pending transactions
-    if (transaction.mpesaCheckoutId) {
+    if (transaction.checkoutRequestId) {
       try {
-        const mpesaStatus = await queryStkPushStatus(transaction.mpesaCheckoutId) as {
+        const mpesaStatus = await queryStkPushStatus(transaction.checkoutRequestId) as {
           ResultCode?: number;
           CallbackMetadata?: {
             Item?: Array<{ Name: string; Value?: string | number }>;
