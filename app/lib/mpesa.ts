@@ -47,6 +47,44 @@ export function getMpesaConfig(): MpesaConfig {
 }
 
 /**
+ * Normalize and validate Kenyan MSISDNs to the format `2547XXXXXXXX`.
+ * Accepts inputs like `+2547...`, `07...`, `7...`, or `2547...` and
+ * returns the normalized form or throws an error for invalid formats.
+ */
+export function normalizeMsisdn(input: string): string {
+  if (!input) throw new Error('Phone number required');
+  let phone = String(input).trim();
+  // Remove spaces, dashes and parentheses
+  phone = phone.replace(/[\s\-()]/g, '');
+  // Remove leading plus
+  if (phone.startsWith('+')) phone = phone.slice(1);
+
+  // 0-prefixed local format: 07XXXXXXXX -> 2547XXXXXXXX
+  if (/^0\d{9}$/.test(phone)) {
+    phone = '254' + phone.slice(1);
+  }
+
+  // Local without leading zero: 7XXXXXXXX -> 2547XXXXXXXX
+  else if (/^7\d{8}$/.test(phone)) {
+    phone = '254' + phone;
+  }
+
+  // Already full international without plus: 2547XXXXXXXX
+  else if (/^254\d{9}$/.test(phone)) {
+    // nothing to do
+  } else {
+    throw new Error('Invalid Kenyan phone number format');
+  }
+
+  // Final sanity check: require Safaricom-style mobile starting with 2547
+  if (!/^2547\d{8}$/.test(phone)) {
+    throw new Error('Invalid Kenyan mobile phone number (expected format: 2547XXXXXXXX)');
+  }
+
+  return phone;
+}
+
+/**
  * Generate M-Pesa access token
  * Required for all M-Pesa API calls
  */
@@ -113,6 +151,15 @@ export async function initiateStkPush(request: StkPushRequest): Promise<StkPushR
     const baseUrl = config.baseUrl || 'https://sandbox.safaricom.co.ke';
     const url = `${baseUrl.replace(/\/$/, '')}/mpesa/stkpush/v1/processrequest`;
 
+    // Normalize phone numbers to MSISDN before sending to M-Pesa
+    let msisdn = request.phoneNumber;
+    try {
+      msisdn = normalizeMsisdn(request.phoneNumber);
+    } catch (err) {
+      console.error('Invalid phone number for STK Push:', request.phoneNumber, err);
+      throw err;
+    }
+
     const response = await fetch(url, {
       method: 'POST',
       headers: {
@@ -125,9 +172,9 @@ export async function initiateStkPush(request: StkPushRequest): Promise<StkPushR
         Timestamp: timestamp,
         TransactionType: 'CustomerPayBillOnline',
         Amount: request.amount,
-        PartyA: request.phoneNumber,
+        PartyA: msisdn,
         PartyB: config.shortcode,
-        PhoneNumber: request.phoneNumber,
+        PhoneNumber: msisdn,
         CallBackURL: process.env.NEXT_PUBLIC_APP_URL,
         AccountReference: request.accountReference,
         TransactionDesc: request.transactionDescription,

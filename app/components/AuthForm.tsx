@@ -13,6 +13,7 @@ export default function AuthForm({ isLogin = false }: AuthFormProps) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [stkStatus, setStkStatus] = useState('');
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -21,9 +22,47 @@ export default function AuthForm({ isLogin = false }: AuthFormProps) {
     phone: '',
   });
 
+  const pollTransactionStatus = async (transactionId: string) => {
+    // Poll for transaction completion for up to 2 minutes
+    const maxAttempts = 24;
+    const pollInterval = 5000; // 5 seconds
+
+    for (let attempt = 0; attempt < maxAttempts; attempt++) {
+      try {
+        const response = await fetch(`/api/payment/mpesa/status?transactionId=${transactionId}`);
+        if (response.ok) {
+          const result = await response.json();
+          if (result.transaction?.status === 'completed') {
+            setStkStatus('✅ Payment successful! Redirecting to dashboard...');
+            setTimeout(() => {
+              router.push('/dashboard');
+            }, 1000);
+            return true;
+          } else if (result.transaction?.status === 'failed') {
+            setError('Payment failed. Please try again.');
+            setLoading(false);
+            return false;
+          }
+        }
+      } catch (err) {
+        console.error('Error polling transaction status:', err);
+      }
+
+      if (attempt < maxAttempts - 1) {
+        await new Promise(resolve => setTimeout(resolve, pollInterval));
+      }
+    }
+
+    // Timeout - user can manually check or retry
+    setStkStatus('Payment status unclear. Please check your account or try again.');
+    setLoading(false);
+    return false;
+  };
+
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setError('');
+    setStkStatus('');
     setLoading(true);
 
     try {
@@ -33,21 +72,34 @@ export default function AuthForm({ isLogin = false }: AuthFormProps) {
           email: formData.email,
           password: formData.password,
         });
+        if (!result.success) {
+          setError(result.error || 'An error occurred');
+          setLoading(false);
+          return;
+        }
+        // Login successful - redirect immediately
+        router.push('/dashboard');
       } else {
         result = await registerUser(formData);
-      }
+        if (!result.success) {
+          setError(result.error || 'An error occurred');
+          setLoading(false);
+          return;
+        }
 
-      if (!result.success) {
-        setError(result.error || 'An error occurred');
-        return;
+        // Wait for STK push completion before navigating
+        if (result.stkPushInitiated && result.transactionId) {
+          setStkStatus('📱 M-Pesa prompt sent to your phone. Please complete the payment (1 KES)...');
+          // Poll for transaction status
+          await pollTransactionStatus(result.transactionId);
+        } else {
+          setError(result.message || 'Failed to initiate payment');
+          setLoading(false);
+        }
       }
-
-      // Redirect to dashboard on success
-      router.push('/dashboard');
     } catch (err) {
       setError('An unexpected error occurred');
       console.error(err);
-    } finally {
       setLoading(false);
     }
   };
@@ -72,6 +124,12 @@ export default function AuthForm({ isLogin = false }: AuthFormProps) {
           </div>
         )}
 
+        {stkStatus && (
+          <div className="mb-4 p-3 bg-green-100 border border-green-400 text-green-700 rounded">
+            {stkStatus}
+          </div>
+        )}
+
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label htmlFor="email" className="block text-sm font-medium text-gray-700">
@@ -84,7 +142,7 @@ export default function AuthForm({ isLogin = false }: AuthFormProps) {
               value={formData.email}
               onChange={handleChange}
               required
-              className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 placeholder-gray-400"
               placeholder="you@example.com"
             />
           </div>
@@ -100,7 +158,7 @@ export default function AuthForm({ isLogin = false }: AuthFormProps) {
               value={formData.password}
               onChange={handleChange}
               required
-              className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 placeholder-gray-400"
               placeholder="••••••••"
             />
           </div>
@@ -117,7 +175,7 @@ export default function AuthForm({ isLogin = false }: AuthFormProps) {
                   type="text"
                   value={formData.firstName}
                   onChange={handleChange}
-                  className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 placeholder-gray-400"
                   placeholder="John"
                 />
               </div>
@@ -132,7 +190,7 @@ export default function AuthForm({ isLogin = false }: AuthFormProps) {
                   type="text"
                   value={formData.lastName}
                   onChange={handleChange}
-                  className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 placeholder-gray-400"
                   placeholder="Doe"
                 />
               </div>
@@ -147,7 +205,7 @@ export default function AuthForm({ isLogin = false }: AuthFormProps) {
                   type="tel"
                   value={formData.phone}
                   onChange={handleChange}
-                  className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 placeholder-gray-400"
                   placeholder="+254712345678"
                 />
               </div>
@@ -159,7 +217,7 @@ export default function AuthForm({ isLogin = false }: AuthFormProps) {
             disabled={loading}
             className="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 disabled:bg-gray-400 transition"
           >
-            {loading ? 'Loading...' : isLogin ? 'Sign In' : 'Sign Up'}
+            {loading ? 'Processing...' : isLogin ? 'Sign In' : 'Sign Up'}
           </button>
         </form>
 

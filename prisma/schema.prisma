@@ -29,18 +29,22 @@ model User {
 // Transaction model for tracking financial movements and M-Pesa transfers
 model Transaction {
   id              String   @id @default(cuid())
-  userId          String
-  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId          String?
+  user            User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
   
   // Transaction details
   amount          Float
-  type            String   // "credit" or "debit"
+  type            String   // "credit", "debit", "registration"
   status          String   @default("pending") // "pending", "completed", "failed"
   description     String?
   
   // M-Pesa specific fields
   mpesaCheckoutId String?  @unique
+  checkoutRequestId String? @unique
   mpesaRef        String?  @unique
+  
+  // Registration metadata (for registration type transactions)
+  metadata        Json?
   
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt

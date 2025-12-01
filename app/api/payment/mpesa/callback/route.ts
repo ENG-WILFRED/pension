@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/app/lib/prisma';
+import { completeRegistrationAfterPayment } from '@/app/actions/auth';
 
 /**
  * M-Pesa Callback Handler
@@ -76,6 +77,20 @@ export async function POST(request: NextRequest) {
       });
 
       console.log(`✅ Payment successful for transaction ${transaction.id}`);
+
+      // If this is a registration payment, complete the registration
+      if (transaction.type === 'registration') {
+        try {
+          const registrationResult = await completeRegistrationAfterPayment(transaction.id);
+          if (registrationResult.success) {
+            console.log(`✅ Registration completed for transaction ${transaction.id}`);
+          } else {
+            console.error(`❌ Registration completion failed: ${registrationResult.error}`);
+          }
+        } catch (regError) {
+          console.error('Error completing registration after payment:', regError);
+        }
+      }
     } else {
       // Payment failed or cancelled
       await prisma.transaction.update({

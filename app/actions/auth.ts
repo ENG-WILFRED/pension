@@ -2,6 +2,7 @@
 
 import { hashPassword, comparePasswords, generateToken } from '@/app/lib/auth';
 import prisma from '@/app/lib/prisma';
+import { initiateStkPush, normalizeMsisdn } from '@/app/lib/mpesa';
 import { z } from 'zod';
 import { cookies } from 'next/headers';
 
@@ -42,8 +43,107 @@ export async function registerUser(data: z.infer<typeof registerSchema>) {
       };
     }
 
-    // Hash password and create user
-    const hashedPassword = await hashPassword(password);
+    if (!phone) {
+      return {
+        success: false,
+        error: 'Phone number is required for registration',
+      };
+    }
+
+    // Normalize phone number to MSISDN (2547XXXXXXXX)
+    let normalizedPhone: string;
+    try {
+      normalizedPhone = normalizeMsisdn(phone);
+    } catch (err: any) {
+      return {
+        success: false,
+        error: err?.message || 'Invalid phone number',
+      };
+    }
+
+    // Create a pending registration record (not yet a user)
+    const pendingReg = await prisma.transaction.create({
+      data: {
+        // don't set `userId` yet; leaving it undefined avoids foreign key constraint errors
+        amount: 1, // 1 KES registration payment
+        status: 'pending',
+        type: 'registration',
+        metadata: {
+          email,
+          hashedPassword: await hashPassword(password),
+          firstName,
+          lastName,
+          phone: normalizedPhone,
+        },
+      },
+    });
+
+    // Initiate STK push for 1 KES
+    try {
+      const stkPushResult = await initiateStkPush({
+        phoneNumber: normalizedPhone,
+        amount: 1, // 1 KES default registration payment
+        accountReference: `REG-${pendingReg.id}`, // Use transaction ID as reference
+        transactionDescription: 'Registration payment',
+      });
+
+      // Update transaction with checkout ID
+      await prisma.transaction.update({
+        where: { id: pendingReg.id },
+        data: {
+          checkoutRequestId: stkPushResult?.CheckoutRequestID,
+        },
+      });
+
+      return {
+        success: true,
+        stkPushInitiated: true,
+        checkoutRequestId: stkPushResult?.CheckoutRequestID,
+        transactionId: pendingReg.id,
+        message: 'STK push sent. Please complete payment on your phone.',
+      };
+    } catch (stkError) {
+      console.error('STK push initiation error during registration:', stkError);
+      // Clean up pending registration if STK push fails
+      await prisma.transaction.delete({
+        where: { id: pendingReg.id },
+      });
+      return {
+        success: false,
+        error: 'Failed to initiate payment. Please try again.',
+      };
+    }
+  } catch (error) {
+    console.error('Registration error:', error);
+    return {
+      success: false,
+      error: 'Internal server error',
+    };
+  }
+}
+
+/**
+ * Complete registration after payment confirmation.
+ * Called from the M-Pesa callback after successful payment.
+ */
+export async function completeRegistrationAfterPayment(transactionId: string) {
+  try {
+    // Fetch the pending registration transaction
+    const transaction = await prisma.transaction.findUnique({
+      where: { id: transactionId },
+    });
+
+    if (!transaction || transaction.type !== 'registration' || transaction.status !== 'completed') {
+      return {
+        success: false,
+        error: 'Invalid or incomplete registration transaction',
+      };
+    }
+
+    const metadata = transaction.metadata as any;
+    const { email, hashedPassword, firstName, lastName, phone } = metadata;
+
+    // Create the actual user now
     const user = await prisma.user.create({
       data: {
         email,
@@ -52,6 +152,12 @@ export async function registerUser(data: z.infer<typeof registerSchema>) {
         lastName,
         phone,
       },
+    });
+
+    // Update transaction with user ID
+    await prisma.transaction.update({
+      where: { id: transactionId },
+      data: { userId: user.id },
     });
 
     // Generate token
@@ -79,10 +185,10 @@ export async function registerUser(data: z.infer<typeof registerSchema>) {
       },
     };
   } catch (error) {
-    console.error('Registration error:', error);
+    console.error('Complete registration error:', error);
     return {
       success: false,
-      error: 'Internal server error',
+      error: 'Failed to complete registration',
     };
   }
 }
