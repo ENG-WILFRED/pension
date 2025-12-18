@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { Shield, Zap, BarChart3, Clock } from "lucide-react";
 import React from "react";
@@ -17,14 +16,32 @@ export default function Home() {
       <main className="grid grid-cols-1 md:grid-cols-2 h-screen">
 
         {/* IMAGE PANEL */}
-        <section className="relative w-full h-64 md:h-full overflow-hidden">
-          <Image
-            src="/transactions.jpeg"
-            alt="Money Transactions Illustration"
-            fill
-            sizes="(max-width: 768px) 100vw, 50vw"
-            className="object-cover"
-          />
+        <section className="relative w-full h-64 md:h-full overflow-hidden bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center">
+          {/* Pension-themed SVG illustration */}
+          <div className="absolute inset-0 flex items-center justify-center p-8">
+            <svg className="w-full h-full text-blue-100 opacity-20" viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="200" cy="200" r="180" stroke="currentColor" strokeWidth="2" />
+              <path d="M100 200L150 150L200 180L250 120L300 200" stroke="currentColor" strokeWidth="3" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+              <circle cx="100" cy="200" r="8" fill="currentColor" />
+              <circle cx="150" cy="150" r="8" fill="currentColor" />
+              <circle cx="200" cy="180" r="8" fill="currentColor" />
+              <circle cx="250" cy="120" r="8" fill="currentColor" />
+              <circle cx="300" cy="200" r="8" fill="currentColor" />
+            </svg>
+          </div>
+
+          <div className="absolute inset-0 flex flex-col items-center justify-center text-white text-center px-8">
+            <svg className="w-24 h-24 mb-6 drop-shadow-lg" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={1.5}
+                d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
+            </svg>
+            <h2 className="text-4xl font-bold mb-2">Secure Your Future</h2>
+            <p className="text-lg text-blue-100">Plan your retirement with confidence</p>
+          </div>
 
           {/* Overlay on mobile */}
           <div className="absolute inset-0 bg-gradient-to-t from-black/25 via-transparent to-transparent md:hidden" />

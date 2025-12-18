@@ -77,6 +77,24 @@ export const authApi = {
       body: JSON.stringify({ transactionId }),
     }),
 
+  // Poll registration/payment status
+  getRegisterStatus: (transactionId: string) =>
+    apiCall(`/api/auth/register/status/${transactionId}`, {
+      method: 'GET',
+    }),
+
+  sendOtp: (data: { email: string }) =>
+    apiCall('/api/auth/send-otp', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+
+  verifyOtp: (data: { email: string; otp: string }) =>
+    apiCall('/api/auth/verify-otp', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+
   login: (data: { email: string; password: string }) =>
     apiCall('/api/auth/login', {
       method: 'POST',

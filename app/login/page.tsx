@@ -1,9 +1,9 @@
-import AuthForm from '@/app/components/AuthForm';
+import LoginForm from '@/app/components/LoginForm';
 
 export const metadata = {
   title: 'Login',
 };
 
 export default function LoginPage() {
-  return <AuthForm isLogin={true} />;
+  return <LoginForm />;
 }
