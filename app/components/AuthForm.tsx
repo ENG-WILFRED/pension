@@ -1,3 +1,5 @@
+///home/hp/JERE/pension/app/components/AuthForm.tsx
+
 'use client';
 
 import { FormEvent, useEffect, useRef, useState } from 'react';

@@ -1,3 +1,4 @@
+// app/components/LoginForm.tsx
 'use client';
 
 import { FormEvent, useState } from 'react';
@@ -5,15 +6,22 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { authApi } from '@/app/lib/api-client';
 import { toast } from 'sonner';
-import { Loader2, Mail, Lock } from 'lucide-react';
+import { Mail, Lock, Eye, EyeOff, ArrowLeft } from 'lucide-react';
+import { Input } from './ui/Input';
+import { Button } from './ui/Button';
+import { Card } from './ui/Card';
+import { Logo } from './ui/Logo';
+import { GradientBackground } from './ui/GradientBackground';
 
 export default function LoginForm() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     email: '',
     password: '',
   });
+  const [rememberMe, setRememberMe] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
@@ -28,7 +36,7 @@ export default function LoginForm() {
 
     try {
       const result = await authApi.login({
-        email: formData.email,
+        identifier: formData.email, // Can be email, username, or phone
         password: formData.password,
       });
 
@@ -38,8 +46,15 @@ export default function LoginForm() {
         return;
       }
 
-      toast.success('OTP sent to your email');
-      router.push(`/verify-otp?email=${encodeURIComponent(formData.email)}`);
+      // Check if token is returned (successful login) or OTP is required
+      if (result.token) {
+        localStorage.setItem('auth_token', result.token);
+        toast.success('Login successful!');
+        router.push('/dashboard');
+      } else {
+        toast.success('OTP sent to your email');
+        router.push(`/verify-otp?email=${encodeURIComponent(formData.email)}`);
+      }
     } catch (err) {
       toast.error('An unexpected error occurred');
       console.error(err);
@@ -48,100 +63,99 @@ export default function LoginForm() {
   };
 
   return (
-    <div className="min-h-screen w-full bg-white flex flex-col lg:flex-row">
-      {/* Image Panel - Desktop only */}
-      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-blue-600 to-indigo-700 items-center justify-center p-8 min-h-screen">
-        <div className="text-center">
-          <svg className="w-64 h-64 mx-auto mb-8" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="100" cy="80" r="50" fill="#E0E7FF" opacity="0.2"/>
-            <path d="M70 100 L100 60 L130 100 M100 60 L100 140" stroke="#FFFFFF" strokeWidth="2" strokeLinecap="round"/>
-            <rect x="60" y="140" width="80" height="8" rx="4" fill="#FCD34D"/>
-            <path d="M50 120 Q100 110 150 120" stroke="#A78BFA" strokeWidth="2" opacity="0.5" strokeDasharray="5,5"/>
-            <g opacity="0.3">
-              <circle cx="40" cy="40" r="3" fill="#FFFFFF"/>
-              <circle cx="160" cy="50" r="2" fill="#FFFFFF"/>
-              <circle cx="50" cy="170" r="2.5" fill="#FFFFFF"/>
-              <circle cx="170" cy="160" r="2" fill="#FFFFFF"/>
-            </g>
-          </svg>
-          <h2 className="text-3xl font-bold text-white mb-3">Welcome Back</h2>
-          <p className="text-indigo-100 text-lg">Manage your pension with confidence</p>
-        </div>
-      </div>
+    <GradientBackground>
+      <div className="min-h-screen flex items-center justify-center p-4">
+        <Card className="w-full max-w-md p-8">
+          {/* Back Button */}
+          <Link 
+            href="/"
+            className="inline-flex items-center text-purple-600 hover:text-purple-700 mb-6 transition"
+          >
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            <span className="font-medium">Back</span>
+          </Link>
 
-      {/* Form Panel */}
-      <div className="w-full lg:w-1/2 min-h-screen overflow-y-auto flex flex-col justify-center">
-        <div className="p-4 sm:p-6 lg:p-8 max-w-md mx-auto w-full">
-          <div className="mb-8">
-            <h2 className="text-2xl font-bold text-gray-900 mb-1">Sign In</h2>
-            <p className="text-sm text-gray-600">Access your pension account</p>
+          {/* Logo */}
+          <div className="flex justify-center mb-6">
+            <Logo />
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label htmlFor="email" className="block text-xs font-medium text-gray-700 mb-0.5">
-                Email or Username
-              </label>
-              <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                <input
-                  id="email"
-                  name="email"
-                  type="text"
-                  value={formData.email}
-                  onChange={handleChange}
-                  required
-                  className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 text-gray-900 placeholder-gray-400"
-                  placeholder="you@example.com"
-                />
-              </div>
-            </div>
-
-            <div>
-              <label htmlFor="password" className="block text-xs font-medium text-gray-700 mb-0.5">
-                Password
-              </label>
-              <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                <input
-                  id="password"
-                  name="password"
-                  type="password"
-                  value={formData.password}
-                  onChange={handleChange}
-                  required
-                  className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 text-gray-900 placeholder-gray-400"
-                  placeholder="••••••••"
-                />
-              </div>
-            </div>
-
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-2 px-4 rounded-lg hover:from-blue-700 hover:to-indigo-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition font-semibold text-sm flex items-center justify-center gap-2 mt-6"
-            >
-              {loading ? (
-                <>
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                  Signing In...
-                </>
-              ) : (
-                'Sign In'
-              )}
-            </button>
-          </form>
-
-          <div className="mt-6 pt-6 border-t border-gray-200">
-            <p className="text-gray-600 text-xs text-center">
-              Don't have an account?{' '}
-              <Link href="/register" className="text-blue-600 hover:text-blue-700 font-semibold">
-                Create one
-              </Link>
+          {/* Header */}
+          <div className="text-center mb-8">
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">
+              Welcome Back!
+            </h1>
+            <p className="text-gray-600">
+              Sign in to manage your pension
             </p>
           </div>
-        </div>
+
+          {/* Form */}
+          <form onSubmit={handleSubmit} className="space-y-5">
+            <Input
+              label="Email Address"
+              name="email"
+              type="text"
+              value={formData.email}
+              onChange={handleChange}
+              placeholder="you@example.com"
+              icon={<Mail className="w-5 h-5" />}
+              required
+            />
+
+            <div>
+              <Input
+                label="Password"
+                name="password"
+                type={showPassword ? 'text' : 'password'}
+                value={formData.password}
+                onChange={handleChange}
+                placeholder="••••••••"
+                icon={<Lock className="w-5 h-5" />}
+                required
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-[42px] text-gray-400 hover:text-gray-600"
+              >
+                {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+              </button>
+            </div>
+
+            {/* Remember Me & Forgot Password */}
+            <div className="flex items-center justify-between">
+              <label className="flex items-center">
+                <input
+                  type="checkbox"
+                  checked={rememberMe}
+                  onChange={(e) => setRememberMe(e.target.checked)}
+                  className="w-4 h-4 rounded border-gray-300 text-purple-600 focus:ring-purple-500"
+                />
+                <span className="ml-2 text-sm text-gray-700">Remember me</span>
+              </label>
+              <Link
+                href="/forgot-password"
+                className="text-sm text-purple-600 hover:text-purple-700 font-medium"
+              >
+                Forgot Password?
+              </Link>
+            </div>
+
+            <Button type="submit" loading={loading}>
+              Login
+            </Button>
+          </form>
+
+          {/* Sign Up Link */}
+          <p className="mt-6 text-center text-sm text-gray-600">
+            Don't have an account?{' '}
+            <Link href="/register" className="text-purple-600 hover:text-purple-700 font-semibold">
+              Sign Up
+            </Link>
+          </p>
+        </Card>
       </div>
-    </div>
+    </GradientBackground>
   );
 }

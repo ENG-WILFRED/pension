@@ -1,3 +1,4 @@
+//home/hp/JERE/pension/app/components/sections/AccountCredentialsSection.tsx
 interface AddressSectionProps {
   formData: { address: string; city: string; country: string };
   onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => void;

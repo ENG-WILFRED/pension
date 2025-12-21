@@ -1,3 +1,4 @@
+// app/lib/api-client.ts
 'use client';
 
 // Client library for calling the backend API
@@ -35,12 +36,21 @@ export async function apiCall<T = any>(
       headers,
     });
 
+    // Check if response is JSON
+    const contentType = response.headers.get('content-type');
+    if (!contentType || !contentType.includes('application/json')) {
+      return {
+        success: false,
+        error: `Invalid response format from server (${response.status})`,
+      };
+    }
+
     const data = await response.json();
 
     if (!response.ok) {
       return {
         success: false,
-        error: data.error || `HTTP ${response.status}`,
+        error: data.error || data.message || `HTTP ${response.status}`,
         ...data,
       };
     }
@@ -53,7 +63,7 @@ export async function apiCall<T = any>(
     console.error('API call error:', error);
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Unknown error',
+      error: error instanceof Error ? error.message : 'Network error - please check your connection',
     };
   }
 }
@@ -63,9 +73,24 @@ export const authApi = {
   register: (data: {
     email: string;
     password: string;
+    phone: string;
     firstName?: string;
     lastName?: string;
-    phone?: string;
+    dateOfBirth?: string;
+    gender?: string;
+    maritalStatus?: string;
+    spouseName?: string;
+    spouseDob?: string;
+    children?: Array<{ name: string; dob: string }>;
+    nationalId?: string;
+    address?: string;
+    city?: string;
+    country?: string;
+    occupation?: string;
+    employer?: string;
+    salary?: number;
+    contributionRate?: number;
+    retirementAge?: number;
   }) => apiCall('/api/auth/register', {
     method: 'POST',
     body: JSON.stringify(data),
@@ -95,8 +120,14 @@ export const authApi = {
       body: JSON.stringify(data),
     }),
 
-  login: (data: { email: string; password: string }) =>
+  login: (data: { identifier: string; password: string }) =>
     apiCall('/api/auth/login', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+
+  loginOtp: (data: { identifier: string; otp: string }) =>
+    apiCall('/api/auth/login/otp', {
       method: 'POST',
       body: JSON.stringify(data),
     }),
@@ -111,7 +142,7 @@ export const authApi = {
 export const paymentApi = {
   initiate: (data: {
     amount: number;
-    planId?: string;
+    phone: string;
     description?: string;
   }) =>
     apiCall('/api/payment/initiate', {
@@ -124,6 +155,7 @@ export const paymentApi = {
       method: 'GET',
     }),
 };
+
 // Dashboard API calls
 export const dashboardApi = {
   getUser: () =>
@@ -141,6 +173,7 @@ export const dashboardApi = {
       method: 'GET',
     }),
 };
+
 // Health check
 export const healthApi = {
   check: () => apiCall('/api/health'),

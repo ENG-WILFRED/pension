@@ -1,3 +1,4 @@
+///home/hp/JERE/pension/app/components/sections/EmploymentSection.tsx
 interface EmploymentSectionProps {
   formData: { occupation: string; employer: string; salary?: number };
   onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => void;

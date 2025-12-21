@@ -1,3 +1,4 @@
+//home/hp/JERE/pension/app/components/sections/PersonalSection.tsx
 interface PersonalSectionProps {
   formData: {
     firstName: string;

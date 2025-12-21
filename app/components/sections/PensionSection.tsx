@@ -1,3 +1,4 @@
+//home/hp/JERE/pension/app/components/sections/PensionSection.tsx
 interface PensionSectionProps {
   formData: { contributionRate?: number; retirementAge?: number };
   onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => void;

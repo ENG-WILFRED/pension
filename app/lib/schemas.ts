@@ -1,9 +1,9 @@
+// app/lib/schemas.ts
 import { z } from 'zod';
 
-// Child schema for the children array
 const childSchema = z.object({
-  name: z.string().optional(),
-  dob: z.string().optional(),
+  name: z.string(),
+  dob: z.string(),
 });
 
 // Registration form schema

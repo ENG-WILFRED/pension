@@ -1,4 +1,8 @@
+// app/components/sections/PaymentPendingModal.tsx
 import { Loader2 } from 'lucide-react';
+import { Card } from '../ui/Card';
+import { Button } from '../ui/Button';
+import { GradientBackground } from '../ui/GradientBackground';
 
 interface PaymentPendingModalProps {
   transactionId?: string;
@@ -7,44 +11,66 @@ interface PaymentPendingModalProps {
 
 export default function PaymentPendingModal({ transactionId, onCancel }: PaymentPendingModalProps) {
   return (
-    <div className="min-h-screen w-full bg-white flex flex-col lg:flex-row">
-      {/* Image Panel - Desktop only */}
-      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-blue-600 to-indigo-700 items-center justify-center p-8 min-h-screen">
-        <div className="text-center">
-          <svg className="w-64 h-64 mx-auto mb-8" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="100" cy="80" r="50" fill="#E0E7FF" opacity="0.2"/>
-            <path d="M70 100 L100 60 L130 100 M100 60 L100 140" stroke="#FFFFFF" strokeWidth="2" strokeLinecap="round"/>
-            <rect x="60" y="140" width="80" height="8" rx="4" fill="#FCD34D"/>
-            <path d="M50 120 Q100 110 150 120" stroke="#A78BFA" strokeWidth="2" opacity="0.5" strokeDasharray="5,5"/>
-          </svg>
-          <h2 className="text-3xl font-bold text-white mb-3">Secure Your Future</h2>
-          <p className="text-indigo-100 text-lg">Plan your retirement with confidence</p>
-        </div>
-      </div>
-
-      {/* Modal Panel */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center p-4 min-h-screen">
-        <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-8 border border-gray-200">
+    <GradientBackground>
+      <div className="min-h-screen flex items-center justify-center p-4">
+        <Card className="w-full max-w-md p-8">
           <div className="text-center">
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-100 rounded-full mb-4">
-              <Loader2 className="w-8 h-8 text-blue-600 animate-spin" />
+            {/* Loading Icon */}
+            <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-purple-100 to-blue-100 rounded-full mb-6">
+              <Loader2 className="w-10 h-10 text-purple-600 animate-spin" />
             </div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">Payment Pending</h3>
-            <p className="text-sm text-gray-600 mb-6">
+
+            {/* Title */}
+            <h2 className="text-2xl font-bold text-gray-900 mb-3">
+              Payment Pending
+            </h2>
+
+            {/* Description */}
+            <p className="text-gray-600 mb-6">
               Your registration is pending payment. Please complete the M-Pesa prompt on your phone.
             </p>
-            <p className="text-xs text-gray-500 bg-gray-50 p-3 rounded mb-4">
-              Transaction ID: <span className="font-mono">{transactionId}</span>
-            </p>
-            <button
-              onClick={onCancel}
-              className="w-full bg-gray-100 text-gray-800 py-2 px-4 rounded-lg hover:bg-gray-200"
-            >
+
+            {/* Transaction ID */}
+            {transactionId && (
+              <div className="bg-purple-50 border border-purple-100 rounded-xl p-4 mb-6">
+                <p className="text-xs text-gray-600 mb-1">Transaction ID</p>
+                <p className="text-sm font-mono text-gray-900 break-all">
+                  {transactionId}
+                </p>
+              </div>
+            )}
+
+            {/* Waiting message */}
+            <div className="flex items-center justify-center gap-2 mb-6">
+              <div className="flex gap-1">
+                <div className="w-2 h-2 bg-purple-600 rounded-full animate-bounce" />
+                <div className="w-2 h-2 bg-purple-600 rounded-full animate-bounce delay-100" />
+                <div className="w-2 h-2 bg-purple-600 rounded-full animate-bounce delay-200" />
+              </div>
+              <span className="text-sm text-gray-600">Waiting for payment confirmation</span>
+            </div>
+
+            {/* Cancel Button */}
+            <Button variant="secondary" onClick={onCancel}>
               Cancel
-            </button>
+            </Button>
+
+            {/* Help text */}
+            <p className="mt-4 text-xs text-gray-500">
+              If you completed payment but registration fails, please wait a few seconds and try again.
+            </p>
           </div>
-        </div>
+        </Card>
       </div>
-    </div>
+
+      <style jsx>{`
+        .delay-100 {
+          animation-delay: 0.1s;
+        }
+        .delay-200 {
+          animation-delay: 0.2s;
+        }
+      `}</style>
+    </GradientBackground>
   );
 }

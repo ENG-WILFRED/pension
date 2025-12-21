@@ -1,3 +1,4 @@
+//home/hp/JERE/pension/app/dashboard/admin/page.tsx
 "use client";
 
 import Link from "next/link";
