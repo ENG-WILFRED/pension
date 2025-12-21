@@ -31,7 +31,7 @@ export default function LoginForm() {
         identifier: formData.email,
         password: formData.password,
       });
-console.log('Login result:', result);
+      console.log('Login result:', result);
       if (!result.success) {
         toast.error(result.error || 'Invalid credentials');
         setLoading(false);
@@ -53,15 +53,15 @@ console.log('Login result:', result);
       <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-blue-600 to-indigo-700 items-center justify-center p-8 min-h-screen">
         <div className="text-center">
           <svg className="w-64 h-64 mx-auto mb-8" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="100" cy="80" r="50" fill="#E0E7FF" opacity="0.2"/>
-            <path d="M70 100 L100 60 L130 100 M100 60 L100 140" stroke="#FFFFFF" strokeWidth="2" strokeLinecap="round"/>
-            <rect x="60" y="140" width="80" height="8" rx="4" fill="#FCD34D"/>
-            <path d="M50 120 Q100 110 150 120" stroke="#A78BFA" strokeWidth="2" opacity="0.5" strokeDasharray="5,5"/>
+            <circle cx="100" cy="80" r="50" fill="#E0E7FF" opacity="0.2" />
+            <path d="M70 100 L100 60 L130 100 M100 60 L100 140" stroke="#FFFFFF" strokeWidth="2" strokeLinecap="round" />
+            <rect x="60" y="140" width="80" height="8" rx="4" fill="#FCD34D" />
+            <path d="M50 120 Q100 110 150 120" stroke="#A78BFA" strokeWidth="2" opacity="0.5" strokeDasharray="5,5" />
             <g opacity="0.3">
-              <circle cx="40" cy="40" r="3" fill="#FFFFFF"/>
-              <circle cx="160" cy="50" r="2" fill="#FFFFFF"/>
-              <circle cx="50" cy="170" r="2.5" fill="#FFFFFF"/>
-              <circle cx="170" cy="160" r="2" fill="#FFFFFF"/>
+              <circle cx="40" cy="40" r="3" fill="#FFFFFF" />
+              <circle cx="160" cy="50" r="2" fill="#FFFFFF" />
+              <circle cx="50" cy="170" r="2.5" fill="#FFFFFF" />
+              <circle cx="170" cy="160" r="2" fill="#FFFFFF" />
             </g>
           </svg>
           <h2 className="text-3xl font-bold text-white mb-3">Welcome Back</h2>

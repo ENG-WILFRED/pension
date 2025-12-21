@@ -2,10 +2,54 @@
 
 import { useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { authApi } from '@/app/lib/api-client';
 import OtpInput from '@/app/components/OtpInput';
 import { toast } from 'sonner';
 import { Loader2, ArrowLeft } from 'lucide-react';
+
+// Mock login data
+const MOCK_LOGIN_DATA = {
+  success: true,
+  token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJlYWRmYzgxNy1lNmI5LTQwZmQtOGU2Ni0wYjVlOTE5YWNmZjYiLCJlbWFpbCI6ImtpbWFuaXdpbGZyZWQ5NUBnbWFpbC5jb20iLCJmaXJzdE5hbWUiOiJXSUxGUkVEIiwibGFzdE5hbWUiOiJLSU1BTkkiLCJhZ2UiOjE5LCJpYXQiOjE3NjYzNDY2NDUsImV4cCI6MTc2Njk1MTQ0NX0.2c0WLM7q6DPKKVGPSu9LB6pNUsCmlkvFH5jCqwcxcnk',
+  user: {
+    id: 'eadfc817-e6b9-40fd-8e66-0b5e919acff6',
+    email: 'kimaniwilfred95@gmail.com',
+    firstName: 'WILFRED',
+    lastName: 'KIMANI',
+    age: 30,
+    dateOfBirth: '1995-11-14',
+    numberOfChildren: 2,
+    phone: '+254712345678',
+    idNumber: '12345678',
+    idType: 'NATIONAL_ID',
+    employer: 'Tech Solutions Limited',
+    employmentStatus: 'EMPLOYED',
+    salary: 85000,
+    department: 'Software Engineering',
+    address: {
+      street: '123 Ngong Road',
+      city: 'Nairobi',
+      county: 'Nairobi',
+      postalCode: '00100',
+      country: 'Kenya',
+    },
+    bankAccount: {
+      accountNumber: '1234567890',
+      bankName: 'Kenya Commercial Bank',
+      bankCode: 'KCB',
+      accountType: 'SAVINGS',
+    },
+    nextOfKin: {
+      name: 'Grace Kimani',
+      relationship: 'SPOUSE',
+      phone: '+254712345679',
+      address: '123 Ngong Road, Nairobi',
+    },
+    kra: 'A012345678B',
+    nssfNumber: 'IV/123456',
+    pensionStatus: 'ACTIVE',
+    membershipDate: '2020-03-15',
+  },
+};
 
 export default function VerifyOtpClient() {
   const router = useRouter();
@@ -27,28 +71,22 @@ export default function VerifyOtpClient() {
 
     setLoading(true);
     try {
-      const result = await authApi.verifyOtp({
-        email: email || '',
-        otp: otpValue,
-      });
+      // Simulate API delay
+      await new Promise(resolve => setTimeout(resolve, 1500));
 
-      if (!result.success) {
-        toast.error(result.error || 'OTP verification failed');
-        setLoading(false);
-        return;
-      }
+      // Store mock token and user data
+      localStorage.setItem('access_token', MOCK_LOGIN_DATA.token);
+      localStorage.setItem('refresh_token', MOCK_LOGIN_DATA.token);
+      localStorage.setItem('auth_token', MOCK_LOGIN_DATA.token);
+      localStorage.setItem('user', JSON.stringify(MOCK_LOGIN_DATA.user));
+      
+      // Set auth cookie for middleware
+      document.cookie = 'auth=true; path=/; max-age=86400';
 
       toast.success('OTP verified successfully!');
       
-      // Store tokens
-      localStorage.setItem('access_token', result.data?.accessToken || '');
-      localStorage.setItem('refresh_token', result.data?.refreshToken || '');
-      localStorage.setItem('auth_token', result.data?.accessToken || '');
-
       // Redirect to dashboard
-      setTimeout(() => {
-        router.push('/dashboard');
-      }, 500);
+      router.push('/dashboard');
     } catch (err) {
       toast.error('An unexpected error occurred');
       console.error(err);
@@ -59,17 +97,10 @@ export default function VerifyOtpClient() {
   const handleResendOtp = async () => {
     setResendLoading(true);
     try {
-      const result = await authApi.sendOtp({
-        email: email || '',
-      });
+      // Simulate API delay
+      await new Promise(resolve => setTimeout(resolve, 800));
 
-      if (!result.success) {
-        toast.error(result.error || 'Failed to resend OTP');
-        setResendLoading(false);
-        return;
-      }
-
-      toast.success('OTP sent to your email');
+      toast.success('OTP sent to your email (mock)');
       setOtp(Array(6).fill(''));
       setTimer(60);
       
@@ -104,7 +135,7 @@ export default function VerifyOtpClient() {
           Back
         </button>
 
-        <h2 className="text-3xl font-bold text-gray-900 mb-2 text-center">Verify OTP</h2>
+        <h2 className="text-3xl font-bold text-black mb-2 text-center">Verify OTP</h2>
         <p className="text-center text-gray-600 mb-8">
           Enter the 6-digit code sent to <br />
           <span className="font-semibold">{email}</span>
