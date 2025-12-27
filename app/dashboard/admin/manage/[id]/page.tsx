@@ -1,3 +1,4 @@
+///home/hp/JERE/pension/app/dashboard/admin/manage/[id]/page.tsx
 "use client";
 
 import { useRouter } from 'next/navigation';

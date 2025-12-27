@@ -1,3 +1,5 @@
+///home/hp/JERE/pension/app/dashboard/admin/page.tsx
+
 "use client";
 
 import { useEffect, useState } from "react";
@@ -5,7 +7,10 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import DashboardHeader from "@/app/components/dashboard/DashboardHeader";
 import AnimatedFooter from "@/app/components/AnimatedFooter";
-import { Users, TrendingUp, PieChart, AlertCircle, CheckCircle, Clock, BarChart3, Wallet, Settings, FileText, Shield } from "lucide-react";
+import { 
+  Users, TrendingUp, AlertCircle, CheckCircle, Clock, 
+   Wallet, Settings, FileText, Layers 
+} from "lucide-react";
 import Link from "next/link";
 import { userApi } from "@/app/lib/api-client";
 
@@ -233,8 +238,8 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        {/* QUICK ACTIONS */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
+        {/* 🆕 QUICK ACTIONS - WITH ACCOUNT TYPES */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
           <Link href="/dashboard/admin/manage" className="bg-white/80 backdrop-blur-xl border border-gray-200 rounded-xl sm:rounded-2xl shadow-lg p-6 hover:shadow-xl transition-all hover:scale-105">
             <Users size={32} className="text-indigo-600 mb-3" />
             <h3 className="font-bold text-gray-900 mb-1">Manage Users</h3>
@@ -251,6 +256,13 @@ export default function AdminDashboard() {
             <Settings size={32} className="text-green-600 mb-3" />
             <h3 className="font-bold text-gray-900 mb-1">Settings</h3>
             <p className="text-xs sm:text-sm text-gray-600">System configuration</p>
+          </Link>
+
+          {/* 🆕 NEW: Account Types Link */}
+          <Link href="/dashboard/admin/account-types" className="bg-white/80 backdrop-blur-xl border border-gray-200 rounded-xl sm:rounded-2xl shadow-lg p-6 hover:shadow-xl transition-all hover:scale-105">
+            <Layers size={32} className="text-purple-600 mb-3" />
+            <h3 className="font-bold text-gray-900 mb-1">Account Types</h3>
+            <p className="text-xs sm:text-sm text-gray-600">Manage account configurations</p>
           </Link>
         </div>
 

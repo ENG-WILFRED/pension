@@ -1,3 +1,5 @@
+///home/hp/JERE/pension/app/lib/api-client.ts
+
 'use client';
 
 import type {
@@ -184,6 +186,78 @@ export const userApi = {
   demoteToCustomer: (userId: string) =>
     apiCall(`/api/users/${userId}/demote`, {
       method: 'POST',
+    }),
+};
+
+// 🆕 Account Types API calls (ADMIN ONLY)
+export const accountTypeApi = {
+  /**
+   * GET /api/account-types
+   * Get all account types
+   */
+  getAll: () =>
+    apiCall('/api/account-types', {
+      method: 'GET',
+    }),
+
+  /**
+   * GET /api/account-types/:id
+   * Get single account type
+   */
+  getById: (id: string) =>
+    apiCall(`/api/account-types/${id}`, {
+      method: 'GET',
+    }),
+
+  /**
+   * POST /api/account-types
+   * Create new account type (Admin only)
+   */
+  create: (data: {
+    name: string;
+    description: string;
+    category: string;
+    minBalance?: number;
+    maxBalance?: number;
+    interestRate?: number;
+    lockInPeriodMonths?: number;
+    allowWithdrawals?: boolean;
+    allowLoans?: boolean;
+    metadata?: any;
+  }) =>
+    apiCall('/api/account-types', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+
+  /**
+   * PUT /api/account-types/:id
+   * Update account type (Admin only)
+   */
+  update: (id: string, data: Partial<{
+    name: string;
+    description: string;
+    category: string;
+    minBalance: number;
+    maxBalance: number;
+    interestRate: number;
+    lockInPeriodMonths: number;
+    allowWithdrawals: boolean;
+    allowLoans: boolean;
+    metadata: any;
+  }>) =>
+    apiCall(`/api/account-types/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    }),
+
+  /**
+   * DELETE /api/account-types/:id
+   * Delete account type (Admin only)
+   */
+  delete: (id: string) =>
+    apiCall(`/api/account-types/${id}`, {
+      method: 'DELETE',
     }),
 };
 
