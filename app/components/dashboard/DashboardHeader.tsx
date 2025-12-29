@@ -23,14 +23,6 @@ export default function DashboardHeader({ firstName, lastName, userType = 'custo
     }
   };
 
-  const handleSwitchToAdmin = () => {
-    router.push("/dashboard/admin");
-  };
-
-  const handleSwitchToCustomer = () => {
-    router.push("/dashboard/customer");
-  };
-
   return (
     <header className="sticky top-0 z-50 bg-white/70 backdrop-blur-xl border-b border-gray-100 shadow-sm w-full">
       <div className="w-full flex items-center justify-between py-4 px-8">
@@ -45,24 +37,6 @@ export default function DashboardHeader({ firstName, lastName, userType = 'custo
         </div>
 
         <div className="flex items-center gap-3">
-          {userType === 'customer' && (
-            <button
-              onClick={handleSwitchToAdmin}
-              className="flex items-center gap-2 px-4 py-2 rounded-xl bg-blue-600 text-white shadow hover:bg-blue-700 transition-all"
-            >
-              <Shield size={18} />
-              Admin
-            </button>
-          )}
-          {userType === 'admin' && (
-            <button
-              onClick={handleSwitchToCustomer}
-              className="flex items-center gap-2 px-4 py-2 rounded-xl bg-green-600 text-white shadow hover:bg-green-700 transition-all"
-            >
-              <Shield size={18} />
-              Customer
-            </button>
-          )}
           <button
             onClick={handleLogout}
             className="flex items-center gap-2 px-4 py-2 rounded-xl bg-red-600 text-white shadow hover:bg-red-700 transition-all"

@@ -1,5 +1,3 @@
-///home/hp/JERE/pension/app/dashboard/admin/page.tsx
-
 "use client";
 
 import { useEffect, useState } from "react";
@@ -7,12 +5,13 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import DashboardHeader from "@/app/components/dashboard/DashboardHeader";
 import AnimatedFooter from "@/app/components/AnimatedFooter";
+import TransactionHistory from "@/app/components/dashboard/TransactionHistory";
 import { 
   Users, TrendingUp, AlertCircle, CheckCircle, Clock, 
-   Wallet, Settings, FileText, Layers 
+  Wallet, Settings, FileText, Layers 
 } from "lucide-react";
 import Link from "next/link";
-import { userApi } from "@/app/lib/api-client";
+import { userApi, dashboardApi } from "@/app/lib/api-client";
 
 interface AdminStats {
   totalUsers: number;
@@ -33,10 +32,23 @@ interface Member {
   balance: number;
 }
 
+interface Transaction {
+  id: string;
+  amount: number;
+  type: string;
+  status: string;
+  description?: string | null;
+  createdAt: any;
+}
+
 export default function AdminDashboard() {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
+  const [loadingTransactions, setLoadingTransactions] = useState(false);
   const [user, setUser] = useState<{ firstName?: string; lastName?: string; email?: string; role?: string } | null>(null);
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [showTransactions, setShowTransactions] = useState(false);
+  
   const [stats, setStats] = useState<AdminStats>({
     totalUsers: 3482,
     activeUsers: 3245,
@@ -101,6 +113,47 @@ export default function AdminDashboard() {
     avgResponseTime: 145,
   });
 
+  // 🆕 NEW: Function to load all transactions (admin view)
+  const loadAllTransactions = async () => {
+    setLoadingTransactions(true);
+    setShowTransactions(true);
+    
+    try {
+      const transactionsResponse = await dashboardApi.getTransactions();
+      if (transactionsResponse.success && transactionsResponse.transactions) {
+        setTransactions(transactionsResponse.transactions);
+        toast.success(`📊 Loaded ${transactionsResponse.transactions.length} transactions`);
+      } else {
+        console.warn('Failed to load transactions:', transactionsResponse.error);
+        toast.warning('⚠️ Could not load transactions from API');
+        // Fallback to sample data
+        setTransactions([
+          {
+            id: "tx1",
+            amount: 15000,
+            type: "debit",
+            status: "completed",
+            description: "Member Contribution - Wilfred Kimani",
+            createdAt: new Date(),
+          },
+          {
+            id: "tx2",
+            amount: 25000,
+            type: "credit",
+            status: "completed",
+            description: "Investment Return Distribution",
+            createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
+          },
+        ]);
+      }
+    } catch (err) {
+      console.error('Error loading transactions:', err);
+      toast.error('Failed to load transactions');
+    } finally {
+      setLoadingTransactions(false);
+    }
+  };
+
   useEffect(() => {
     const load = async () => {
       try {
@@ -114,9 +167,22 @@ export default function AdminDashboard() {
           return;
         }
 
+        // ⚠️ CRITICAL: Check if user is actually an admin
+        if (storedUser.role !== 'admin') {
+          toast.error('🚫 Access Denied: Admin privileges required');
+          router.push('/dashboard/customer');
+          return;
+        }
+
         // Fetch full user data from API
         const userResponse = await userApi.getById(storedUser.id);
         if (userResponse.success && userResponse.user) {
+          // Double-check role from API response
+          if (userResponse.user.role !== 'admin') {
+            toast.error('🚫 Access Denied: Admin privileges required');
+            router.push('/dashboard/customer');
+            return;
+          }
           setUser(userResponse.user);
           toast.success(`Welcome ${userResponse.user.firstName || 'Admin'}!`);
         } else {
@@ -238,7 +304,7 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        {/* 🆕 QUICK ACTIONS - WITH ACCOUNT TYPES */}
+        {/* QUICK ACTIONS - WITH ACCOUNT TYPES */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
           <Link href="/dashboard/admin/manage" className="bg-white/80 backdrop-blur-xl border border-gray-200 rounded-xl sm:rounded-2xl shadow-lg p-6 hover:shadow-xl transition-all hover:scale-105">
             <Users size={32} className="text-indigo-600 mb-3" />
@@ -258,7 +324,6 @@ export default function AdminDashboard() {
             <p className="text-xs sm:text-sm text-gray-600">System configuration</p>
           </Link>
 
-          {/* 🆕 NEW: Account Types Link */}
           <Link href="/dashboard/admin/account-types" className="bg-white/80 backdrop-blur-xl border border-gray-200 rounded-xl sm:rounded-2xl shadow-lg p-6 hover:shadow-xl transition-all hover:scale-105">
             <Layers size={32} className="text-purple-600 mb-3" />
             <h3 className="font-bold text-gray-900 mb-1">Account Types</h3>
@@ -268,11 +333,29 @@ export default function AdminDashboard() {
 
         {/* MEMBERS LIST - Mobile Responsive */}
         <div className="bg-white/80 backdrop-blur-xl border border-gray-200 rounded-xl sm:rounded-2xl shadow-xl overflow-hidden">
-          <div className="px-4 sm:px-6 py-4 border-b border-gray-100 bg-white/60">
+          <div className="px-4 sm:px-6 py-4 border-b border-gray-100 bg-white/60 flex items-center justify-between">
             <h3 className="text-lg sm:text-xl font-bold text-gray-900 flex items-center gap-2">
               <Users size={20} className="sm:w-6 sm:h-6 text-indigo-600" />
               Member Management ({members.length})
             </h3>
+            {/* 🆕 NEW: Button to view all transactions */}
+            <button
+              onClick={loadAllTransactions}
+              disabled={loadingTransactions}
+              className="text-sm bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+            >
+              {loadingTransactions ? (
+                <>
+                  <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  Loading...
+                </>
+              ) : (
+                <>
+                  <FileText size={16} />
+                  View All Transactions
+                </>
+              )}
+            </button>
           </div>
 
           <div className="overflow-x-auto">
@@ -317,6 +400,11 @@ export default function AdminDashboard() {
             </table>
           </div>
         </div>
+
+        {/* 🆕 NEW: All Transactions Section (Admin View) */}
+        {showTransactions && (
+          <TransactionHistory transactions={transactions} />
+        )}
 
         {/* ALERTS & NOTIFICATIONS - Mobile Responsive */}
         <div className="bg-white/80 backdrop-blur-xl border border-gray-200 rounded-xl sm:rounded-2xl shadow-xl p-4 sm:p-6">

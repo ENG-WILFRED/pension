@@ -12,7 +12,7 @@ import BankDetailsComponent from "@/app/components/dashboard/BankDetails";
 import PensionPlans from "@/app/components/dashboard/PensionPlans";
 import TransactionHistory from "@/app/components/dashboard/TransactionHistory";
 import QuickActions from "@/app/components/dashboard/QuickActions";
-import { userApi } from "@/app/lib/api-client";
+import { userApi, dashboardApi } from "@/app/lib/api-client";
 
 interface User {
   id: string;
@@ -31,6 +31,7 @@ interface User {
   bankAccount?: any;
   kra?: string;
   nssfNumber?: string;
+  role?: 'customer' | 'admin';
 }
 
 interface Transaction {
@@ -62,6 +63,7 @@ export default function CustomerDashboard() {
   const [totalContributions, setTotalContributions] = useState(0);
   const [projectedRetirement, setProjectedRetirement] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [loadingTransactions, setLoadingTransactions] = useState(true);
 
   useEffect(() => {
     const load = async () => {
@@ -75,17 +77,54 @@ export default function CustomerDashboard() {
           return;
         }
 
+        // ⚠️ CRITICAL: Check if user is trying to access customer dashboard as admin
+        if (storedUser.role === 'admin') {
+          toast.error('🚫 Admins cannot access customer dashboard');
+          router.push('/dashboard/admin');
+          return;
+        }
+
         // Fetch full user data from API
         const userResponse = await userApi.getById(storedUser.id);
         if (userResponse.success && userResponse.user) {
+          // Double-check role from API response
+          if (userResponse.user.role === 'admin') {
+            toast.error('Admins cannot access customer dashboard');
+            router.push('/dashboard/admin');
+            return;
+          }
           setUser(userResponse.user);
+          toast.success(`Welcome back, ${userResponse.user.firstName || storedUser.firstName}!`);
         } else {
           // Fallback to stored user if API fails
           setUser(storedUser);
+          toast.success(`Welcome back, ${storedUser.firstName}!`);
         }
-        toast.success(`Welcome back, ${(userResponse.user?.firstName || storedUser.firstName)}!`);
 
-        // Mock pension plans
+        // 🆕 UPDATED: Fetch transactions from backend API
+        setLoadingTransactions(true);
+        const transactionsResponse = await dashboardApi.getTransactions();
+        if (transactionsResponse.success && transactionsResponse.transactions) {
+          setTransactions(transactionsResponse.transactions);
+          toast.success('📊 Transactions loaded successfully');
+        } else {
+          console.warn('Failed to load transactions:', transactionsResponse.error);
+          toast.warning('⚠️ Could not load transactions. Using sample data.');
+          // Fallback to mock data if API fails
+          setTransactions([
+            {
+              id: "1",
+              amount: 15000,
+              type: "debit",
+              status: "completed",
+              description: "Monthly Contribution",
+              createdAt: new Date(),
+            },
+          ]);
+        }
+        setLoadingTransactions(false);
+
+        // Mock pension plans (TODO: Replace with API call when backend implements)
         const mockPensionPlans: PensionPlan[] = [
           {
             id: "plan1",
@@ -119,87 +158,10 @@ export default function CustomerDashboard() {
           },
         ];
 
-        // Mock transactions - expanded
-        const mockTransactions: Transaction[] = [
-          {
-            id: "1",
-            amount: 15000,
-            type: "debit",
-            status: "completed",
-            description: "Growth Fund Contribution",
-            createdAt: new Date(),
-          },
-          {
-            id: "2",
-            amount: 10000,
-            type: "debit",
-            status: "completed",
-            description: "Balanced Fund Contribution",
-            createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
-          },
-          {
-            id: "3",
-            amount: 8000,
-            type: "debit",
-            status: "completed",
-            description: "Conservative Fund Contribution",
-            createdAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000),
-          },
-          {
-            id: "4",
-            amount: 12500,
-            type: "credit",
-            status: "completed",
-            description: "Monthly Investment Returns",
-            createdAt: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000),
-          },
-          {
-            id: "5",
-            amount: 15000,
-            type: "debit",
-            status: "completed",
-            description: "Growth Fund Contribution",
-            createdAt: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
-          },
-          {
-            id: "6",
-            amount: 8500,
-            type: "credit",
-            status: "completed",
-            description: "Dividend Distribution",
-            createdAt: new Date(Date.now() - 40 * 24 * 60 * 60 * 1000),
-          },
-          {
-            id: "7",
-            amount: 10000,
-            type: "debit",
-            status: "completed",
-            description: "Balanced Fund Contribution",
-            createdAt: new Date(Date.now() - 60 * 24 * 60 * 60 * 1000),
-          },
-          {
-            id: "8",
-            amount: 33000,
-            type: "credit",
-            status: "completed",
-            description: "Quarterly Performance Bonus",
-            createdAt: new Date(Date.now() - 90 * 24 * 60 * 60 * 1000),
-          },
-          {
-            id: "9",
-            amount: 5000,
-            type: "debit",
-            status: "pending",
-            description: "Loan Disbursement",
-            createdAt: new Date(Date.now() - 120 * 24 * 60 * 60 * 1000),
-          },
-        ];
-
         const totalContrib = mockPensionPlans.reduce((sum, plan) => sum + plan.contribution, 0);
         const totalBalance = mockPensionPlans.reduce((sum, plan) => sum + plan.balance, 0);
 
         setPensionPlans(mockPensionPlans);
-        setTransactions(mockTransactions);
         setTotalContributions(totalContrib);
         setBalance(totalBalance);
         setProjectedRetirement(Math.round(totalBalance * Math.pow(1.08, 30)));
@@ -259,7 +221,17 @@ export default function CustomerDashboard() {
         </div>
 
         <PensionPlans plans={pensionPlans} />
-        <TransactionHistory transactions={transactions} />
+        
+        {/* 🆕 UPDATED: Transaction History with loading state */}
+        {loadingTransactions ? (
+          <div className="bg-white/80 backdrop-blur-xl border border-gray-200 rounded-2xl shadow-xl p-12 flex flex-col items-center justify-center">
+            <div className="h-10 w-10 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
+            <p className="mt-4 text-gray-600 font-medium">Loading transactions...</p>
+          </div>
+        ) : (
+          <TransactionHistory transactions={transactions} />
+        )}
+        
         <QuickActions userType={'customer'} />
       </main>
 
