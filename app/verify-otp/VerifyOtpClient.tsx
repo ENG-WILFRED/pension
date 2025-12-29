@@ -145,10 +145,23 @@ export default function VerifyOtpClient() {
         (typeof window !== 'undefined' ? localStorage.getItem('auth_identifier') : null) ||
         '';
 
+      if (!id) {
+        toast.error(' No identifier found. Please login again.');
+        setResendLoading(false);
+        return;
+      }
+
       const res = await authApi.sendOtp({ identifier: id });
 
       if (!res.success) {
-        toast.error(res.error || 'Failed to send OTP');
+        const errorMsg = res.error || 'Failed to send OTP';
+        
+        // Check if error is HTML (backend endpoint missing)
+        if (errorMsg.includes('Unexpected token') || errorMsg.includes('DOCTYPE')) {
+          toast.error('⚠️ Resend OTP feature is currently unavailable. Please try logging in again.');
+        } else {
+          toast.error(errorMsg);
+        }
         setResendLoading(false);
         return;
       }
@@ -156,19 +169,10 @@ export default function VerifyOtpClient() {
       toast.success('📧 New OTP sent to your email');
       setOtp(Array(6).fill(''));
       setTimer(60);
-      
-      const interval = setInterval(() => {
-        setTimer(prev => {
-          if (prev <= 1) {
-            clearInterval(interval);
-            return 0;
-          }
-          return prev - 1;
-        });
-      }, 1000);
+      setResendLoading(false);
     } catch (err) {
-      toast.error('⚠️ An unexpected error occurred');
-      console.error(err);
+      console.error('Resend OTP error:', err);
+      toast.error('⚠️ Failed to resend OTP. Please try logging in again.');
       setResendLoading(false);
     }
   };
@@ -176,6 +180,23 @@ export default function VerifyOtpClient() {
   const handleBack = () => {
     router.back();
   };
+
+  // Timer countdown effect
+  useEffect(() => {
+    if (timer <= 0) return;
+
+    const interval = setInterval(() => {
+      setTimer(prev => {
+        if (prev <= 1) {
+          clearInterval(interval);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [timer]);
 
   useEffect(() => {
     if (!identifier) {
