@@ -1,5 +1,3 @@
-///home/hp/JERE/pension/app/lib/api-client.ts
-
 'use client';
 
 import type {
@@ -133,6 +131,28 @@ export const authApi = {
   sendOtp: (data: { identifier: string }) =>
     apiCall('/api/auth/send-otp', {
       method: 'POST',
+      body: JSON.stringify(data),
+    }),
+};
+
+// Terms and Conditions API calls
+export const termsApi = {
+  /**
+   * GET /api/terms-and-conditions
+   * Get current terms and conditions
+   */
+  getCurrent: () =>
+    apiCall('/api/terms-and-conditions', {
+      method: 'GET',
+    }),
+
+  /**
+   * PUT /api/terms-and-conditions
+   * Update terms and conditions (Admin only)
+   */
+  update: (data: { body: string }) =>
+    apiCall('/api/terms-and-conditions', {
+      method: 'PUT',
       body: JSON.stringify(data),
     }),
 };

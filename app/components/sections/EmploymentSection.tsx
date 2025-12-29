@@ -4,13 +4,21 @@ interface EmploymentSectionProps {
 }
 
 export default function EmploymentSection({ formData, onChange }: EmploymentSectionProps) {
+  const handleSalaryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    if (value === '' || parseFloat(value) >= 0) {
+      onChange(e);
+    }
+  };
+
   return (
     <div className="space-y-2 pb-4 mb-4 border-b">
       <h3 className="text-xs font-bold text-gray-900 mb-4 uppercase tracking-wider">Employment</h3>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
         <div>
-          <label htmlFor="occupation" className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="occupation" className="block text-sm font-medium'
+           text-gray-700 mb-1">
             Occupation
           </label>
           <input
@@ -50,7 +58,12 @@ export default function EmploymentSection({ formData, onChange }: EmploymentSect
             min="0"
             step="0.01"
             value={formData.salary || ''}
-            onChange={onChange}
+            onChange={handleSalaryChange}
+            onKeyDown={(e) => {
+              if (e.key === '-' || e.key === 'e' || e.key === 'E') {
+                e.preventDefault();
+              }
+            }}
             className="w-full px-4 py-4 border border-gray-300 rounded-lg text-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 placeholder-gray-500"
             placeholder="0.00"
           />
