@@ -1,3 +1,4 @@
+///home/hp/JERE/AutoNest/app/components/AnimatedFooter.tsx
 "use client";
 
 import { TrendingUp, DollarSign, PieChart, Wallet, Zap } from "lucide-react";

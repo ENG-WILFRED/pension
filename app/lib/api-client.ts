@@ -195,14 +195,25 @@ export const dashboardApi = {
 
 // User API calls
 export const userApi = {
+  /**
+   * GET /api/users
+   * Get all users (Admin only)
+   */
+  getAll: () =>
+    apiCall('/api/users', {
+      method: 'GET',
+    }),
+    
   getById: (userId: string) =>
     apiCall(`/api/users/${userId}`, {
       method: 'GET',
     }),
+    
   promoteToAdmin: (userId: string) =>
     apiCall(`/api/users/${userId}/promote`, {
       method: 'POST',
     }),
+    
   demoteToCustomer: (userId: string) =>
     apiCall(`/api/users/${userId}/demote`, {
       method: 'POST',
@@ -213,6 +224,9 @@ export const userApi = {
 export const adminApi = {
   /**
    * POST /api/auth/makeadmin
+   * Create new admin user or promote existing customer to admin (Admin only - no payment required)
+   * Creating new admin requires: email, phone, firstName, lastName
+   * Promoting existing user accepts: email OR userId
    */
   createAdmin: (data: {
     email: string;
@@ -224,7 +238,7 @@ export const adminApi = {
     address?: string;
     city?: string;
     country?: string;
-    userId?: string; 
+    userId?: string; // For promoting existing user
   }) =>
     apiCall('/api/auth/makeadmin', {
       method: 'POST',
@@ -240,6 +254,7 @@ export const adminApi = {
       method: 'GET',
     }),
 };
+
 // Account Types API calls (ADMIN ONLY)
 export const accountTypeApi = {
   /**

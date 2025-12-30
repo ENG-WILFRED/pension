@@ -1,10 +1,9 @@
+///home/hp/JERE/AutoNest/app/dashboard/customer/page.tsx
 "use client";
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import DashboardHeader from "@/app/components/dashboard/DashboardHeader";
-import AnimatedFooter from "@/app/components/AnimatedFooter";
 import UserProfile from "@/app/components/dashboard/UserProfile";
 import BalanceCards from "@/app/components/dashboard/BalanceCards";
 import EmploymentDetails from "@/app/components/dashboard/EmploymentDetails";
@@ -68,7 +67,6 @@ export default function CustomerDashboard() {
   useEffect(() => {
     const load = async () => {
       try {
-        // Get user from localStorage
         const userStr = localStorage.getItem('user');
         const storedUser = userStr ? JSON.parse(userStr) : null;
 
@@ -77,17 +75,14 @@ export default function CustomerDashboard() {
           return;
         }
 
-        // ⚠️ CRITICAL: Check if user is trying to access customer dashboard as admin
         if (storedUser.role === 'admin') {
           toast.error('🚫 Admins cannot access customer dashboard');
           router.push('/dashboard/admin');
           return;
         }
 
-        // Fetch full user data from API
         const userResponse = await userApi.getById(storedUser.id);
         if (userResponse.success && userResponse.user) {
-          // Double-check role from API response
           if (userResponse.user.role === 'admin') {
             toast.error('Admins cannot access customer dashboard');
             router.push('/dashboard/admin');
@@ -96,12 +91,10 @@ export default function CustomerDashboard() {
           setUser(userResponse.user);
           toast.success(`Welcome back, ${userResponse.user.firstName || storedUser.firstName}!`);
         } else {
-          // Fallback to stored user if API fails
           setUser(storedUser);
           toast.success(`Welcome back, ${storedUser.firstName}!`);
         }
 
-        // 🆕 UPDATED: Fetch transactions from backend API
         setLoadingTransactions(true);
         const transactionsResponse = await dashboardApi.getTransactions();
         if (transactionsResponse.success && transactionsResponse.transactions) {
@@ -110,7 +103,6 @@ export default function CustomerDashboard() {
         } else {
           console.warn('Failed to load transactions:', transactionsResponse.error);
           toast.warning('⚠️ Could not load transactions. Using sample data.');
-          // Fallback to mock data if API fails
           setTransactions([
             {
               id: "1",
@@ -124,7 +116,6 @@ export default function CustomerDashboard() {
         }
         setLoadingTransactions(false);
 
-        // Mock pension plans (TODO: Replace with API call when backend implements)
         const mockPensionPlans: PensionPlan[] = [
           {
             id: "plan1",
@@ -187,75 +178,45 @@ export default function CustomerDashboard() {
   }
 
   return (
-    <div className="min-h-screen w-full bg-gradient-to-br from-indigo-100 via-blue-50 to-purple-100 relative overflow-x-hidden flex flex-col">
-
-      {/* Floating shapes */}
-      <div className="absolute top-10 left-10 w-40 h-40 bg-indigo-300/30 blur-3xl rounded-full animate-floating-slow" />
-      <div className="absolute bottom-16 right-10 w-52 h-52 bg-purple-300/20 blur-3xl rounded-full animate-floating-slower" />
-
-      <DashboardHeader firstName={user?.firstName ?? 'User'} lastName={user?.lastName ?? ''} userType={'customer'} />
-
-      <main className="flex-1 w-full px-4 sm:px-6 lg:px-8 py-8 sm:py-10 space-y-8 sm:space-y-10">
-        <UserProfile user={user} />
-        <BalanceCards 
-          balance={balance} 
-          totalContributions={totalContributions} 
-          projectedRetirement={projectedRetirement}
-          user={user ? {
-            salary: user.salary,
-            contributionRate: user.contributionRate,
-            dateOfBirth: user.dateOfBirth,
-            retirementAge: user.retirementAge,
-          } : undefined}
+    <div className="px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+      
+      <UserProfile user={user} />
+      
+      <BalanceCards 
+        balance={balance} 
+        totalContributions={totalContributions} 
+        projectedRetirement={projectedRetirement}
+        user={user ? {
+          salary: user.salary,
+          contributionRate: user.contributionRate,
+          dateOfBirth: user.dateOfBirth,
+          retirementAge: user.retirementAge,
+        } : undefined}
+      />
+      
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+        <EmploymentDetails 
+          employer={user?.employer} 
+          occupation={user?.occupation}
+          salary={user?.salary} 
+          contributionRate={user?.contributionRate}
+          retirementAge={user?.retirementAge}
         />
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
-          <EmploymentDetails 
-            employer={user?.employer} 
-            occupation={user?.occupation}
-            salary={user?.salary} 
-            contributionRate={user?.contributionRate}
-            retirementAge={user?.retirementAge}
-          />
-          <BankDetailsComponent bankAccount={user?.bankAccount} />
+        <BankDetailsComponent bankAccount={user?.bankAccount} />
+      </div>
+
+      <PensionPlans plans={pensionPlans} />
+      
+      {loadingTransactions ? (
+        <div className="bg-white/80 backdrop-blur-xl border border-gray-200 rounded-2xl shadow-xl p-12 flex flex-col items-center justify-center">
+          <div className="h-10 w-10 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
+          <p className="mt-4 text-gray-600 font-medium">Loading transactions...</p>
         </div>
-
-        <PensionPlans plans={pensionPlans} />
-        
-        {/* 🆕 UPDATED: Transaction History with loading state */}
-        {loadingTransactions ? (
-          <div className="bg-white/80 backdrop-blur-xl border border-gray-200 rounded-2xl shadow-xl p-12 flex flex-col items-center justify-center">
-            <div className="h-10 w-10 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
-            <p className="mt-4 text-gray-600 font-medium">Loading transactions...</p>
-          </div>
-        ) : (
-          <TransactionHistory transactions={transactions} />
-        )}
-        
-        <QuickActions userType={'customer'} />
-      </main>
-
-      <AnimatedFooter />
-
-      {/* ANIMATIONS */}
-      <style jsx>{`
-        .animate-floating-slow {
-          animation: float 9s ease-in-out infinite;
-        }
-        .animate-floating-slower {
-          animation: float 14s ease-in-out infinite;
-        }
-
-        @keyframes float {
-          0%,
-          100% {
-            transform: translateY(0px) scale(1);
-          }
-          50% {
-            transform: translateY(-18px) scale(1.04);
-          }
-        }
-      `}</style>
+      ) : (
+        <TransactionHistory transactions={transactions} />
+      )}
+      
+      <QuickActions userType="customer" />
     </div>
   );
 }
