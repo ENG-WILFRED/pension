@@ -1,4 +1,3 @@
-///home/hp/JERE/AutoNest/app/dashboard/Sidebar.tsx
 "use client";
 
 import { useState } from "react";
@@ -55,6 +54,11 @@ export default function Sidebar({ userType, firstName, lastName }: SidebarProps)
       name: "Manage Users",
       icon: Users,
       href: "/dashboard/admin/manage",
+    },
+    {
+      name: "Manage Accounts",
+      icon: Wallet,
+      href: "/dashboard/admin/accounts",
     },
     {
       name: "Create Admin",

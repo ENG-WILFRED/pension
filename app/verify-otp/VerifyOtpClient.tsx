@@ -146,27 +146,32 @@ export default function VerifyOtpClient() {
         '';
 
       if (!id) {
-        toast.error(' No identifier found. Please login again.');
+        toast.error('❌ No identifier found. Please login again.');
         setResendLoading(false);
         return;
       }
 
-      const res = await authApi.sendOtp({ identifier: id });
+      // ✅ FIXED: Use resendOtp instead of sendOtp
+      const res = await authApi.resendOtp({ identifier: id });
 
       if (!res.success) {
-        const errorMsg = res.error || 'Failed to send OTP';
+        const errorMsg = res.error || 'Failed to resend OTP';
         
-        // Check if error is HTML (backend endpoint missing)
-        if (errorMsg.includes('Unexpected token') || errorMsg.includes('DOCTYPE')) {
-          toast.error('⚠️ Resend OTP feature is currently unavailable. Please try logging in again.');
+        // Handle specific error codes from backend
+        if (errorMsg.includes('not found') || errorMsg.includes('Invalid identifier')) {
+          toast.error('❌ User not found. Please check your identifier.');
+        } else if (errorMsg.includes('expired') || errorMsg.includes('OTP has expired')) {
+          toast.error('⏰ Previous OTP expired. A new one has been sent.');
+        } else if (errorMsg.includes('No OTP found')) {
+          toast.error('⚠️ No OTP found. Please log in again to get an OTP.');
         } else {
-          toast.error(errorMsg);
+          toast.error(`❌ ${errorMsg}`);
         }
         setResendLoading(false);
         return;
       }
 
-      toast.success('📧 New OTP sent to your email');
+      toast.success('📧 New OTP sent to your email and phone!');
       setOtp(Array(6).fill(''));
       setTimer(60);
       setResendLoading(false);

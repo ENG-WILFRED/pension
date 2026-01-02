@@ -145,9 +145,21 @@ export const authApi = {
   /**
    * POST /api/auth/send-otp
    * Send OTP to email (for resend functionality)
+   * @deprecated Use resendOtp instead
    */
   sendOtp: (data: { identifier: string }) =>
     apiCall('/api/auth/send-otp', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+
+  /**
+   * POST /api/auth/resend-otp
+   * Resend OTP to user's email and phone
+   * Validates user exists, OTP was previously generated, and OTP not expired
+   */
+  resendOtp: (data: { identifier: string }) =>
+    apiCall('/api/auth/resend-otp', {
       method: 'POST',
       body: JSON.stringify(data),
     }),
@@ -303,6 +315,104 @@ export const adminApi = {
     }),
 };
 
+// 🆕 ACCOUNTS API - Pension Account Management
+export const accountsApi = {
+  /**
+   * GET /api/accounts
+   * List all accounts for the current user
+   */
+  getAll: () =>
+    apiCall('/api/accounts', {
+      method: 'GET',
+    }),
+
+  /**
+   * GET /api/accounts/{id}
+   * Get account details
+   */
+  getById: (id: string) =>
+    apiCall(`/api/accounts/${id}`, {
+      method: 'GET',
+    }),
+
+  /**
+   * GET /api/accounts/{id}/summary
+   * Get account summary with all balances
+   */
+  getSummary: (id: string) =>
+    apiCall(`/api/accounts/${id}/summary`, {
+      method: 'GET',
+    }),
+
+  /**
+   * POST /api/accounts/{id}/contribution
+   * Add contribution to account
+   */
+  addContribution: (id: string, data: {
+    employeeAmount: number;
+    employerAmount: number;
+    description?: string;
+  }) =>
+    apiCall(`/api/accounts/${id}/contribution`, {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+
+  /**
+   * POST /api/accounts/{id}/deposit
+   * Deposit funds to an account (initiates M-Pesa STK Push)
+   */
+  deposit: (id: string, data: {
+    amount: number;
+    phone: string;
+    description?: string;
+  }) =>
+    apiCall(`/api/accounts/${id}/deposit`, {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+
+  /**
+   * POST /api/accounts/{id}/withdraw
+   * Withdraw funds from account
+   */
+  withdraw: (id: string, data: {
+    amount: number;
+    withdrawalType: string;
+    description?: string;
+  }) =>
+    apiCall(`/api/accounts/${id}/withdraw`, {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+
+  /**
+   * POST /api/accounts/{id}/earnings
+   * Add earnings to account (interest, investment returns, dividends)
+   */
+  addEarnings: (id: string, data: {
+    type: 'interest' | 'investment' | 'dividend';
+    amount: number;
+    description?: string;
+  }) =>
+    apiCall(`/api/accounts/${id}/earnings`, {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+
+  /**
+   * PUT /api/accounts/{id}/status
+   * Update account status
+   */
+  updateStatus: (id: string, data: {
+    accountStatus: 'ACTIVE' | 'INACTIVE' | 'SUSPENDED';
+  }) =>
+    apiCall(`/api/accounts/${id}/status`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    }),
+};
+
 // Account Types API calls (ADMIN ONLY)
 export const accountTypeApi = {
   /**
@@ -330,10 +440,10 @@ export const accountTypeApi = {
   create: (data: {
     name: string;
     description: string;
-    category: string;
+    interestRate?: number;
+    category?: string;
     minBalance?: number;
     maxBalance?: number;
-    interestRate?: number;
     lockInPeriodMonths?: number;
     allowWithdrawals?: boolean;
     allowLoans?: boolean;
@@ -351,10 +461,10 @@ export const accountTypeApi = {
   update: (id: string, data: Partial<{
     name: string;
     description: string;
+    interestRate: number;
     category: string;
     minBalance: number;
     maxBalance: number;
-    interestRate: number;
     lockInPeriodMonths: number;
     allowWithdrawals: boolean;
     allowLoans: boolean;

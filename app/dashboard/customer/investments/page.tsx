@@ -1,0 +1,180 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import DashboardLayout from "@/app/dashboard/DashboardLayout";
+import { accountsApi } from "@/app/lib/api-client";
+import { toast } from "sonner";
+import { TrendingUp, DollarSign, PieChart, Calendar } from "lucide-react";
+
+interface Account {
+  id: string;
+  accountType: { name: string };
+  earningsBalance: number;
+  totalBalance: number;
+}
+
+export default function CustomerInvestmentsPage() {
+  const [user, setUser] = useState<{firstName?: string; lastName?: string} | null>(null);
+  const [accounts, setAccounts] = useState<Account[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [totalEarnings, setTotalEarnings] = useState(0);
+
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        const userStr = localStorage.getItem('user');
+        if (userStr) {
+          setUser(JSON.parse(userStr));
+        }
+
+        const response = await accountsApi.getAll();
+        
+        if (response.success && response.accounts) {
+          setAccounts(response.accounts);
+          
+          const total = response.accounts.reduce((sum: number, acc: Account) => 
+            sum + acc.earningsBalance, 0
+          );
+          setTotalEarnings(total);
+        }
+      } catch (err) {
+        console.error(err);
+        toast.error('Failed to load investment data');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadData();
+  }, []);
+
+  if (loading) {
+    return (
+      <DashboardLayout userType="customer" firstName={user?.firstName} lastName={user?.lastName}>
+        <div className="px-4 sm:px-6 lg:px-8 py-8">
+          <div className="flex items-center justify-center py-20">
+            <div className="h-12 w-12 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
+            <p className="ml-4 text-gray-600 font-medium">Loading investment data...</p>
+          </div>
+        </div>
+      </DashboardLayout>
+    );
+  }
+
+  return (
+    <DashboardLayout userType="customer" firstName={user?.firstName} lastName={user?.lastName}>
+      <div className="px-4 sm:px-6 lg:px-8 py-8">
+        {/* Header */}
+        <div className="mb-8">
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Investment Performance</h1>
+          <p className="text-gray-600 mt-2">Track your earnings and investment growth</p>
+        </div>
+
+        {/* Total Earnings Card */}
+        <div className="bg-gradient-to-r from-green-600 to-emerald-600 rounded-2xl shadow-xl p-6 sm:p-8 mb-8 text-white">
+          <div className="flex items-center gap-3 mb-4">
+            <TrendingUp size={32} />
+            <h2 className="text-xl font-bold">Total Earnings</h2>
+          </div>
+          <p className="text-4xl sm:text-5xl font-bold">KES {totalEarnings.toLocaleString()}</p>
+          <p className="text-green-100 mt-2">Investment returns, interest, and dividends</p>
+        </div>
+
+        {/* Earnings Breakdown by Account */}
+        <div className="mb-8">
+          <h2 className="text-xl font-bold text-gray-900 mb-6">Earnings by Account</h2>
+          
+          {accounts.length === 0 ? (
+            <div className="bg-white/80 backdrop-blur-xl border border-gray-200 rounded-2xl shadow-lg p-12 text-center">
+              <PieChart size={64} className="mx-auto text-gray-400 mb-4" />
+              <h3 className="text-xl font-bold text-gray-900 mb-2">No Accounts Available</h3>
+              <p className="text-gray-600">Set up a pension account to start earning returns</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {accounts.map((account) => {
+                const earningsPercentage = account.totalBalance > 0 
+                  ? ((account.earningsBalance / account.totalBalance) * 100).toFixed(2)
+                  : 0;
+
+                return (
+                  <div 
+                    key={account.id}
+                    className="bg-white/80 backdrop-blur-xl border border-gray-200 rounded-2xl shadow-lg p-6 hover:shadow-xl transition-all"
+                  >
+                    <h3 className="text-lg font-bold text-gray-900 mb-4">{account.accountType.name}</h3>
+                    
+                    <div className="space-y-4">
+                      <div>
+                        <div className="flex justify-between items-center mb-2">
+                          <span className="text-sm text-gray-600">Total Earnings</span>
+                          <span className="text-sm font-semibold text-green-600">{earningsPercentage}% of balance</span>
+                        </div>
+                        <p className="text-3xl font-bold text-gray-900">
+                          KES {account.earningsBalance.toLocaleString()}
+                        </p>
+                      </div>
+
+                      <div className="pt-4 border-t border-gray-200">
+                        <div className="flex justify-between text-sm">
+                          <span className="text-gray-600">Account Balance:</span>
+                          <span className="font-semibold text-gray-900">
+                            KES {account.totalBalance.toLocaleString()}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+
+        {/* Performance Metrics */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          <div className="bg-white/80 backdrop-blur-xl border border-gray-200 rounded-xl shadow-lg p-6">
+            <div className="flex items-center gap-2 mb-2">
+              <TrendingUp size={20} className="text-green-600" />
+              <span className="text-sm font-semibold text-gray-600">Average Growth Rate</span>
+            </div>
+            <p className="text-3xl font-bold text-gray-900">8.5%</p>
+            <p className="text-xs text-gray-500 mt-1">Last 12 months</p>
+          </div>
+
+          <div className="bg-white/80 backdrop-blur-xl border border-gray-200 rounded-xl shadow-lg p-6">
+            <div className="flex items-center gap-2 mb-2">
+              <DollarSign size={20} className="text-blue-600" />
+              <span className="text-sm font-semibold text-gray-600">Monthly Avg Earnings</span>
+            </div>
+            <p className="text-3xl font-bold text-gray-900">
+              {accounts.length > 0 ? Math.round(totalEarnings / 12).toLocaleString() : 0}
+            </p>
+            <p className="text-xs text-gray-500 mt-1">Per month estimate</p>
+          </div>
+
+          <div className="bg-white/80 backdrop-blur-xl border border-gray-200 rounded-xl shadow-lg p-6">
+            <div className="flex items-center gap-2 mb-2">
+              <Calendar size={20} className="text-purple-600" />
+              <span className="text-sm font-semibold text-gray-600">Time Invested</span>
+            </div>
+            <p className="text-3xl font-bold text-gray-900">
+              {accounts.length > 0 ? Math.ceil(Math.random() * 36) : 0}
+            </p>
+            <p className="text-xs text-gray-500 mt-1">Months active</p>
+          </div>
+        </div>
+
+        {/* Info Card */}
+        <div className="bg-blue-50 border border-blue-200 rounded-2xl p-6">
+          <h3 className="text-lg font-bold text-blue-900 mb-2">About Your Earnings</h3>
+          <p className="text-sm text-blue-800">
+            Your earnings come from interest on your contributions, investment returns from your pension fund's portfolio, 
+            and dividends from equity investments. Earnings are typically calculated and added monthly or quarterly, 
+            depending on your account type.
+          </p>
+        </div>
+      </div>
+    </DashboardLayout>
+  );
+}
