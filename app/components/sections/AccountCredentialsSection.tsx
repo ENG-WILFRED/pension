@@ -1,37 +1,22 @@
 import { Eye, EyeOff } from 'lucide-react';
+import { useState } from 'react';
 
 interface AccountCredentialsSectionProps {
-  formData: { email: string; phone: string; username?: string };
+  formData: { email: string; phone: string; pin: string };
   errors: Record<string, string>;
   onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => void;
 }
 
 export default function AccountCredentialsSection({ formData, errors, onChange }: AccountCredentialsSectionProps) {
-  return (
-    <div className="space-y-2 pb-4 mb-4 border-b">
-      <h3 className="text-xs font-bold text-gray-900 uppercase tracking-wider">Account Credentials</h3>
+  const [showPin, setShowPin] = useState(false);
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
-        <div>
-             <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-1">
-               Username *
-             </label>
-             <input
-               id="username"
-               name="username"
-               type="text"
-               value={formData.username || ''}
-               onChange={onChange}
-               required
-               className={`w-full px-4 py-4 border rounded-lg text-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 placeholder-gray-500 ${
-                 errors.username ? 'border-red-500' : 'border-gray-300'
-               }`}
-               placeholder="choose-a-username"
-             />
-             {errors.username && <p className="text-red-600 text-xs mt-0.5">{errors.username}</p>}
-        </div>
-        <div>
-          <label htmlFor="email" className="block text-xs font-medium text-gray-700 mb-0.5">
+  return (
+    <div className="space-y-4 pb-4 mb-4">
+      <h3 className="text-xs font-bold text-gray-900 uppercase tracking-wider border-b pb-2">Account Credentials</h3>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="sm:col-span-2">
+          <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
             Email *
           </label>
           <input
@@ -41,17 +26,17 @@ export default function AccountCredentialsSection({ formData, errors, onChange }
             value={formData.email}
             onChange={onChange}
             required
-               className={`w-full px-4 py-4 border rounded-lg text-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 placeholder-gray-500 ${
-                 errors.email ? 'border-red-500' : 'border-gray-300'
-               }`}
+            className={`w-full px-4 py-4 border rounded-lg text-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 placeholder-gray-500 ${
+              errors.email ? 'border-red-500' : 'border-gray-300'
+            }`}
             placeholder="you@example.com"
           />
-          {errors.email && <p className="text-red-600 text-xs mt-0.5">{errors.email}</p>}
+          {errors.email && <p className="text-red-600 text-xs mt-1">{errors.email}</p>}
         </div>
 
         <div>
-          <label htmlFor="phone" className="block text-xs font-medium text-gray-700 mb-0.5">
-            Phone * (M-Pesa)
+          <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">
+            Phone Number * (M-Pesa)
           </label>
           <input
             id="phone"
@@ -60,19 +45,49 @@ export default function AccountCredentialsSection({ formData, errors, onChange }
             value={formData.phone}
             onChange={onChange}
             required
-               className={`w-full px-4 py-4 border rounded-lg text-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 placeholder-gray-500 ${
-                 errors.phone ? 'border-red-500' : 'border-gray-300'
-               }`}
+            className={`w-full px-4 py-4 border rounded-lg text-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 placeholder-gray-500 ${
+              errors.phone ? 'border-red-500' : 'border-gray-300'
+            }`}
             placeholder="+254712345678"
           />
-          {errors.phone && <p className="text-red-600 text-xs mt-0.5">{errors.phone}</p>}
+          {errors.phone && <p className="text-red-600 text-xs mt-1">{errors.phone}</p>}
+        </div>
+
+        <div>
+          <label htmlFor="pin" className="block text-sm font-medium text-gray-700 mb-1">
+            4-Digit PIN *
+          </label>
+          <div className="relative">
+            <input
+              id="pin"
+              name="pin"
+              type={showPin ? 'text' : 'password'}
+              value={formData.pin}
+              onChange={onChange}
+              required
+              maxLength={4}
+              className={`w-full px-4 py-4 border rounded-lg text-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 placeholder-gray-500 ${
+                errors.pin ? 'border-red-500' : 'border-gray-300'
+              }`}
+              placeholder="****"
+            />
+            <button
+              type="button"
+              onClick={() => setShowPin(!showPin)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+            >
+              {showPin ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+            </button>
+          </div>
+          {errors.pin && <p className="text-red-600 text-xs mt-1">{errors.pin}</p>}
+          <p className="text-xs text-gray-500 mt-1">Enter a 4-digit PIN for account security</p>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
-        <div className="sm:col-span-2">
-             <p className="text-sm text-gray-600">A temporary password will be issued via email after registration.</p>
-        </div>
+      <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+        <p className="text-sm text-blue-800">
+          <strong>Note:</strong> A temporary password will be sent to your email and phone after successful registration.
+        </p>
       </div>
     </div>
   );

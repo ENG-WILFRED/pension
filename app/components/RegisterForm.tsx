@@ -31,9 +31,18 @@ export default function RegisterForm() {
   const [loadingTerms, setLoadingTerms] = useState(false);
 
   const [formData, setFormData] = useState<Partial<RegistrationFormData>>({
+    // Account credentials
     email: '',
-    username: '',
     phone: '',
+    pin: '',
+    
+    // Bank account details
+    bankAccountName: '',
+    bankAccountNumber: '',
+    bankBranchName: '',
+    bankBranchCode: '',
+    
+    // Personal information
     firstName: '',
     lastName: '',
     dateOfBirth: '',
@@ -43,14 +52,26 @@ export default function RegisterForm() {
     spouseDob: '',
     children: [],
     nationalId: '',
+    
+    // Address
     address: '',
     city: '',
     country: '',
+    
+    // Employment
     occupation: '',
     employer: '',
     salary: undefined,
+    
+    // Pension details
     contributionRate: undefined,
     retirementAge: undefined,
+    accountType: 'MANDATORY',
+    riskProfile: 'MEDIUM',
+    currency: 'KES',
+    accountStatus: 'ACTIVE',
+    kycVerified: false,
+    complianceStatus: 'PENDING',
   });
 
   const [paymentPending, setPaymentPending] = useState<{
@@ -61,7 +82,6 @@ export default function RegisterForm() {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value, type } = e.target as any;
-    // convert certain fields to numbers
     const numericFields = ['salary', 'contributionRate', 'retirementAge'];
     setFormData({
       ...formData,
@@ -74,27 +94,21 @@ export default function RegisterForm() {
 
   // Multi-step UI state
   const [step, setStep] = useState(0);
-  const steps = ['Account', 'Personal', 'Address', 'Employment', 'Pension'];
+  const steps = ['Account', 'Personal', 'Address', 'Employment', 'Pension & Bank'];
 
   const validateStep = (idx: number) => {
     const e: Record<string, string> = {};
     if (idx === 0) {
-      if (!formData.username) e.username = 'Username is required';
       if (!formData.email) e.email = 'Email is required';
       if (!formData.phone) e.phone = 'Phone is required';
-    }
-    if (idx === 1) {
-      // personal - optional but check for names if provided
-      // no required fields here
-    }
-    if (idx === 2) {
-      // address
-    }
-    if (idx === 3) {
-      // employment
+      if (!formData.pin || !/^\d{4}$/.test(formData.pin)) e.pin = 'PIN must be 4 digits';
     }
     if (idx === 4) {
-      // pension
+      // Pension & Bank details
+      if (!formData.bankAccountName) e.bankAccountName = 'Bank account name is required';
+      if (!formData.bankAccountNumber) e.bankAccountNumber = 'Bank account number is required';
+      if (!formData.bankBranchName) e.bankBranchName = 'Bank branch name is required';
+      if (!formData.bankBranchCode) e.bankBranchCode = 'Bank branch code is required';
       if (formData.contributionRate == null) e.contributionRate = 'Select contribution rate';
     }
 
@@ -102,12 +116,10 @@ export default function RegisterForm() {
     return Object.keys(e).length === 0;
   };
 
-  // 🆕 NEW: Handle terms click
   const handleTermsClick = () => {
     setShowTermsModal(true);
   };
 
-  // 🆕 NEW: Handle terms checkbox change
   const handleTermsChange = (checked: boolean) => {
     setTermsAccepted(checked);
     if (checked) {
@@ -115,7 +127,6 @@ export default function RegisterForm() {
     }
   };
 
-  // 🆕 UPDATED: Validate terms before proceeding
   const handleNext = async (e?: React.MouseEvent) => {
     e?.preventDefault();
     if (!validateStep(step)) return;
@@ -125,7 +136,7 @@ export default function RegisterForm() {
       return;
     }
     
-    // 🆕 Validate terms on final step
+    // Validate terms on final step
     if (!termsAccepted) {
       setTermsError('You must accept the Terms and Conditions to continue');
       toast.error('⚠️ Please accept the Terms and Conditions');
@@ -174,8 +185,6 @@ export default function RegisterForm() {
   const handleSubmit = async (e: FormEvent) => {
     try { e.preventDefault?.(); } catch {}
 
-    // 🆕 REMOVED: Old terms validation (now handled in handleNext)
-
     if (!validateForm()) {
       toast.error('⚠️ Please fix validation errors');
       return;
@@ -184,13 +193,23 @@ export default function RegisterForm() {
     setLoading(true);
 
     try {
-      const dataToSend = formData;
+      const dataToSend = {
+        ...formData,
+        // Ensure defaults are set
+        accountType: formData.accountType || 'MANDATORY',
+        riskProfile: formData.riskProfile || 'MEDIUM',
+        currency: formData.currency || 'KES',
+        accountStatus: formData.accountStatus || 'ACTIVE',
+        kycVerified: formData.kycVerified || false,
+        complianceStatus: formData.complianceStatus || 'PENDING',
+      };
+      
       const result = await authApi.register(dataToSend as RegistrationFormData);
       
       if (!result.success) {
         const errorMsg = result.error || 'Registration failed';
         if (errorMsg.includes('already')) {
-          toast.error('❌ Email or username already registered');
+          toast.error('❌ Email or phone already registered');
         } else if (errorMsg.includes('Payment') || errorMsg.includes('payment')) {
           toast.error('💳 Failed to initiate payment. Please check your details and try again.');
         } else {
@@ -225,7 +244,6 @@ export default function RegisterForm() {
     const fetchTerms = async () => {
       setLoadingTerms(true);
       try {
-        // Fetch terms from backend
         const res = await termsApi.getCurrent();
         if (res.success && res.body) {
           setTermsContent(res.body);
@@ -248,7 +266,7 @@ export default function RegisterForm() {
     if (!paymentPending?.transactionId || !polling) return;
 
     let attempts = 0;
-    const maxAttempts = 120; // 4 minutes (120 * 2 seconds)
+    const maxAttempts = 120;
 
     const poll = async () => {
       attempts++;
@@ -270,12 +288,10 @@ export default function RegisterForm() {
         } else {
           const s = (res as any).status;
           
-          // First poll: show waiting message
           if (s === 'payment_pending' && attempts === 1) {
             toast.loading('⏳ Waiting for payment confirmation...');
           }
 
-          // Payment completed
           if (s === 'registration_completed') {
             const token = (res as any).token;
             if (token && typeof window !== 'undefined') {
@@ -289,7 +305,6 @@ export default function RegisterForm() {
             return;
           }
 
-          // Payment failed
           if (s === 'payment_failed') {
             toast.error('❌ Payment failed. Please try again.');
             setPolling(false);
@@ -299,7 +314,6 @@ export default function RegisterForm() {
           }
         }
 
-        // Timeout after 4 minutes of polling
         if (attempts >= maxAttempts) {
           toast.error('⏱️ Payment confirmation timeout. Please check the transaction status and try again.');
           setPolling(false);
@@ -338,12 +352,10 @@ export default function RegisterForm() {
       <div className="min-h-screen w-full bg-white flex flex-col lg:flex-row">
         {/* Branding Panel - Desktop only */}
         <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-indigo-600 via-blue-600 to-cyan-500 items-center justify-center p-12 min-h-screen relative overflow-hidden">
-          {/* Decorative elements */}
           <div className="absolute top-0 right-0 w-96 h-96 bg-blue-400 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse"></div>
           <div className="absolute bottom-0 left-0 w-96 h-96 bg-indigo-400 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse" style={{ animationDelay: '2s' }}></div>
           
           <div className="relative z-10 text-center max-w-md">
-            {/* Logo */}
             <div className="mb-12 flex justify-center">
               <div className="relative">
                 <img
@@ -354,13 +366,10 @@ export default function RegisterForm() {
               </div>
             </div>
 
-            {/* Heading */}
             <h1 className="text-5xl font-black text-white mb-4 leading-tight">Secure Your<br />Future Today</h1>
             
-            {/* Subheading */}
             <p className="text-xl text-blue-100 mb-8 font-medium">Start your pension journey in minutes</p>
 
-            {/* Process Steps */}
             <div className="space-y-4 text-left mt-12 pt-8 border-t border-white/20">
               <div className="flex items-start gap-3">
                 <div className="w-8 h-8 rounded-lg bg-gradient-to-r from-green-400 to-emerald-500 flex items-center justify-center text-white font-bold text-sm flex-shrink-0 mt-1">
@@ -391,7 +400,6 @@ export default function RegisterForm() {
               </div>
             </div>
 
-            {/* Footer text */}
             <p className="text-white/60 text-xs mt-12 pt-8 border-t border-white/10">
               Join thousands managing their retirement
             </p>
@@ -428,7 +436,7 @@ export default function RegisterForm() {
                       formData={{
                         email: formData.email as string,
                         phone: formData.phone as string,
-                        username: formData.username as string,
+                        pin: formData.pin as string,
                       }}
                       errors={errors}
                       onChange={handleChange}
@@ -477,13 +485,19 @@ export default function RegisterForm() {
                   />
                 )}
 
-                {/* 🆕 UPDATED: PensionSection with terms props */}
                 {step === 4 && (
                   <PensionSection
                     formData={{
                       contributionRate: formData.contributionRate,
                       retirementAge: formData.retirementAge,
+                      bankAccountName: formData.bankAccountName as string,
+                      bankAccountNumber: formData.bankAccountNumber as string,
+                      bankBranchName: formData.bankBranchName as string,
+                      bankBranchCode: formData.bankBranchCode as string,
+                      accountType: formData.accountType,
+                      riskProfile: formData.riskProfile,
                     }}
+                    errors={errors}
                     onChange={handleChange}
                     termsAccepted={termsAccepted}
                     onTermsChange={handleTermsChange}
@@ -529,7 +543,6 @@ export default function RegisterForm() {
                         </>
                       ) : (
                         <>
-                          {/* 🆕 UPDATED: Button text */}
                           <span>Complete Registration</span>
                           <span>→</span>
                         </>
@@ -554,7 +567,6 @@ export default function RegisterForm() {
           </div>
         </div>
 
-      {/* Terms and Conditions Modal */}
       <TermsAndConditionsModal
         isOpen={showTermsModal}
         onClose={handleTermsDecline}

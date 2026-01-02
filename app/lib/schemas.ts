@@ -1,4 +1,3 @@
-///home/hp/JERE/pension/app/lib/schemas.ts
 import { z } from 'zod';
 
 // Child schema for the children array
@@ -7,11 +6,20 @@ const childSchema = z.object({
   dob: z.string().optional(),
 });
 
-// Registration form schema
+// Registration form schema - Updated to match backend API
 export const registrationSchema = z.object({
+  // Account credentials
   email: z.string().email('Invalid email address'),
-  username: z.string().min(1, 'Username is required'),
-  phone: z.string().min(1, 'Phone number is required for payment'),
+  phone: z.string().min(10, 'Phone number is required for M-Pesa payment'),
+  pin: z.string().regex(/^\d{4}$/, 'PIN must be exactly 4 digits'),
+  
+  // Bank account details
+  bankAccountName: z.string().min(1, 'Bank account name is required'),
+  bankAccountNumber: z.string().min(1, 'Bank account number is required'),
+  bankBranchName: z.string().min(1, 'Bank branch name is required'),
+  bankBranchCode: z.string().min(1, 'Bank branch code is required'),
+  
+  // Personal information
   firstName: z.string().optional(),
   lastName: z.string().optional(),
   dateOfBirth: z.string().optional(),
@@ -21,14 +29,26 @@ export const registrationSchema = z.object({
   spouseDob: z.string().optional(),
   children: z.array(childSchema).optional(),
   nationalId: z.string().optional(),
+  
+  // Address
   address: z.string().optional(),
   city: z.string().optional(),
   country: z.string().optional(),
+  
+  // Employment
   occupation: z.string().optional(),
   employer: z.string().optional(),
   salary: z.number().optional(),
+  
+  // Pension details
   contributionRate: z.number().optional(),
   retirementAge: z.number().optional(),
+  accountType: z.enum(['MANDATORY', 'VOLUNTARY', 'INDIVIDUAL']).optional(),
+  riskProfile: z.enum(['LOW', 'MEDIUM', 'HIGH']).optional(),
+  currency: z.enum(['KES', 'USD', 'EUR']).optional(),
+  accountStatus: z.enum(['ACTIVE', 'INACTIVE', 'SUSPENDED']).optional(),
+  kycVerified: z.boolean().optional(),
+  complianceStatus: z.enum(['PENDING', 'APPROVED', 'REJECTED']).optional(),
 });
 
 export type RegistrationFormData = z.infer<typeof registrationSchema>;
