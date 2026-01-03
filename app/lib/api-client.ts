@@ -1,3 +1,5 @@
+///home/hp/JERE/AutoNest/app/lib/api-client.ts
+
 'use client';
 
 import type {
@@ -24,6 +26,25 @@ interface ApiResponse<T = any> {
   error?: string;
   data?: T;
   [key: string]: any;
+}
+
+// Report interface
+interface Report {
+  id: string;
+  type: string;
+  title: string;
+  fileName: string;
+  pdfBase64: string;
+  metadata?: any;
+  createdAt: string;
+}
+
+// Helper function to get token
+function getToken(): string | null {
+  if (typeof window !== 'undefined') {
+    return localStorage.getItem('auth_token');
+  }
+  return null;
 }
 
 export async function apiCall<T = any>(
@@ -483,6 +504,141 @@ export const accountTypeApi = {
     apiCall(`/api/account-types/${id}`, {
       method: 'DELETE',
     }),
+};
+
+// 🆕 Reports API - Report Generation and Management
+export const reportsApi = {
+  /**
+   * POST /api/reports/generate-transaction
+   * Generate transaction report
+   */
+  generateTransactionReport: async (data: {
+    title: string;
+    transactions: Array<{
+      id: string;
+      type: string;
+      amount: number;
+      status: string;
+      createdAt: string;
+    }>;
+  }) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/reports/generate-transaction`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${getToken()}`,
+        },
+        body: JSON.stringify(data),
+      });
+      return await response.json();
+    } catch (error) {
+      console.error('Error generating transaction report:', error);
+      return { success: false, error: 'Failed to generate transaction report' };
+    }
+  },
+
+  /**
+   * POST /api/reports/generate-customer
+   * Generate customer report
+   */
+  generateCustomerReport: async (data: {
+    title: string;
+    user: {
+      id: string;
+      email: string;
+      firstName?: string;
+      lastName?: string;
+    };
+    transactions: Array<any>;
+  }) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/reports/generate-customer`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${getToken()}`,
+        },
+        body: JSON.stringify(data),
+      });
+      return await response.json();
+    } catch (error) {
+      console.error('Error generating customer report:', error);
+      return { success: false, error: 'Failed to generate customer report' };
+    }
+  },
+
+  /**
+   * GET /api/reports
+   * List all reports
+   */
+  getAll: async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/reports`, {
+        headers: {
+          'Authorization': `Bearer ${getToken()}`,
+        },
+      });
+      return await response.json();
+    } catch (error) {
+      console.error('Error fetching reports:', error);
+      return { success: false, error: 'Failed to fetch reports' };
+    }
+  },
+
+  /**
+   * GET /api/reports/{reportId}
+   * Get report by ID
+   */
+  getById: async (reportId: string) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/reports/${reportId}`, {
+        headers: {
+          'Authorization': `Bearer ${getToken()}`,
+        },
+      });
+      return await response.json();
+    } catch (error) {
+      console.error('Error fetching report:', error);
+      return { success: false, error: 'Failed to fetch report' };
+    }
+  },
+
+  /**
+   * DELETE /api/reports/{reportId}
+   * Delete report
+   */
+  delete: async (reportId: string) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/reports/${reportId}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${getToken()}`,
+        },
+      });
+      return await response.json();
+    } catch (error) {
+      console.error('Error deleting report:', error);
+      return { success: false, error: 'Failed to delete report' };
+    }
+  },
+
+  /**
+   * Download PDF from base64
+   * Utility function to download PDF reports
+   */
+  downloadPDF: (pdfBase64: string, fileName: string) => {
+    try {
+      const linkSource = `data:application/pdf;base64,${pdfBase64}`;
+      const downloadLink = document.createElement('a');
+      downloadLink.href = linkSource;
+      downloadLink.download = fileName;
+      downloadLink.click();
+    } catch (error) {
+      console.error('Error downloading PDF:', error);
+      throw new Error('Failed to download PDF');
+    }
+  },
 };
 
 // Health check

@@ -1,3 +1,4 @@
+//home/hp/JERE/AutoNest/app/dashboard/Sidebar.tsx
 "use client";
 
 import { useState } from "react";
@@ -108,6 +109,11 @@ export default function Sidebar({ userType, firstName, lastName }: SidebarProps)
       name: "Portfolio",
       icon: PieChart,
       href: "/dashboard/customer/portfolio",
+    },
+    {
+      name: "Reports",
+      icon: FileText,
+      href: "/dashboard/customer/reports",
     },
     {
       name: "Profile",

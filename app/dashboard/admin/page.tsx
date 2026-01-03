@@ -102,16 +102,6 @@ export default function AdminDashboard() {
       } else {
         console.warn('Failed to load transactions:', transactionsResponse.error);
         toast.warning('⚠️ Could not load transactions from API');
-        setTransactions([
-          {
-            id: "tx1",
-            amount: 15000,
-            type: "debit",
-            status: "completed",
-            description: "Member Contribution",
-            createdAt: new Date(),
-          },
-        ]);
       }
     } catch (err) {
       console.error('Error loading transactions:', err);
@@ -155,18 +145,6 @@ export default function AdminDashboard() {
 
         await loadUsers();
 
-        setInterval(() => {
-          setStats(prev => ({
-            ...prev,
-            totalAssets: prev.totalAssets + Math.random() * 500000,
-            monthlyRevenue: prev.monthlyRevenue + Math.random() * 100000,
-          }));
-        }, 8000);
-
-        setTimeout(() => {
-          toast.success('System health check: All services operational');
-        }, 2000);
-
       } catch (err) {
         console.error(err);
         toast.error('Failed to load admin dashboard');
@@ -189,7 +167,6 @@ export default function AdminDashboard() {
 
   return (
     <div className="px-4 sm:px-6 lg:px-8 py-8 space-y-8">
-
       {/* Welcome Banner */}
       <div className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-2xl shadow-lg p-6 sm:p-8">
         <h1 className="text-2xl sm:text-3xl font-bold">Welcome, {user ? `${user.firstName ?? ''} ${user.lastName ?? ''}`.trim() : 'Admin'}! 👋</h1>
@@ -395,7 +372,6 @@ export default function AdminDashboard() {
           </div>
         </div>
       </div>
-
     </div>
   );
 }

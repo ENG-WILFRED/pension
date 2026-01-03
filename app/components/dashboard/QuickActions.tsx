@@ -1,4 +1,7 @@
 ///home/hp/JERE/AutoNest/app/components/dashboard/QuickActions.tsx
+"use client";
+
+import { useRouter } from 'next/navigation';
 import { CreditCard, Download, Target, TrendingUp, Users, FileText, Settings, AlertCircle } from 'lucide-react';
 
 interface QuickActionsProps {
@@ -6,6 +9,8 @@ interface QuickActionsProps {
 }
 
 export default function QuickActions({ userType = 'customer' }: QuickActionsProps) {
+  const router = useRouter();
+
   const customerActions = [
     {
       action: 'contribute',
@@ -13,15 +18,15 @@ export default function QuickActions({ userType = 'customer' }: QuickActionsProp
       title: 'Make Contribution',
       description: 'Add funds to your pension account.',
       color: 'from-green-500 to-emerald-600',
-      onClick: () => alert('Opening contribution form...')
+      onClick: () => router.push('/dashboard/customer/contributions')
     },
     {
-      action: 'download',
-      icon: Download,
-      title: 'Download Statement',
-      description: 'Get your pension statement PDF.',
+      action: 'reports',
+      icon: FileText,
+      title: 'My Reports',
+      description: 'Download your account reports.',
       color: 'from-blue-500 to-indigo-600',
-      onClick: () => alert('Preparing statement download...')
+      onClick: () => router.push('/dashboard/customer/reports')
     },
     {
       action: 'goals',
@@ -29,7 +34,7 @@ export default function QuickActions({ userType = 'customer' }: QuickActionsProp
       title: 'Update Goals',
       description: 'Adjust your retirement targets.',
       color: 'from-purple-500 to-pink-600',
-      onClick: () => alert('Opening goals calculator...')
+      onClick: () => router.push('/dashboard/customer/goals')
     },
     {
       action: 'calculator',
@@ -37,7 +42,7 @@ export default function QuickActions({ userType = 'customer' }: QuickActionsProp
       title: 'Retirement Calculator',
       description: 'Project your retirement savings.',
       color: 'from-orange-500 to-red-600',
-      onClick: () => alert('Opening retirement calculator...')
+      onClick: () => router.push('/dashboard/customer/calculator')
     }
   ];
 
@@ -45,34 +50,34 @@ export default function QuickActions({ userType = 'customer' }: QuickActionsProp
     {
       action: 'approve',
       icon: Users,
-      title: 'Approve Requests',
-      description: 'Review pending member requests.',
+      title: 'Manage Users',
+      description: 'Review and manage members.',
       color: 'from-green-500 to-emerald-600',
-      onClick: () => alert('Opening approval queue...')
+      onClick: () => router.push('/dashboard/admin/manage')
     },
     {
       action: 'generate-report',
       icon: FileText,
-      title: 'Generate Report',
-      description: 'Create financial or member report.',
+      title: 'Reports',
+      description: 'Generate system reports.',
       color: 'from-blue-500 to-indigo-600',
-      onClick: () => alert('Opening report generator...')
+      onClick: () => router.push('/dashboard/admin/reports')
     },
     {
       action: 'system-check',
       icon: Settings,
-      title: 'System Health',
-      description: 'Run system diagnostics.',
+      title: 'System Settings',
+      description: 'Configure system parameters.',
       color: 'from-purple-500 to-pink-600',
-      onClick: () => alert('Running system check...')
+      onClick: () => router.push('/dashboard/admin/settings')
     },
     {
       action: 'alerts',
       icon: AlertCircle,
-      title: 'View Alerts',
-      description: 'Check system notifications.',
+      title: 'Account Types',
+      description: 'Manage account types.',
       color: 'from-orange-500 to-red-600',
-      onClick: () => alert('Opening alerts panel...')
+      onClick: () => router.push('/dashboard/admin/account-types')
     }
   ];
 
