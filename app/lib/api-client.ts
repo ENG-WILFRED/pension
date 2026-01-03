@@ -43,6 +43,11 @@ function getToken(): string | null {
   return null;
 }
 
+function getAuthHeaders(): Record<string, string> {
+  const token = getToken();
+  return token ? { 'Authorization': `Bearer ${token}` } : {};
+}
+
 export async function apiCall<T = any>(
   endpoint: string,
   options: RequestInit = {}
@@ -255,29 +260,9 @@ export const adminApi = {
 // ACCOUNTS API (FULLY UPDATED)
 // ========================================
 export const accountsApi = {
-  /**
-   * GET /api/accounts
-   * List all accounts (for admin: all accounts, for customer: their accounts)
-   */
   getAll: () => apiCall('/api/accounts', { method: 'GET' }),
-
-  /**
-   * GET /api/accounts/{id}
-   * Get detailed information about a specific account
-   */
   getById: (id: string) => apiCall(`/api/accounts/${id}`, { method: 'GET' }),
-
-  /**
-   * GET /api/accounts/{id}/summary
-   * Get account summary with all balances and recent transactions
-   */
   getSummary: (id: string) => apiCall(`/api/accounts/${id}/summary`, { method: 'GET' }),
-
-  /**
-   * 🆕 POST /api/accounts/create
-   * Create a new pension account for a user (Admin only)
-   * NOTE: Ensure this endpoint exists in your backend
-   */
   create: (data: {
     userId: string;
     accountTypeId: string;
@@ -288,19 +273,8 @@ export const accountsApi = {
       method: 'POST',
       body: JSON.stringify(data),
     }),
-
-  /**
-   * 🆕 GET /api/accounts/user/{userId}
-   * Get all accounts for a specific user (Admin only)
-   * NOTE: Ensure this endpoint exists in your backend
-   */
   getByUserId: (userId: string) =>
     apiCall(`/api/accounts/user/${userId}`, { method: 'GET' }),
-
-  /**
-   * POST /api/accounts/{id}/contribution
-   * Add employee/employer contribution to an account
-   */
   addContribution: (id: string, data: {
     employeeAmount: number;
     employerAmount: number;
@@ -310,11 +284,6 @@ export const accountsApi = {
       method: 'POST',
       body: JSON.stringify(data),
     }),
-
-  /**
-   * POST /api/accounts/{accountNumber}/deposit
-   * Deposit funds to an account (initiates M-Pesa STK Push)
-   */
   deposit: (accountNumber: string, data: {
     amount: number;
     phone: string;
@@ -324,11 +293,6 @@ export const accountsApi = {
       method: 'POST',
       body: JSON.stringify(data),
     }),
-
-  /**
-   * POST /api/accounts/{id}/withdraw
-   * Withdraw funds from an account
-   */
   withdraw: (id: string, data: {
     amount: number;
     withdrawalType: string;
@@ -338,11 +302,6 @@ export const accountsApi = {
       method: 'POST',
       body: JSON.stringify(data),
     }),
-
-  /**
-   * POST /api/accounts/{id}/earnings
-   * Add earnings to account (interest, investment returns, dividends)
-   */
   addEarnings: (id: string, data: {
     type: 'interest' | 'investment' | 'dividend';
     amount: number;
@@ -352,11 +311,6 @@ export const accountsApi = {
       method: 'POST',
       body: JSON.stringify(data),
     }),
-
-  /**
-   * PUT /api/accounts/{id}/status
-   * Update account status (ACTIVE, INACTIVE, SUSPENDED)
-   */
   updateStatus: (id: string, data: {
     accountStatus: 'ACTIVE' | 'INACTIVE' | 'SUSPENDED';
   }) =>
@@ -364,11 +318,6 @@ export const accountsApi = {
       method: 'PUT',
       body: JSON.stringify(data),
     }),
-
-  /**
-   * 🆕 PUT /api/accounts/{id}
-   * Update account details (Admin only)
-   */
   update: (id: string, data: {
     accountTypeId?: string;
     accountStatus?: 'ACTIVE' | 'INACTIVE' | 'SUSPENDED';
@@ -377,11 +326,6 @@ export const accountsApi = {
       method: 'PUT',
       body: JSON.stringify(data),
     }),
-
-  /**
-   * 🆕 DELETE /api/accounts/{id}
-   * Delete an account (Admin only, use with caution)
-   */
   delete: (id: string) =>
     apiCall(`/api/accounts/${id}`, { method: 'DELETE' }),
 };
@@ -390,22 +334,8 @@ export const accountsApi = {
 // ACCOUNT TYPES API (FULLY UPDATED)
 // ========================================
 export const accountTypeApi = {
-  /**
-   * GET /api/account-types
-   * List all available account types
-   */
   getAll: () => apiCall('/api/account-types', { method: 'GET' }),
-
-  /**
-   * GET /api/account-types/{id}
-   * Get details for a single account type
-   */
   getById: (id: string) => apiCall(`/api/account-types/${id}`, { method: 'GET' }),
-
-  /**
-   * POST /api/account-types
-   * Create a new account type (Admin only)
-   */
   create: (data: {
     name: string;
     description: string;
@@ -422,11 +352,6 @@ export const accountTypeApi = {
       method: 'POST',
       body: JSON.stringify(data),
     }),
-
-  /**
-   * PUT /api/account-types/{id}
-   * Update an existing account type (Admin only)
-   */
   update: (id: string, data: Partial<{
     name: string;
     description: string;
@@ -444,26 +369,20 @@ export const accountTypeApi = {
       method: 'PUT',
       body: JSON.stringify(data),
     }),
-
-  /**
-   * DELETE /api/account-types/{id}
-   * Delete an account type (Admin only)
-   */
   delete: (id: string) =>
     apiCall(`/api/account-types/${id}`, { method: 'DELETE' }),
-
-  /**
-   * 🆕 GET /api/account-types/{id}/accounts
-   * Get all accounts using this account type
-   */
   getAccounts: (id: string) =>
     apiCall(`/api/account-types/${id}/accounts`, { method: 'GET' }),
 };
 
 // ========================================
-// REPORTS API
+// REPORTS API (UPDATED TO MATCH BACKEND)
 // ========================================
 export const reportsApi = {
+  /**
+   * POST /api/reports/generate-transaction
+   * Generate a transaction report PDF
+   */
   generateTransactionReport: async (data: {
     title: string;
     transactions: Array<{
@@ -479,19 +398,30 @@ export const reportsApi = {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${getToken()}`,
+          ...getAuthHeaders(),
         },
         body: JSON.stringify(data),
       });
-      return await response.json();
+      const result = await response.json();
+      return { success: response.ok, ...result };
     } catch (error) {
       console.error('Error generating transaction report:', error);
       return { success: false, error: 'Failed to generate transaction report' };
     }
   },
+
+  /**
+   * POST /api/reports/generate-customer
+   * Generate a customer report PDF
+   */
   generateCustomerReport: async (data: {
     title: string;
-    user: { id: string; email: string; firstName?: string; lastName?: string };
+    user: { 
+      id: string; 
+      email: string; 
+      firstName?: string; 
+      lastName?: string;
+    };
     transactions: Array<any>;
   }) => {
     try {
@@ -499,83 +429,137 @@ export const reportsApi = {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${getToken()}`,
+          ...getAuthHeaders(),
         },
         body: JSON.stringify(data),
       });
-      return await response.json();
+      const result = await response.json();
+      return { success: response.ok, ...result };
     } catch (error) {
       console.error('Error generating customer report:', error);
       return { success: false, error: 'Failed to generate customer report' };
     }
   },
-  generateAccountReport: async (data: {
-    title: string;
-    accountId: string;
-    dateRange?: { start: string; end: string };
-  }) => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/api/reports/generate-account`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${getToken()}`,
-        },
-        body: JSON.stringify(data),
-      });
-      return await response.json();
-    } catch (error) {
-      console.error('Error generating account report:', error);
-      return { success: false, error: 'Failed to generate account report' };
-    }
-  },
+
+  /**
+   * GET /api/reports
+   * List all reports (returns array of reports)
+   */
   getAll: async () => {
     try {
       const response = await fetch(`${API_BASE_URL}/api/reports`, {
-        headers: { 'Authorization': `Bearer ${getToken()}` },
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          ...getAuthHeaders(),
+        },
       });
-      return await response.json();
+      const result = await response.json();
+      return { success: response.ok, ...result };
     } catch (error) {
       console.error('Error fetching reports:', error);
       return { success: false, error: 'Failed to fetch reports' };
     }
   },
+
+  /**
+   * GET /api/reports/{id}
+   * Get a specific report by ID (includes full PDF base64 data)
+   */
   getById: async (reportId: string) => {
     try {
       const response = await fetch(`${API_BASE_URL}/api/reports/${reportId}`, {
-        headers: { 'Authorization': `Bearer ${getToken()}` },
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          ...getAuthHeaders(),
+        },
       });
-      return await response.json();
+      const result = await response.json();
+      return { success: response.ok, ...result };
     } catch (error) {
       console.error('Error fetching report:', error);
       return { success: false, error: 'Failed to fetch report' };
     }
   },
+
+  /**
+   * DELETE /api/reports/{id}
+   * Delete a report
+   */
   delete: async (reportId: string) => {
     try {
       const response = await fetch(`${API_BASE_URL}/api/reports/${reportId}`, {
         method: 'DELETE',
-        headers: { 'Authorization': `Bearer ${getToken()}` },
+        headers: {
+          'Content-Type': 'application/json',
+          ...getAuthHeaders(),
+        },
       });
-      return await response.json();
+      const result = await response.json();
+      return { success: response.ok, ...result };
     } catch (error) {
       console.error('Error deleting report:', error);
       return { success: false, error: 'Failed to delete report' };
     }
   },
+
+  /**
+   * Download PDF from base64 data
+   */
   downloadPDF: (pdfBase64: string, fileName: string) => {
     try {
       const linkSource = `data:application/pdf;base64,${pdfBase64}`;
       const downloadLink = document.createElement('a');
       downloadLink.href = linkSource;
       downloadLink.download = fileName;
+      document.body.appendChild(downloadLink);
       downloadLink.click();
+      document.body.removeChild(downloadLink);
     } catch (error) {
       console.error('Error downloading PDF:', error);
       throw new Error('Failed to download PDF');
     }
   },
+
+  /**
+   * View PDF in new tab
+   */
+  viewPDF: (pdfBase64: string) => {
+    try {
+      const blob = base64ToBlob(pdfBase64, 'application/pdf');
+      const url = URL.createObjectURL(blob);
+      window.open(url, '_blank');
+      // Clean up after a delay
+      setTimeout(() => URL.revokeObjectURL(url), 100);
+    } catch (error) {
+      console.error('Error viewing PDF:', error);
+      throw new Error('Failed to view PDF');
+    }
+  },
 };
+
+/**
+ * Helper function to convert base64 to Blob
+ */
+function base64ToBlob(base64: string, contentType: string = ''): Blob {
+  const byteCharacters = atob(base64);
+  const byteArrays = [];
+
+  for (let offset = 0; offset < byteCharacters.length; offset += 512) {
+    const slice = byteCharacters.slice(offset, offset + 512);
+    const byteNumbers = new Array(slice.length);
+    
+    for (let i = 0; i < slice.length; i++) {
+      byteNumbers[i] = slice.charCodeAt(i);
+    }
+    
+    const byteArray = new Uint8Array(byteNumbers);
+    byteArrays.push(byteArray);
+  }
+
+  return new Blob(byteArrays, { type: contentType });
+}
 
 // ========================================
 // HEALTH API

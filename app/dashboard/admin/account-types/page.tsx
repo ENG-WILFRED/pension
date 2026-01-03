@@ -1,10 +1,8 @@
-// File: /app/dashboard/admin/account-types/page.tsx
 "use client";
 
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
-import DashboardLayout from "@/app/dashboard/DashboardLayout";
 import { accountTypeApi } from "@/app/lib/api-client";
 import { Plus, Edit, Trash2, Loader2, X, CreditCard, Eye } from "lucide-react";
 
@@ -20,6 +18,8 @@ interface AccountType {
   allowWithdrawals?: boolean;
   allowLoans?: boolean;
   active?: boolean;
+  metadata?: any;
+  createdAt?: string;
 }
 
 interface CreateEditModalProps {
@@ -41,6 +41,7 @@ function CreateEditModal({ isOpen, onClose, onSuccess, editingType }: CreateEdit
     lockInPeriodMonths: "",
     allowWithdrawals: true,
     allowLoans: true,
+    active: true,
   });
 
   useEffect(() => {
@@ -55,6 +56,7 @@ function CreateEditModal({ isOpen, onClose, onSuccess, editingType }: CreateEdit
         lockInPeriodMonths: editingType.lockInPeriodMonths?.toString() || "",
         allowWithdrawals: editingType.allowWithdrawals ?? true,
         allowLoans: editingType.allowLoans ?? true,
+        active: editingType.active ?? true,
       });
     } else {
       setFormData({
@@ -67,6 +69,7 @@ function CreateEditModal({ isOpen, onClose, onSuccess, editingType }: CreateEdit
         lockInPeriodMonths: "",
         allowWithdrawals: true,
         allowLoans: true,
+        active: true,
       });
     }
   }, [editingType, isOpen]);
@@ -92,6 +95,7 @@ function CreateEditModal({ isOpen, onClose, onSuccess, editingType }: CreateEdit
         lockInPeriodMonths: formData.lockInPeriodMonths ? parseInt(formData.lockInPeriodMonths) : undefined,
         allowWithdrawals: formData.allowWithdrawals,
         allowLoans: formData.allowLoans,
+        active: formData.active,
       };
 
       const response = editingType
@@ -119,10 +123,11 @@ function CreateEditModal({ isOpen, onClose, onSuccess, editingType }: CreateEdit
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full p-6 max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between mb-6">
-          <h3 className="text-2xl font-bold text-gray-900">
+          <h3 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
+            <CreditCard className="text-indigo-600" size={28} />
             {editingType ? 'Edit Account Type' : 'Create Account Type'}
           </h3>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 transition">
             <X size={24} />
           </button>
         </div>
@@ -230,7 +235,7 @@ function CreateEditModal({ isOpen, onClose, onSuccess, editingType }: CreateEdit
                 type="number"
                 value={formData.lockInPeriodMonths}
                 onChange={(e) => setFormData({ ...formData, lockInPeriodMonths: e.target.value })}
-                placeholder="0"
+                placeholder="0 for no lock-in period"
                 className="w-full border border-gray-300 rounded-xl p-3 focus:ring-2 focus:ring-indigo-500"
               />
             </div>
@@ -256,6 +261,16 @@ function CreateEditModal({ isOpen, onClose, onSuccess, editingType }: CreateEdit
                 />
                 <span className="text-sm font-medium text-gray-700">Allow Loans</span>
               </label>
+
+              <label className="flex items-center gap-3">
+                <input
+                  type="checkbox"
+                  checked={formData.active}
+                  onChange={(e) => setFormData({ ...formData, active: e.target.checked })}
+                  className="w-5 h-5 text-indigo-600 rounded focus:ring-2 focus:ring-indigo-500"
+                />
+                <span className="text-sm font-medium text-gray-700">Active (Available for new accounts)</span>
+              </label>
             </div>
           </div>
 
@@ -271,12 +286,12 @@ function CreateEditModal({ isOpen, onClose, onSuccess, editingType }: CreateEdit
             <button
               type="submit"
               disabled={submitting}
-              className="flex-1 bg-indigo-600 text-white py-3 px-4 rounded-xl hover:bg-indigo-700 disabled:bg-gray-400 transition font-semibold flex items-center justify-center gap-2"
+              className="flex-1 bg-indigo-600 text-white py-3 px-4 rounded-xl hover:bg-indigo-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition font-semibold flex items-center justify-center gap-2"
             >
               {submitting ? (
                 <>
                   <Loader2 className="w-5 h-5 animate-spin" />
-                  Saving...
+                  {editingType ? 'Updating...' : 'Creating...'}
                 </>
               ) : (
                 <>
@@ -298,7 +313,6 @@ export default function AccountTypesPage() {
   const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
   const [editingType, setEditingType] = useState<AccountType | null>(null);
-  const [user, setUser] = useState<{ firstName?: string; lastName?: string } | null>(null);
 
   const loadAccountTypes = async () => {
     setLoading(true);
@@ -306,21 +320,21 @@ export default function AccountTypesPage() {
       const response = await accountTypeApi.getAll();
       if (response.success && response.accountTypes) {
         setAccountTypes(response.accountTypes);
+        toast.success(`📊 Loaded ${response.accountTypes.length} account types`);
+      } else {
+        toast.warning('⚠️ Could not load account types');
+        setAccountTypes([]);
       }
     } catch (err) {
       console.error(err);
       toast.error('Failed to load account types');
+      setAccountTypes([]);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    const userStr = localStorage.getItem('user');
-    if (userStr) {
-      const userData = JSON.parse(userStr);
-      setUser(userData);
-    }
     loadAccountTypes();
   }, []);
 
@@ -344,10 +358,10 @@ export default function AccountTypesPage() {
     try {
       const response = await accountTypeApi.delete(id);
       if (response.success) {
-        toast.success('✅ Account type deleted');
+        toast.success('✅ Account type deleted successfully');
         loadAccountTypes();
       } else {
-        toast.error(response.error || 'Failed to delete');
+        toast.error(response.error || 'Failed to delete account type');
       }
     } catch (err) {
       console.error(err);
@@ -375,146 +389,169 @@ export default function AccountTypesPage() {
 
   if (loading) {
     return (
-      <DashboardLayout userType="admin" firstName={user?.firstName} lastName={user?.lastName}>
-        <div className="px-4 sm:px-6 lg:px-8 py-8">
-          <div className="flex items-center justify-center py-20">
-            <Loader2 className="w-12 h-12 animate-spin text-indigo-600" />
-            <p className="ml-4 text-gray-600 font-medium">Loading...</p>
-          </div>
+      <div className="px-4 sm:px-6 lg:px-8 py-8">
+        <div className="flex items-center justify-center py-20">
+          <Loader2 className="w-12 h-12 animate-spin text-indigo-600" />
+          <p className="ml-4 text-gray-600 font-medium">Loading account types...</p>
         </div>
-      </DashboardLayout>
+      </div>
     );
   }
 
   return (
-    <DashboardLayout userType="admin" firstName={user?.firstName} lastName={user?.lastName}>
-      <div className="px-4 sm:px-6 lg:px-8 py-8">
-        {/* Header */}
-        <div className="flex justify-between items-center mb-8">
+    <div className="px-4 sm:px-6 lg:px-8 py-8">
+      {/* Header */}
+      <div className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-2xl shadow-lg p-6 sm:p-8 mb-8">
+        <div className="flex items-center justify-between flex-wrap gap-4">
           <div>
-            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Account Types</h1>
-            <p className="text-gray-600 mt-2">Manage pension account types</p>
+            <h1 className="text-2xl sm:text-3xl font-bold flex items-center gap-3">
+              <CreditCard size={32} />
+              Account Types
+            </h1>
+            <p className="text-indigo-100 mt-2">Manage pension account types</p>
           </div>
           <button
-            onClick={() => setModalOpen(true)}
-            className="bg-indigo-600 text-white py-3 px-6 rounded-xl hover:bg-indigo-700 transition font-semibold flex items-center gap-2 shadow-lg"
+            onClick={() => {
+              setEditingType(null);
+              setModalOpen(true);
+            }}
+            className="flex items-center gap-2 bg-white text-indigo-600 px-6 py-3 rounded-xl hover:bg-indigo-50 transition font-semibold shadow-lg"
           >
             <Plus size={20} />
             Create Account Type
           </button>
         </div>
+      </div>
 
-        {/* Account Types List */}
-        {accountTypes.length === 0 ? (
-          <div className="bg-white border border-gray-200 rounded-2xl shadow-lg p-12 text-center">
-            <CreditCard className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-            <h3 className="text-xl font-bold text-gray-900 mb-2">No Account Types Yet</h3>
-            <p className="text-gray-600 mb-6">
-              Create your first account type to start managing pension accounts.
-            </p>
-            <button
-              onClick={() => setModalOpen(true)}
-              className="bg-indigo-600 text-white py-2 px-6 rounded-xl hover:bg-indigo-700 transition font-semibold inline-flex items-center gap-2"
+      {/* Account Types List */}
+      {accountTypes.length === 0 ? (
+        <div className="bg-white/80 backdrop-blur-xl border border-gray-200 rounded-2xl shadow-xl p-12 text-center">
+          <CreditCard className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+          <h3 className="text-xl font-bold text-gray-900 mb-2">No Account Types Yet</h3>
+          <p className="text-gray-600 mb-6">
+            Create your first account type to start managing pension accounts.
+          </p>
+          <button
+            onClick={() => setModalOpen(true)}
+            className="bg-indigo-600 text-white py-3 px-6 rounded-xl hover:bg-indigo-700 transition font-semibold inline-flex items-center gap-2"
+          >
+            <Plus size={18} />
+            Create Account Type
+          </button>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {accountTypes.map((type) => (
+            <div
+              key={type.id}
+              className="bg-white/80 backdrop-blur-xl border border-gray-200 rounded-2xl shadow-lg p-6 hover:shadow-xl transition"
             >
-              <Plus size={18} />
-              Create Account Type
-            </button>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {accountTypes.map((type) => (
-              <div
-                key={type.id}
-                className="bg-white border border-gray-200 rounded-2xl shadow-lg p-6 hover:shadow-xl transition"
-              >
-                <div className="flex items-start justify-between mb-4">
-                  <div className="flex-1">
-                    <h3 className="text-lg font-bold text-gray-900 mb-1">{type.name}</h3>
-                    <p className="text-sm text-gray-600">{type.description}</p>
+              <div className="flex items-start justify-between mb-4">
+                <div className="flex-1">
+                  <h3 className="text-lg font-bold text-gray-900 mb-1">{type.name}</h3>
+                  <p className="text-sm text-gray-600">{type.description}</p>
+                </div>
+                {type.active !== undefined && (
+                  <span
+                    className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                      type.active
+                        ? "bg-green-100 text-green-800"
+                        : "bg-gray-100 text-gray-800"
+                    }`}
+                  >
+                    {type.active ? "Active" : "Inactive"}
+                  </span>
+                )}
+              </div>
+
+              <div className="space-y-2 mb-4">
+                {type.category && (
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-600">Category:</span>
+                    <span className="font-semibold text-gray-900">{type.category}</span>
                   </div>
-                  {type.active !== undefined && (
-                    <span
-                      className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                        type.active
-                          ? "bg-green-100 text-green-800"
-                          : "bg-gray-100 text-gray-800"
-                      }`}
-                    >
-                      {type.active ? "Active" : "Inactive"}
+                )}
+                {type.interestRate !== undefined && (
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-600">Interest Rate:</span>
+                    <span className="font-semibold text-green-600">{type.interestRate}%</span>
+                  </div>
+                )}
+                {type.minBalance !== undefined && type.minBalance > 0 && (
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-600">Min Balance:</span>
+                    <span className="font-semibold text-gray-900">
+                      KES {type.minBalance.toLocaleString()}
                     </span>
-                  )}
+                  </div>
+                )}
+                {type.maxBalance !== undefined && type.maxBalance > 0 && (
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-600">Max Balance:</span>
+                    <span className="font-semibold text-gray-900">
+                      KES {type.maxBalance.toLocaleString()}
+                    </span>
+                  </div>
+                )}
+                {type.lockInPeriodMonths !== undefined && type.lockInPeriodMonths > 0 && (
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-600">Lock-in Period:</span>
+                    <span className="font-semibold text-gray-900">
+                      {type.lockInPeriodMonths} months
+                    </span>
+                  </div>
+                )}
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-600">Withdrawals:</span>
+                  <span className={`font-semibold ${type.allowWithdrawals ? 'text-green-600' : 'text-red-600'}`}>
+                    {type.allowWithdrawals ? 'Allowed' : 'Not Allowed'}
+                  </span>
                 </div>
-
-                <div className="space-y-2 mb-4">
-                  {type.category && (
-                    <div className="flex justify-between text-sm">
-                      <span className="text-gray-600">Category:</span>
-                      <span className="font-semibold text-gray-900">{type.category}</span>
-                    </div>
-                  )}
-                  {type.interestRate !== undefined && (
-                    <div className="flex justify-between text-sm">
-                      <span className="text-gray-600">Interest Rate:</span>
-                      <span className="font-semibold text-green-600">{type.interestRate}%</span>
-                    </div>
-                  )}
-                  {type.minBalance !== undefined && (
-                    <div className="flex justify-between text-sm">
-                      <span className="text-gray-600">Min Balance:</span>
-                      <span className="font-semibold text-gray-900">
-                        KES {type.minBalance.toLocaleString()}
-                      </span>
-                    </div>
-                  )}
-                  {type.lockInPeriodMonths !== undefined && type.lockInPeriodMonths > 0 && (
-                    <div className="flex justify-between text-sm">
-                      <span className="text-gray-600">Lock-in Period:</span>
-                      <span className="font-semibold text-gray-900">
-                        {type.lockInPeriodMonths} months
-                      </span>
-                    </div>
-                  )}
-                </div>
-
-                <div className="flex gap-2 pt-4 border-t border-gray-200">
-                  <button
-                    onClick={() => handleView(type.id)}
-                    className="flex-1 border border-indigo-300 text-indigo-700 py-2 px-3 rounded-lg hover:bg-indigo-50 transition font-medium flex items-center justify-center gap-2"
-                  >
-                    <Eye size={16} />
-                    View
-                  </button>
-                  <button
-                    onClick={() => handleEdit(type)}
-                    className="flex-1 border border-gray-300 text-gray-700 py-2 px-3 rounded-lg hover:bg-gray-50 transition font-medium flex items-center justify-center gap-2"
-                  >
-                    <Edit size={16} />
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => handleDelete(type.id, type.name)}
-                    className="flex-1 border border-red-300 text-red-700 py-2 px-3 rounded-lg hover:bg-red-50 transition font-medium flex items-center justify-center gap-2"
-                  >
-                    <Trash2 size={16} />
-                    Delete
-                  </button>
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-600">Loans:</span>
+                  <span className={`font-semibold ${type.allowLoans ? 'text-green-600' : 'text-red-600'}`}>
+                    {type.allowLoans ? 'Allowed' : 'Not Allowed'}
+                  </span>
                 </div>
               </div>
-            ))}
-          </div>
-        )}
 
-        {/* Create/Edit Modal */}
-        <CreateEditModal
-          isOpen={modalOpen}
-          onClose={handleCloseModal}
-          onSuccess={() => {
-            handleCloseModal();
-            loadAccountTypes();
-          }}
-          editingType={editingType}
-        />
-      </div>
-    </DashboardLayout>
+              <div className="flex gap-2 pt-4 border-t border-gray-200">
+                <button
+                  onClick={() => handleView(type.id)}
+                  className="flex-1 flex items-center justify-center gap-1 border border-indigo-300 text-indigo-700 py-2 px-3 rounded-lg hover:bg-indigo-50 transition font-medium text-sm"
+                >
+                  <Eye size={16} />
+                  View
+                </button>
+                <button
+                  onClick={() => handleEdit(type)}
+                  className="flex-1 flex items-center justify-center gap-1 border border-gray-300 text-gray-700 py-2 px-3 rounded-lg hover:bg-gray-50 transition font-medium text-sm"
+                >
+                  <Edit size={16} />
+                  Edit
+                </button>
+                <button
+                  onClick={() => handleDelete(type.id, type.name)}
+                  className="flex items-center justify-center px-3 py-2 border border-red-300 text-red-700 rounded-lg hover:bg-red-50 transition"
+                >
+                  <Trash2 size={16} />
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Create/Edit Modal */}
+      <CreateEditModal
+        isOpen={modalOpen}
+        onClose={handleCloseModal}
+        onSuccess={() => {
+          handleCloseModal();
+          loadAccountTypes();
+        }}
+        editingType={editingType}
+      />
+    </div>
   );
 }
