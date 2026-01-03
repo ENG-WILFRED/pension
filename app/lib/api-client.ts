@@ -90,6 +90,9 @@ export async function apiCall<T = any>(
   }
 }
 
+// ========================================
+// AUTH API
+// ========================================
 export const authApi = {
   register: (data: RegistrationFormData) =>
     apiCall<RegistrationInitResponse>('/api/auth/register', {
@@ -143,6 +146,9 @@ export const authApi = {
     }),
 };
 
+// ========================================
+// TERMS & CONDITIONS API
+// ========================================
 export const termsApi = {
   getCurrent: () => apiCall('/api/terms-and-conditions', { method: 'GET' }),
   update: (data: { body: string }) =>
@@ -152,6 +158,9 @@ export const termsApi = {
     }),
 };
 
+// ========================================
+// PAYMENT API
+// ========================================
 export const paymentApi = {
   initiate: (data: { amount: number; planId?: string; description?: string }) =>
     apiCall('/api/payment/initiate', {
@@ -162,12 +171,18 @@ export const paymentApi = {
     apiCall(`/api/payment/status/${transactionId}`, { method: 'GET' }),
 };
 
+// ========================================
+// DASHBOARD API
+// ========================================
 export const dashboardApi = {
   getUser: () => apiCall('/api/dashboard/user', { method: 'GET' }),
   getTransactions: () => apiCall('/api/dashboard/transactions', { method: 'GET' }),
   getStats: () => apiCall('/api/dashboard/stats', { method: 'GET' }),
 };
 
+// ========================================
+// USER API
+// ========================================
 export const userApi = {
   getAll: () => apiCall('/api/users', { method: 'GET' }),
   getById: (userId: string) => apiCall(`/api/users/${userId}`, { method: 'GET' }),
@@ -175,8 +190,27 @@ export const userApi = {
     apiCall(`/api/users/${userId}/promote`, { method: 'POST' }),
   demoteToCustomer: (userId: string) =>
     apiCall(`/api/users/${userId}/demote`, { method: 'POST' }),
+  update: (userId: string, data: {
+    firstName?: string;
+    lastName?: string;
+    phone?: string;
+    dateOfBirth?: string;
+    gender?: string;
+    address?: string;
+    city?: string;
+    country?: string;
+  }) =>
+    apiCall(`/api/users/${userId}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    }),
+  delete: (userId: string) =>
+    apiCall(`/api/users/${userId}`, { method: 'DELETE' }),
 };
 
+// ========================================
+// ADMIN API
+// ========================================
 export const adminApi = {
   createAdmin: (data: {
     email: string;
@@ -197,21 +231,38 @@ export const adminApi = {
   listAdmins: () => apiCall('/api/admin/list', { method: 'GET' }),
 };
 
-// 🆕 UPDATED ACCOUNTS API
+// ========================================
+// ACCOUNTS API (FULLY UPDATED)
+// ========================================
 export const accountsApi = {
+  /**
+   * GET /api/accounts
+   * List all accounts (for admin: all accounts, for customer: their accounts)
+   */
   getAll: () => apiCall('/api/accounts', { method: 'GET' }),
+
+  /**
+   * GET /api/accounts/{id}
+   * Get detailed information about a specific account
+   */
   getById: (id: string) => apiCall(`/api/accounts/${id}`, { method: 'GET' }),
+
+  /**
+   * GET /api/accounts/{id}/summary
+   * Get account summary with all balances and recent transactions
+   */
   getSummary: (id: string) => apiCall(`/api/accounts/${id}/summary`, { method: 'GET' }),
-  
+
   /**
    * 🆕 POST /api/accounts/create
    * Create a new pension account for a user (Admin only)
-   * NOTE: This endpoint must be added to your backend!
+   * NOTE: Ensure this endpoint exists in your backend
    */
   create: (data: {
     userId: string;
     accountTypeId: string;
     initialBalance?: number;
+    accountStatus?: 'ACTIVE' | 'INACTIVE' | 'SUSPENDED';
   }) =>
     apiCall('/api/accounts/create', {
       method: 'POST',
@@ -221,10 +272,15 @@ export const accountsApi = {
   /**
    * 🆕 GET /api/accounts/user/{userId}
    * Get all accounts for a specific user (Admin only)
+   * NOTE: Ensure this endpoint exists in your backend
    */
   getByUserId: (userId: string) =>
     apiCall(`/api/accounts/user/${userId}`, { method: 'GET' }),
 
+  /**
+   * POST /api/accounts/{id}/contribution
+   * Add employee/employer contribution to an account
+   */
   addContribution: (id: string, data: {
     employeeAmount: number;
     employerAmount: number;
@@ -235,6 +291,10 @@ export const accountsApi = {
       body: JSON.stringify(data),
     }),
 
+  /**
+   * POST /api/accounts/{accountNumber}/deposit
+   * Deposit funds to an account (initiates M-Pesa STK Push)
+   */
   deposit: (accountNumber: string, data: {
     amount: number;
     phone: string;
@@ -245,6 +305,10 @@ export const accountsApi = {
       body: JSON.stringify(data),
     }),
 
+  /**
+   * POST /api/accounts/{id}/withdraw
+   * Withdraw funds from an account
+   */
   withdraw: (id: string, data: {
     amount: number;
     withdrawalType: string;
@@ -255,6 +319,10 @@ export const accountsApi = {
       body: JSON.stringify(data),
     }),
 
+  /**
+   * POST /api/accounts/{id}/earnings
+   * Add earnings to account (interest, investment returns, dividends)
+   */
   addEarnings: (id: string, data: {
     type: 'interest' | 'investment' | 'dividend';
     amount: number;
@@ -265,6 +333,10 @@ export const accountsApi = {
       body: JSON.stringify(data),
     }),
 
+  /**
+   * PUT /api/accounts/{id}/status
+   * Update account status (ACTIVE, INACTIVE, SUSPENDED)
+   */
   updateStatus: (id: string, data: {
     accountStatus: 'ACTIVE' | 'INACTIVE' | 'SUSPENDED';
   }) =>
@@ -272,11 +344,48 @@ export const accountsApi = {
       method: 'PUT',
       body: JSON.stringify(data),
     }),
+
+  /**
+   * 🆕 PUT /api/accounts/{id}
+   * Update account details (Admin only)
+   */
+  update: (id: string, data: {
+    accountTypeId?: string;
+    accountStatus?: 'ACTIVE' | 'INACTIVE' | 'SUSPENDED';
+  }) =>
+    apiCall(`/api/accounts/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    }),
+
+  /**
+   * 🆕 DELETE /api/accounts/{id}
+   * Delete an account (Admin only, use with caution)
+   */
+  delete: (id: string) =>
+    apiCall(`/api/accounts/${id}`, { method: 'DELETE' }),
 };
 
+// ========================================
+// ACCOUNT TYPES API (FULLY UPDATED)
+// ========================================
 export const accountTypeApi = {
+  /**
+   * GET /api/account-types
+   * List all available account types
+   */
   getAll: () => apiCall('/api/account-types', { method: 'GET' }),
+
+  /**
+   * GET /api/account-types/{id}
+   * Get details for a single account type
+   */
   getById: (id: string) => apiCall(`/api/account-types/${id}`, { method: 'GET' }),
+
+  /**
+   * POST /api/account-types
+   * Create a new account type (Admin only)
+   */
   create: (data: {
     name: string;
     description: string;
@@ -293,6 +402,11 @@ export const accountTypeApi = {
       method: 'POST',
       body: JSON.stringify(data),
     }),
+
+  /**
+   * PUT /api/account-types/{id}
+   * Update an existing account type (Admin only)
+   */
   update: (id: string, data: Partial<{
     name: string;
     description: string;
@@ -303,15 +417,32 @@ export const accountTypeApi = {
     lockInPeriodMonths: number;
     allowWithdrawals: boolean;
     allowLoans: boolean;
+    active: boolean;
     metadata: any;
   }>) =>
     apiCall(`/api/account-types/${id}`, {
       method: 'PUT',
       body: JSON.stringify(data),
     }),
-  delete: (id: string) => apiCall(`/api/account-types/${id}`, { method: 'DELETE' }),
+
+  /**
+   * DELETE /api/account-types/{id}
+   * Delete an account type (Admin only)
+   */
+  delete: (id: string) =>
+    apiCall(`/api/account-types/${id}`, { method: 'DELETE' }),
+
+  /**
+   * 🆕 GET /api/account-types/{id}/accounts
+   * Get all accounts using this account type
+   */
+  getAccounts: (id: string) =>
+    apiCall(`/api/account-types/${id}/accounts`, { method: 'GET' }),
 };
 
+// ========================================
+// REPORTS API
+// ========================================
 export const reportsApi = {
   generateTransactionReport: async (data: {
     title: string;
@@ -356,6 +487,26 @@ export const reportsApi = {
     } catch (error) {
       console.error('Error generating customer report:', error);
       return { success: false, error: 'Failed to generate customer report' };
+    }
+  },
+  generateAccountReport: async (data: {
+    title: string;
+    accountId: string;
+    dateRange?: { start: string; end: string };
+  }) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/reports/generate-account`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${getToken()}`,
+        },
+        body: JSON.stringify(data),
+      });
+      return await response.json();
+    } catch (error) {
+      console.error('Error generating account report:', error);
+      return { success: false, error: 'Failed to generate account report' };
     }
   },
   getAll: async () => {
@@ -406,6 +557,9 @@ export const reportsApi = {
   },
 };
 
+// ========================================
+// HEALTH API
+// ========================================
 export const healthApi = {
   check: () => apiCall('/api/health'),
 };
