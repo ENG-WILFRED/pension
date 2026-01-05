@@ -127,31 +127,33 @@ export default function Sidebar({ userType, firstName, lastName }: SidebarProps)
 
       {/* Footer Actions */}
       <div className="p-4 border-t border-gray-700 dark:border-gray-600 space-y-2 transition-colors duration-300">
-        {/* Dark Mode Toggle */}
+        {/* Dark Mode Toggle - FIXED LOGIC */}
         <button
           onClick={handleThemeToggle}
           className="w-full flex items-center justify-between px-4 py-3 rounded-xl text-gray-300 dark:text-gray-400 hover:bg-gray-800 dark:hover:bg-gray-700 transition-all duration-300 group"
         >
           <div className="flex items-center gap-3">
-            {theme === "dark" ? (
-              <Sun size={20} className="text-yellow-400 group-hover:rotate-90 transition-transform duration-300" />
-            ) : (
+            {/* FIXED: Show opposite of current theme */}
+            {theme === "light" ? (
               <Moon size={20} className="text-blue-400 group-hover:rotate-12 transition-transform duration-300" />
+            ) : (
+              <Sun size={20} className="text-yellow-400 group-hover:rotate-90 transition-transform duration-300" />
             )}
             <span className="font-medium">
-              {theme === "dark" ? "Light Mode" : "Dark Mode"}
+              {/* FIXED: Show what mode you'll switch TO */}
+              {theme === "light" ? "Dark Mode" : "Light Mode"}
             </span>
           </div>
           
           {/* Animated Toggle Switch */}
           <div
             className={`w-12 h-6 rounded-full transition-colors duration-300 relative ${
-              theme === "dark" ? "bg-indigo-600" : "bg-gray-600"
+              theme === "light" ? "bg-gray-600" : "bg-indigo-600"
             }`}
           >
             <div
               className={`w-5 h-5 bg-white rounded-full absolute top-0.5 shadow-md transition-all duration-300 ${
-                theme === "dark" ? "right-0.5" : "left-0.5"
+                theme === "light" ? "left-0.5" : "right-0.5"
               }`}
             />
           </div>

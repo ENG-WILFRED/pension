@@ -12,7 +12,7 @@ export const registrationSchema = z.object({
   // Account credentials
   email: z.string().email('Invalid email address'),
   phone: z.string().min(10, 'Phone number is required for M-Pesa payment'),
-  pin: z.string().regex(/^\d{4}$/, 'PIN must be exactly 4 digits'),
+  pin: z.string().regex(/^\d{4}$/, 'PIN must be exactly 4 digits').optional().or(z.literal('')),
   
   // Bank account details
   bankAccountName: z.string().min(1, 'Bank account name is required'),

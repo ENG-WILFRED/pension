@@ -1,4 +1,3 @@
-///home/hp/JERE/AutoNest/app/components/RegisterForm.tsx
 'use client';
 
 import { FormEvent, useEffect, useRef, useState } from 'react';
@@ -102,7 +101,10 @@ export default function RegisterForm() {
     if (idx === 0) {
       if (!formData.email) e.email = 'Email is required';
       if (!formData.phone) e.phone = 'Phone is required';
-      if (!formData.pin || !/^\d{4}$/.test(formData.pin)) e.pin = 'PIN must be 4 digits';
+      // PIN is now optional - remove validation
+      if (formData.pin && !/^\d{4}$/.test(formData.pin)) {
+        e.pin = 'PIN must be 4 digits if provided';
+      }
     }
     if (idx === 4) {
       // Pension & Bank details
