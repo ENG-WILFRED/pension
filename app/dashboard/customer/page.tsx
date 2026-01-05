@@ -1,3 +1,4 @@
+///app/dashboard/customer/page.tsx
 "use client";
 
 import { useEffect, useState } from "react";
@@ -170,9 +171,9 @@ export default function CustomerDashboard() {
 
   if (loading) {
     return (
-      <div className="h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex flex-col items-center justify-center">
-        <div className="h-12 w-12 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
-        <p className="mt-4 text-indigo-700 font-medium">Loading your dashboard...</p>
+      <div className="h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-950 dark:to-indigo-950 flex flex-col items-center justify-center transition-colors duration-300">
+        <div className="h-12 w-12 border-4 border-indigo-600 dark:border-indigo-400 border-t-transparent rounded-full animate-spin"></div>
+        <p className="mt-4 text-indigo-700 dark:text-indigo-300 font-medium">Loading your dashboard...</p>
       </div>
     );
   }
@@ -207,9 +208,9 @@ export default function CustomerDashboard() {
       <PensionPlans plans={pensionPlans} />
       
       {loadingTransactions ? (
-        <div className="bg-white/80 backdrop-blur-xl border border-gray-200 rounded-2xl shadow-xl p-12 flex flex-col items-center justify-center">
-          <div className="h-10 w-10 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
-          <p className="mt-4 text-gray-600 font-medium">Loading transactions...</p>
+        <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl border border-gray-200 dark:border-gray-700 rounded-2xl shadow-xl p-12 flex flex-col items-center justify-center transition-colors duration-300">
+          <div className="h-10 w-10 border-4 border-indigo-600 dark:border-indigo-400 border-t-transparent rounded-full animate-spin"></div>
+          <p className="mt-4 text-gray-600 dark:text-gray-400 font-medium">Loading transactions...</p>
         </div>
       ) : (
         <TransactionHistory transactions={transactions} />

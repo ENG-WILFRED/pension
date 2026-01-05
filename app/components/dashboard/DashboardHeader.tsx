@@ -1,4 +1,4 @@
-///home/hp/JERE/AutoNest/app/components/dashboard/DashboardHeader.tsx
+///app/components/dashboard/DashboardHeader.tsx
 "use client";
 
 import { Shield } from 'lucide-react';
@@ -11,16 +11,16 @@ interface DashboardHeaderProps {
 
 export default function DashboardHeader({ firstName, lastName, userType = 'customer' }: DashboardHeaderProps) {
   return (
-    <header className="sticky top-0 z-40 bg-white/70 backdrop-blur-xl border-b border-gray-100 shadow-sm w-full">
+    <header className="sticky top-0 z-40 bg-white/70 dark:bg-gray-900/70 backdrop-blur-xl border-b border-gray-100 dark:border-gray-800 shadow-sm w-full transition-colors duration-300">
       <div className="w-full flex items-center justify-between py-4 px-4 lg:px-8">
         <div>
-          <h1 className="text-xl md:text-3xl font-extrabold text-gray-900">
+          <h1 className="text-xl md:text-3xl font-extrabold text-gray-900 dark:text-white transition-colors duration-300">
             {userType === 'admin' ? 'Admin Dashboard' : 'AutoNest Dashboard'}
           </h1>
-          <p className="text-gray-600 text-xs md:text-sm mt-1">
+          <p className="text-gray-600 dark:text-gray-300 text-xs md:text-sm mt-1 transition-colors duration-300">
             Welcome back, {firstName} {lastName}
             {userType === 'admin' && (
-              <span className="ml-2 inline-flex items-center gap-1 text-xs bg-purple-100 text-purple-700 px-2 py-1 rounded-full">
+              <span className="ml-2 inline-flex items-center gap-1 text-xs bg-purple-100 dark:bg-purple-900/50 text-purple-700 dark:text-purple-300 px-2 py-1 rounded-full transition-colors duration-300">
                 <Shield size={12} />
                 Administrator
               </span>
@@ -31,14 +31,14 @@ export default function DashboardHeader({ firstName, lastName, userType = 'custo
         <div className="flex items-center gap-3">
           {/* Time Display */}
           <div className="hidden md:flex flex-col items-end">
-            <p className="text-xs text-gray-500">
+            <p className="text-xs text-gray-500 dark:text-gray-400 transition-colors duration-300">
               {new Date().toLocaleDateString('en-US', { 
                 weekday: 'short', 
                 month: 'short', 
                 day: 'numeric' 
               })}
             </p>
-            <p className="text-sm font-semibold text-gray-700">
+            <p className="text-sm font-semibold text-gray-700 dark:text-gray-200 transition-colors duration-300">
               {new Date().toLocaleTimeString('en-US', { 
                 hour: '2-digit', 
                 minute: '2-digit' 

@@ -1,3 +1,4 @@
+///app/dashboard/layout.tsx
 "use client";
 
 import { useEffect, useState } from "react";
@@ -40,15 +41,15 @@ export default function DashboardLayout({
 
   if (loading) {
     return (
-      <div className="h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex flex-col items-center justify-center">
-        <div className="h-12 w-12 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
-        <p className="mt-4 text-indigo-700 font-medium">Loading...</p>
+      <div className="h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-950 dark:via-gray-900 dark:to-indigo-950 flex flex-col items-center justify-center transition-colors duration-300">
+        <div className="h-12 w-12 border-4 border-indigo-600 dark:border-indigo-400 border-t-transparent rounded-full animate-spin"></div>
+        <p className="mt-4 text-indigo-700 dark:text-indigo-300 font-medium">Loading...</p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-100 via-blue-50 to-indigo-100">
+    <div className="min-h-screen bg-gradient-to-br from-slate-100 via-blue-50 to-indigo-100 dark:from-gray-950 dark:via-gray-900 dark:to-slate-950 transition-colors duration-300">
       {/* Sidebar - Fixed on desktop, slides in/out on mobile */}
       <Sidebar
         userType={userType}

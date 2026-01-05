@@ -1,8 +1,9 @@
-///home/hp/JERE/AutoNest/app/layout.tsx
+///app/layout.tsx
 import type { Metadata } from "next";
 // import { Geist, Geist_Mono } from "next/font/google";
 import { Toaster } from "sonner";
 import "./globals.css";
+import { ThemeProvider } from "./components/ThemeProvider";
 
 // const geistSans = Geist({
 //   variable: "--font-geist-sans",
@@ -25,10 +26,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body className="antialiased">
-        {children}
-        <Toaster position="top-center" richColors />
+        <ThemeProvider>
+          {children}
+          <Toaster position="top-center" richColors />
+        </ThemeProvider>
       </body>
     </html>
   );

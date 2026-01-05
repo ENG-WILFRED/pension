@@ -1,3 +1,4 @@
+///app/dashboard/admin/page.tsx
 "use client";
 
 import { useEffect, useState } from "react";
@@ -157,9 +158,9 @@ export default function AdminDashboard() {
 
   if (loading) {
     return (
-      <div className="h-screen bg-gradient-to-br from-red-50 to-orange-100 flex flex-col items-center justify-center">
-        <div className="h-12 w-12 border-4 border-red-600 border-t-transparent rounded-full animate-spin"></div>
-        <p className="mt-4 text-red-700 font-medium">Loading admin dashboard...</p>
+      <div className="h-screen bg-gradient-to-br from-red-50 to-orange-100 dark:from-gray-950 dark:to-red-950 flex flex-col items-center justify-center transition-colors duration-300">
+        <div className="h-12 w-12 border-4 border-red-600 dark:border-red-400 border-t-transparent rounded-full animate-spin"></div>
+        <p className="mt-4 text-red-700 dark:text-red-300 font-medium">Loading admin dashboard...</p>
       </div>
     );
   }
@@ -167,64 +168,64 @@ export default function AdminDashboard() {
   return (
     <div className="px-4 sm:px-6 lg:px-8 py-8 space-y-8">
       {/* Welcome Banner */}
-      <div className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-2xl shadow-lg p-6 sm:p-8">
+      <div className="bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-700 dark:to-purple-700 text-white rounded-2xl shadow-lg p-6 sm:p-8 transition-colors duration-300">
         <h1 className="text-2xl sm:text-3xl font-bold">Welcome, {user ? `${user.firstName ?? ''} ${user.lastName ?? ''}`.trim() : 'Admin'}! 👋</h1>
-        <p className="text-indigo-100 mt-2">Monitor system performance, manage users, and oversee platform operations.</p>
+        <p className="text-indigo-100 dark:text-indigo-200 mt-2">Monitor system performance, manage users, and oversee platform operations.</p>
       </div>
 
       {/* ADMIN STATS CARDS */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-        <div className="bg-white/80 backdrop-blur-xl border border-gray-200 rounded-xl sm:rounded-2xl shadow-lg p-4 sm:p-6">
+        <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl border border-gray-200 dark:border-gray-700 rounded-xl sm:rounded-2xl shadow-lg hover:shadow-xl p-4 sm:p-6 transition-all duration-300">
           <div className="flex items-center justify-between mb-4">
-            <h4 className="text-xs sm:text-sm font-semibold text-gray-600">Total Users</h4>
-            <Users size={20} className="sm:w-6 sm:h-6 text-blue-600" />
+            <h4 className="text-xs sm:text-sm font-semibold text-gray-600 dark:text-gray-400 transition-colors duration-300">Total Users</h4>
+            <Users size={20} className="sm:w-6 sm:h-6 text-blue-600 dark:text-blue-400" />
           </div>
-          <p className="text-2xl sm:text-4xl font-bold text-gray-900">{stats.totalUsers.toLocaleString()}</p>
-          <p className="text-xs text-green-600 mt-2">↑ {stats.activeUsers} customers</p>
+          <p className="text-2xl sm:text-4xl font-bold text-gray-900 dark:text-white transition-colors duration-300">{stats.totalUsers.toLocaleString()}</p>
+          <p className="text-xs text-green-600 dark:text-green-400 mt-2 transition-colors duration-300">↑ {stats.activeUsers} customers</p>
         </div>
 
-        <div className="bg-white/80 backdrop-blur-xl border border-gray-200 rounded-xl sm:rounded-2xl shadow-lg p-4 sm:p-6">
+        <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl border border-gray-200 dark:border-gray-700 rounded-xl sm:rounded-2xl shadow-lg hover:shadow-xl p-4 sm:p-6 transition-all duration-300">
           <div className="flex items-center justify-between mb-4">
-            <h4 className="text-xs sm:text-sm font-semibold text-gray-600">Total Assets</h4>
-            <Wallet size={20} className="sm:w-6 sm:h-6 text-green-600" />
+            <h4 className="text-xs sm:text-sm font-semibold text-gray-600 dark:text-gray-400 transition-colors duration-300">Total Assets</h4>
+            <Wallet size={20} className="sm:w-6 sm:h-6 text-green-600 dark:text-green-400" />
           </div>
-          <p className="text-xl sm:text-3xl font-bold text-gray-900">KES {(stats.totalAssets / 1000000).toFixed(0)}M</p>
-          <p className="text-xs text-green-600 mt-2">↑ KES {(stats.monthlyRevenue / 1000000).toFixed(1)}M this month</p>
+          <p className="text-xl sm:text-3xl font-bold text-gray-900 dark:text-white transition-colors duration-300">KES {(stats.totalAssets / 1000000).toFixed(0)}M</p>
+          <p className="text-xs text-green-600 dark:text-green-400 mt-2 transition-colors duration-300">↑ KES {(stats.monthlyRevenue / 1000000).toFixed(1)}M this month</p>
         </div>
 
-        <div className="bg-white/80 backdrop-blur-xl border border-gray-200 rounded-xl sm:rounded-2xl shadow-lg p-4 sm:p-6">
+        <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl border border-gray-200 dark:border-gray-700 rounded-xl sm:rounded-2xl shadow-lg hover:shadow-xl p-4 sm:p-6 transition-all duration-300">
           <div className="flex items-center justify-between mb-4">
-            <h4 className="text-xs sm:text-sm font-semibold text-gray-600">Active Loans</h4>
-            <TrendingUp size={20} className="sm:w-6 sm:h-6 text-orange-600" />
+            <h4 className="text-xs sm:text-sm font-semibold text-gray-600 dark:text-gray-400 transition-colors duration-300">Active Loans</h4>
+            <TrendingUp size={20} className="sm:w-6 sm:h-6 text-orange-600 dark:text-orange-400" />
           </div>
-          <p className="text-2xl sm:text-4xl font-bold text-gray-900">{stats.activeLoans}</p>
-          <p className="text-xs text-red-600 mt-2">Default rate: {stats.defaultRate}%</p>
+          <p className="text-2xl sm:text-4xl font-bold text-gray-900 dark:text-white transition-colors duration-300">{stats.activeLoans}</p>
+          <p className="text-xs text-red-600 dark:text-red-400 mt-2 transition-colors duration-300">Default rate: {stats.defaultRate}%</p>
         </div>
       </div>
 
       {/* SYSTEM METRICS */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-        <div className="bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-xl sm:rounded-2xl shadow-lg p-4 sm:p-6">
+        <div className="bg-gradient-to-br from-blue-500 to-blue-600 dark:from-blue-600 dark:to-blue-700 text-white rounded-xl sm:rounded-2xl shadow-lg hover:shadow-xl p-4 sm:p-6 transition-all duration-300">
           <p className="text-xs sm:text-sm opacity-90">API Uptime</p>
           <p className="text-2xl sm:text-3xl font-bold mt-2">{systemMetrics.apiUptime}%</p>
           <div className="mt-3 w-full bg-white/20 rounded-full h-2">
-            <div className="bg-white rounded-full h-2" style={{width: `${systemMetrics.apiUptime}%`}}></div>
+            <div className="bg-white rounded-full h-2 transition-all duration-300" style={{width: `${systemMetrics.apiUptime}%`}}></div>
           </div>
         </div>
 
-        <div className="bg-gradient-to-br from-green-500 to-green-600 text-white rounded-xl sm:rounded-2xl shadow-lg p-4 sm:p-6">
+        <div className="bg-gradient-to-br from-green-500 to-green-600 dark:from-green-600 dark:to-green-700 text-white rounded-xl sm:rounded-2xl shadow-lg hover:shadow-xl p-4 sm:p-6 transition-all duration-300">
           <p className="text-xs sm:text-sm opacity-90">Active Connections</p>
           <p className="text-2xl sm:text-3xl font-bold mt-2">{systemMetrics.activeConnections}</p>
           <p className="text-xs opacity-75 mt-2">Real-time users</p>
         </div>
 
-        <div className="bg-gradient-to-br from-purple-500 to-purple-600 text-white rounded-xl sm:rounded-2xl shadow-lg p-4 sm:p-6">
+        <div className="bg-gradient-to-br from-purple-500 to-purple-600 dark:from-purple-600 dark:to-purple-700 text-white rounded-xl sm:rounded-2xl shadow-lg hover:shadow-xl p-4 sm:p-6 transition-all duration-300">
           <p className="text-xs sm:text-sm opacity-90">Daily Transactions</p>
           <p className="text-2xl sm:text-3xl font-bold mt-2">{systemMetrics.dailyTransactions}</p>
           <p className="text-xs opacity-75 mt-2">In last 24 hours</p>
         </div>
 
-        <div className="bg-gradient-to-br from-orange-500 to-orange-600 text-white rounded-xl sm:rounded-2xl shadow-lg p-4 sm:p-6">
+        <div className="bg-gradient-to-br from-orange-500 to-orange-600 dark:from-orange-600 dark:to-orange-700 text-white rounded-xl sm:rounded-2xl shadow-lg hover:shadow-xl p-4 sm:p-6 transition-all duration-300">
           <p className="text-xs sm:text-sm opacity-90">Avg Response Time</p>
           <p className="text-2xl sm:text-3xl font-bold mt-2">{systemMetrics.avgResponseTime}ms</p>
           <p className="text-xs opacity-75 mt-2">API latency</p>
@@ -235,17 +236,17 @@ export default function AdminDashboard() {
       <QuickActions userType="admin" />
 
       {/* MEMBERS LIST */}
-      <div className="bg-white/80 backdrop-blur-xl border border-gray-200 rounded-xl sm:rounded-2xl shadow-xl overflow-hidden">
-        <div className="px-4 sm:px-6 py-4 border-b border-gray-100 bg-white/60 flex items-center justify-between flex-wrap gap-3">
-          <h3 className="text-lg sm:text-xl font-bold text-gray-900 flex items-center gap-2">
-            <Users size={20} className="sm:w-6 sm:h-6 text-indigo-600" />
+      <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl border border-gray-200 dark:border-gray-700 rounded-xl sm:rounded-2xl shadow-xl overflow-hidden transition-colors duration-300">
+        <div className="px-4 sm:px-6 py-4 border-b border-gray-100 dark:border-gray-700 bg-white/60 dark:bg-gray-800/60 flex items-center justify-between flex-wrap gap-3 transition-colors duration-300">
+          <h3 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2 transition-colors duration-300">
+            <Users size={20} className="sm:w-6 sm:h-6 text-indigo-600 dark:text-indigo-400" />
             User Management ({members.length})
           </h3>
           <div className="flex gap-2">
             <button
               onClick={loadUsers}
               disabled={loadingUsers}
-              className="text-sm bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition disabled:opacity-50 flex items-center gap-2"
+              className="text-sm bg-green-600 dark:bg-green-700 text-white px-4 py-2 rounded-lg hover:bg-green-700 dark:hover:bg-green-600 transition disabled:opacity-50 flex items-center gap-2"
             >
               <RefreshCw size={16} className={loadingUsers ? 'animate-spin' : ''} />
               {loadingUsers ? 'Refreshing...' : 'Refresh Users'}
@@ -253,7 +254,7 @@ export default function AdminDashboard() {
             <button
               onClick={loadAllTransactions}
               disabled={loadingTransactions}
-              className="text-sm bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+              className="text-sm bg-indigo-600 dark:bg-indigo-700 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 dark:hover:bg-indigo-600 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
             >
               {loadingTransactions ? (
                 <>
@@ -273,23 +274,23 @@ export default function AdminDashboard() {
         <div className="overflow-x-auto">
           {loadingUsers ? (
             <div className="flex items-center justify-center py-12">
-              <div className="h-10 w-10 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
-              <p className="ml-4 text-gray-600">Loading users...</p>
+              <div className="h-10 w-10 border-4 border-indigo-600 dark:border-indigo-400 border-t-transparent rounded-full animate-spin"></div>
+              <p className="ml-4 text-gray-600 dark:text-gray-400 transition-colors duration-300">Loading users...</p>
             </div>
           ) : members.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-12">
-              <Users size={48} className="text-gray-300 mb-4" />
-              <p className="text-gray-600 font-medium">No users found</p>
-              <p className="text-gray-500 text-sm">Users will appear here once registered</p>
+              <Users size={48} className="text-gray-300 dark:text-gray-600 mb-4 transition-colors duration-300" />
+              <p className="text-gray-600 dark:text-gray-400 font-medium transition-colors duration-300">No users found</p>
+              <p className="text-gray-500 dark:text-gray-500 text-sm transition-colors duration-300">Users will appear here once registered</p>
             </div>
           ) : (
             <table className="w-full">
-              <thead className="bg-gray-50/50 backdrop-blur-sm">
+              <thead className="bg-gray-50/50 dark:bg-gray-900/50 backdrop-blur-sm transition-colors duration-300">
                 <tr>
                   {["Name", "Email", "Phone", "Join Date", "Role", "Action"].map((h) => (
                     <th
                       key={h}
-                      className="px-3 sm:px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide"
+                      className="px-3 sm:px-6 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide transition-colors duration-300"
                     >
                       {h}
                     </th>
@@ -297,22 +298,24 @@ export default function AdminDashboard() {
                 </tr>
               </thead>
 
-              <tbody className="divide-y divide-gray-200 bg-white/60 backdrop-blur-xl">
+              <tbody className="divide-y divide-gray-200 dark:divide-gray-700 bg-white/60 dark:bg-gray-800/60 backdrop-blur-xl transition-colors duration-300">
                 {members.map((member) => (
-                  <tr key={member.id} className="hover:bg-gray-50">
-                    <td className="px-3 sm:px-6 py-3 sm:py-4 text-xs sm:text-sm font-medium text-gray-900">
+                  <tr key={member.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors duration-200">
+                    <td className="px-3 sm:px-6 py-3 sm:py-4 text-xs sm:text-sm font-medium text-gray-900 dark:text-white transition-colors duration-300">
                       {member.firstName || member.lastName ? `${member.firstName || ''} ${member.lastName || ''}`.trim() : 'N/A'}
                     </td>
-                    <td className="px-3 sm:px-6 py-3 sm:py-4 text-xs sm:text-sm text-gray-700">{member.email}</td>
-                    <td className="px-3 sm:px-6 py-3 sm:py-4 text-xs sm:text-sm text-gray-700 hidden lg:table-cell">
+                    <td className="px-3 sm:px-6 py-3 sm:py-4 text-xs sm:text-sm text-gray-700 dark:text-gray-300 transition-colors duration-300">{member.email}</td>
+                    <td className="px-3 sm:px-6 py-3 sm:py-4 text-xs sm:text-sm text-gray-700 dark:text-gray-300 hidden lg:table-cell transition-colors duration-300">
                       {member.phone || 'N/A'}
                     </td>
-                    <td className="px-3 sm:px-6 py-3 sm:py-4 text-xs sm:text-sm text-gray-700">
+                    <td className="px-3 sm:px-6 py-3 sm:py-4 text-xs sm:text-sm text-gray-700 dark:text-gray-300 transition-colors duration-300">
                       {new Date(member.createdAt).toLocaleDateString()}
                     </td>
                     <td className="px-3 sm:px-6 py-3 sm:py-4">
-                      <span className={`px-2 sm:px-3 py-1 rounded-full text-xs font-semibold ${
-                        member.role === 'admin' ? 'bg-purple-100 text-purple-800' : 'bg-blue-100 text-blue-800'
+                      <span className={`px-2 sm:px-3 py-1 rounded-full text-xs font-semibold transition-colors duration-300 ${
+                        member.role === 'admin' 
+                          ? 'bg-purple-100 dark:bg-purple-900/50 text-purple-800 dark:text-purple-300' 
+                          : 'bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-300'
                       }`}>
                         {member.role || 'customer'}
                       </span>
@@ -320,7 +323,7 @@ export default function AdminDashboard() {
                     <td className="px-3 sm:px-6 py-3 sm:py-4">
                       <button 
                         onClick={() => router.push(`/dashboard/admin/manage/${member.id}`)}
-                        className="text-xs bg-indigo-600 text-white px-2 sm:px-3 py-1 rounded hover:bg-indigo-700 whitespace-nowrap"
+                        className="text-xs bg-indigo-600 dark:bg-indigo-700 text-white px-2 sm:px-3 py-1 rounded hover:bg-indigo-700 dark:hover:bg-indigo-600 whitespace-nowrap transition-colors duration-300"
                       >
                         View
                       </button>
@@ -339,34 +342,34 @@ export default function AdminDashboard() {
       )}
 
       {/* ALERTS & NOTIFICATIONS */}
-      <div className="bg-white/80 backdrop-blur-xl border border-gray-200 rounded-xl sm:rounded-2xl shadow-xl p-4 sm:p-6">
-        <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-          <AlertCircle size={20} className="sm:w-6 sm:h-6 text-orange-600" />
+      <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl border border-gray-200 dark:border-gray-700 rounded-xl sm:rounded-2xl shadow-xl p-4 sm:p-6 transition-colors duration-300">
+        <h3 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2 transition-colors duration-300">
+          <AlertCircle size={20} className="sm:w-6 sm:h-6 text-orange-600 dark:text-orange-400" />
           System Alerts & Notifications
         </h3>
 
         <div className="space-y-4">
-          <div className="border border-yellow-200 bg-yellow-50 rounded-lg p-3 sm:p-4 flex items-start gap-3 sm:gap-4">
-            <Clock size={18} className="sm:w-5 sm:h-5 text-yellow-600 mt-1 flex-shrink-0" />
+          <div className="border border-yellow-200 dark:border-yellow-800 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg p-3 sm:p-4 flex items-start gap-3 sm:gap-4 transition-colors duration-300">
+            <Clock size={18} className="sm:w-5 sm:h-5 text-yellow-600 dark:text-yellow-400 mt-1 flex-shrink-0" />
             <div>
-              <p className="font-semibold text-sm sm:text-base text-yellow-900">Pending Loan Applications</p>
-              <p className="text-xs sm:text-sm text-yellow-700 mt-1">12 members have submitted loan applications awaiting approval</p>
+              <p className="font-semibold text-sm sm:text-base text-yellow-900 dark:text-yellow-200 transition-colors duration-300">Pending Loan Applications</p>
+              <p className="text-xs sm:text-sm text-yellow-700 dark:text-yellow-300 mt-1 transition-colors duration-300">12 members have submitted loan applications awaiting approval</p>
             </div>
           </div>
 
-          <div className="border border-green-200 bg-green-50 rounded-lg p-3 sm:p-4 flex items-start gap-3 sm:gap-4">
-            <CheckCircle size={18} className="sm:w-5 sm:h-5 text-green-600 mt-1 flex-shrink-0" />
+          <div className="border border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-900/20 rounded-lg p-3 sm:p-4 flex items-start gap-3 sm:gap-4 transition-colors duration-300">
+            <CheckCircle size={18} className="sm:w-5 sm:h-5 text-green-600 dark:text-green-400 mt-1 flex-shrink-0" />
             <div>
-              <p className="font-semibold text-sm sm:text-base text-green-900">Monthly Compliance Check Passed</p>
-              <p className="text-xs sm:text-sm text-green-700 mt-1">All regulatory compliance requirements met for December 2025</p>
+              <p className="font-semibold text-sm sm:text-base text-green-900 dark:text-green-200 transition-colors duration-300">Monthly Compliance Check Passed</p>
+              <p className="text-xs sm:text-sm text-green-700 dark:text-green-300 mt-1 transition-colors duration-300">All regulatory compliance requirements met for December 2025</p>
             </div>
           </div>
 
-          <div className="border border-red-200 bg-red-50 rounded-lg p-3 sm:p-4 flex items-start gap-3 sm:gap-4">
-            <AlertCircle size={18} className="sm:w-5 sm:h-5 text-red-600 mt-1 flex-shrink-0" />
+          <div className="border border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-900/20 rounded-lg p-3 sm:p-4 flex items-start gap-3 sm:gap-4 transition-colors duration-300">
+            <AlertCircle size={18} className="sm:w-5 sm:h-5 text-red-600 dark:text-red-400 mt-1 flex-shrink-0" />
             <div>
-              <p className="font-semibold text-sm sm:text-base text-red-900">High Default Rate Alert</p>
-              <p className="text-xs sm:text-sm text-red-700 mt-1">Default rate has increased to 0.8%. Review collection strategies.</p>
+              <p className="font-semibold text-sm sm:text-base text-red-900 dark:text-red-200 transition-colors duration-300">High Default Rate Alert</p>
+              <p className="text-xs sm:text-sm text-red-700 dark:text-red-300 mt-1 transition-colors duration-300">Default rate has increased to 0.8%. Review collection strategies.</p>
             </div>
           </div>
         </div>

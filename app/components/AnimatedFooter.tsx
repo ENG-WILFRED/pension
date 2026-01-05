@@ -1,4 +1,4 @@
-///home/hp/JERE/AutoNest/app/components/AnimatedFooter.tsx
+///app/components/AnimatedFooter.tsx
 "use client";
 
 import { TrendingUp, DollarSign, PieChart, Wallet, Zap } from "lucide-react";
@@ -13,7 +13,7 @@ export default function AnimatedFooter() {
   ];
 
   return (
-    <footer className="w-full bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 text-white py-4 mt-auto border-t border-white/20">
+    <footer className="w-full bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 dark:from-indigo-700 dark:via-purple-700 dark:to-pink-700 text-white py-4 mt-auto border-t border-white/20 dark:border-white/10 transition-colors duration-300">
       <div className="max-w-full mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-center gap-6 sm:gap-8 lg:gap-12 overflow-x-auto pb-2">
           {items.map((item, idx) => {
