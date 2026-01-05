@@ -1,4 +1,3 @@
-///app/dashboard/customer/page.tsx
 "use client";
 
 import { useEffect, useState } from "react";
@@ -12,6 +11,14 @@ import PensionPlans from "@/app/components/dashboard/PensionPlans";
 import TransactionHistory from "@/app/components/dashboard/TransactionHistory";
 import QuickActions from "@/app/components/dashboard/QuickActions";
 import { userApi, dashboardApi } from "@/app/lib/api-client";
+
+interface BankAccount {
+  bankName?: string;
+  accountNumber?: string;
+  accountName?: string;
+  branchCode?: string;
+  branchName?: string;
+}
 
 interface User {
   id: string;
@@ -27,7 +34,7 @@ interface User {
   dateOfBirth?: string;
   numberOfChildren?: number;
   address?: any;
-  bankAccount?: any;
+  bankAccount?: BankAccount;
   kra?: string;
   nssfNumber?: string;
   role?: 'customer' | 'admin';
@@ -63,6 +70,7 @@ export default function CustomerDashboard() {
   const [projectedRetirement, setProjectedRetirement] = useState(0);
   const [loading, setLoading] = useState(true);
   const [loadingTransactions, setLoadingTransactions] = useState(true);
+  const [loadingBankDetails, setLoadingBankDetails] = useState(true);
 
   useEffect(() => {
     const load = async () => {
@@ -81,26 +89,38 @@ export default function CustomerDashboard() {
           return;
         }
 
+        // Fetch fresh user data from backend including bank details
+        setLoadingBankDetails(true);
         const userResponse = await userApi.getById(storedUser.id);
+        
         if (userResponse.success && userResponse.user) {
           if (userResponse.user.role === 'admin') {
             toast.error('Admins cannot access customer dashboard');
             router.push('/dashboard/admin');
             return;
           }
+          
           setUser(userResponse.user);
-          toast.success(`Welcome back, ${userResponse.user.firstName || storedUser.firstName}!`);
+          
+          // Check if bank details are present
+          if (userResponse.user.bankAccount) {
+            toast.success(`Welcome back, ${userResponse.user.firstName || storedUser.firstName}!`);
+          } else {
+            toast.info('💳 Please update your bank details in settings');
+          }
         } else {
+          // Fallback to stored user if API fails
           setUser(storedUser);
-          toast.success(`Welcome back, ${storedUser.firstName}!`);
+          toast.warning('Using cached profile data');
         }
+        setLoadingBankDetails(false);
 
+        // Fetch transactions
         setLoadingTransactions(true);
-        
         const transactionsResponse = await dashboardApi.getTransactions();
+        
         if (transactionsResponse.success && transactionsResponse.transactions) {
           setTransactions(transactionsResponse.transactions);
-          toast.success('📊 Transactions loaded successfully');
         } else {
           console.warn('Failed to load transactions:', transactionsResponse.error);
           toast.warning('⚠️ Could not load transactions. Using sample data.');
@@ -117,6 +137,7 @@ export default function CustomerDashboard() {
         }
         setLoadingTransactions(false);
 
+        // Mock pension plans (replace with actual API call when available)
         const mockPensionPlans: PensionPlan[] = [
           {
             id: "plan1",
@@ -202,7 +223,10 @@ export default function CustomerDashboard() {
           contributionRate={user?.contributionRate}
           retirementAge={user?.retirementAge}
         />
-        <BankDetailsComponent bankAccount={user?.bankAccount} />
+        <BankDetailsComponent 
+          bankAccount={user?.bankAccount}
+          loading={loadingBankDetails}
+        />
       </div>
 
       <PensionPlans plans={pensionPlans} />

@@ -1,16 +1,53 @@
-///app/components/dashboard/BankDetails.tsx
-import { CreditCard } from 'lucide-react';
+import { CreditCard, AlertCircle, Loader2 } from 'lucide-react';
 
-interface BankDetails {
+interface BankAccount {
   bankName?: string;
   accountNumber?: string;
+  accountName?: string;
+  branchCode?: string;
+  branchName?: string;
 }
 
 interface BankDetailsProps {
-  bankAccount?: BankDetails;
+  bankAccount?: BankAccount;
+  loading?: boolean;
 }
 
-export default function BankDetailsComponent({ bankAccount }: BankDetailsProps) {
+export default function BankDetailsComponent({ bankAccount, loading = false }: BankDetailsProps) {
+  // Show loading state
+  if (loading) {
+    return (
+      <div className="bg-white dark:bg-gray-800 backdrop-blur-xl border border-gray-200 dark:border-gray-700 rounded-2xl shadow-lg p-6 transition-colors duration-300">
+        <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2 transition-colors duration-300">
+          <CreditCard size={20} className="text-indigo-600 dark:text-indigo-400" />
+          Bank Account
+        </h3>
+        <div className="flex items-center justify-center py-8">
+          <Loader2 className="h-8 w-8 animate-spin text-indigo-600 dark:text-indigo-400" />
+        </div>
+      </div>
+    );
+  }
+
+  // Show message if no bank account details
+  if (!bankAccount || !bankAccount.bankName) {
+    return (
+      <div className="bg-white dark:bg-gray-800 backdrop-blur-xl border border-gray-200 dark:border-gray-700 rounded-2xl shadow-lg p-6 transition-colors duration-300">
+        <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2 transition-colors duration-300">
+          <CreditCard size={20} className="text-indigo-600 dark:text-indigo-400" />
+          Bank Account
+        </h3>
+        <div className="flex flex-col items-center justify-center py-8 text-center">
+          <AlertCircle className="h-12 w-12 text-amber-500 dark:text-amber-400 mb-3" />
+          <p className="text-gray-600 dark:text-gray-400 mb-2">No bank account details found</p>
+          <p className="text-sm text-gray-500 dark:text-gray-500">
+            Please update your bank information in settings
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="bg-white dark:bg-gray-800 backdrop-blur-xl border border-gray-200 dark:border-gray-700 rounded-2xl shadow-lg p-6 transition-colors duration-300">
       <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2 transition-colors duration-300">
@@ -20,23 +57,50 @@ export default function BankDetailsComponent({ bankAccount }: BankDetailsProps) 
       <div className="space-y-3 text-sm">
         <div className="flex justify-between">
           <span className="text-gray-600 dark:text-gray-400 transition-colors duration-300">Bank:</span>
-          <span className="font-semibold text-gray-900 dark:text-white transition-colors duration-300">{bankAccount?.bankName || 'Kenya Commercial Bank'}</span>
+          <span className="font-semibold text-gray-900 dark:text-white transition-colors duration-300">
+            {bankAccount.bankName}
+          </span>
         </div>
-        <div className="flex justify-between">
-          <span className="text-gray-600 dark:text-gray-400 transition-colors duration-300">Account Type:</span>
-          <span className="font-semibold text-gray-900 dark:text-white transition-colors duration-300">Savings</span>
-        </div>
+        
+        {bankAccount.accountName && (
+          <div className="flex justify-between">
+            <span className="text-gray-600 dark:text-gray-400 transition-colors duration-300">Account Name:</span>
+            <span className="font-semibold text-gray-900 dark:text-white transition-colors duration-300">
+              {bankAccount.accountName}
+            </span>
+          </div>
+        )}
+        
         <div className="flex justify-between">
           <span className="text-gray-600 dark:text-gray-400 transition-colors duration-300">Account Number:</span>
-          <span className="font-semibold text-gray-900 dark:text-white transition-colors duration-300">****{(bankAccount?.accountNumber || '1234567890').slice(-4)}</span>
+          <span className="font-semibold text-gray-900 dark:text-white transition-colors duration-300">
+            ****{bankAccount.accountNumber?.slice(-4) || '****'}
+          </span>
         </div>
-        <div className="flex justify-between">
-          <span className="text-gray-600 dark:text-gray-400 transition-colors duration-300">Status:</span>
-          <span className="px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-200 rounded text-xs font-semibold transition-colors duration-300">Verified</span>
-        </div>
+        
+        {bankAccount.branchName && (
+          <div className="flex justify-between">
+            <span className="text-gray-600 dark:text-gray-400 transition-colors duration-300">Branch:</span>
+            <span className="font-semibold text-gray-900 dark:text-white transition-colors duration-300">
+              {bankAccount.branchName}
+            </span>
+          </div>
+        )}
+        
+        {bankAccount.branchCode && (
+          <div className="flex justify-between">
+            <span className="text-gray-600 dark:text-gray-400 transition-colors duration-300">Branch Code:</span>
+            <span className="font-semibold text-gray-900 dark:text-white transition-colors duration-300">
+              {bankAccount.branchCode}
+            </span>
+          </div>
+        )}
+        
         <div className="flex justify-between border-t border-gray-200 dark:border-gray-700 pt-3 mt-3 transition-colors duration-300">
-          <span className="text-gray-600 dark:text-gray-400 transition-colors duration-300">Swift Code:</span>
-          <span className="font-semibold text-gray-900 dark:text-white transition-colors duration-300">KCBLKENA</span>
+          <span className="text-gray-600 dark:text-gray-400 transition-colors duration-300">Status:</span>
+          <span className="px-2 py-1 bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-200 rounded text-xs font-semibold transition-colors duration-300">
+            Active
+          </span>
         </div>
       </div>
     </div>
