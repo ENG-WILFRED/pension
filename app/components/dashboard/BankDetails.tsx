@@ -1,4 +1,5 @@
-import { CreditCard, AlertCircle, Loader2 } from 'lucide-react';
+import { CreditCard, AlertCircle, Loader2, Edit } from 'lucide-react';
+import Link from 'next/link';
 
 interface BankAccount {
   bankName?: string;
@@ -40,9 +41,16 @@ export default function BankDetailsComponent({ bankAccount, loading = false }: B
         <div className="flex flex-col items-center justify-center py-8 text-center">
           <AlertCircle className="h-12 w-12 text-amber-500 dark:text-amber-400 mb-3" />
           <p className="text-gray-600 dark:text-gray-400 mb-2">No bank account details found</p>
-          <p className="text-sm text-gray-500 dark:text-gray-500">
-            Please update your bank information in settings
+          <p className="text-sm text-gray-500 dark:text-gray-500 mb-4">
+            Please add your bank information to receive payments
           </p>
+          <Link 
+            href="/settings/bank-details"
+            className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-colors text-sm font-medium inline-flex items-center gap-2"
+          >
+            <CreditCard size={16} />
+            Add Bank Details
+          </Link>
         </div>
       </div>
     );
@@ -50,10 +58,20 @@ export default function BankDetailsComponent({ bankAccount, loading = false }: B
 
   return (
     <div className="bg-white dark:bg-gray-800 backdrop-blur-xl border border-gray-200 dark:border-gray-700 rounded-2xl shadow-lg p-6 transition-colors duration-300">
-      <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2 transition-colors duration-300">
-        <CreditCard size={20} className="text-indigo-600 dark:text-indigo-400" />
-        Bank Account
-      </h3>
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2 transition-colors duration-300">
+          <CreditCard size={20} className="text-indigo-600 dark:text-indigo-400" />
+          Bank Account
+        </h3>
+        <Link
+          href="/settings/bank-details"
+          className="text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 transition-colors p-2 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded-lg"
+          title="Edit bank details"
+        >
+          <Edit size={18} />
+        </Link>
+      </div>
+      
       <div className="space-y-3 text-sm">
         <div className="flex justify-between">
           <span className="text-gray-600 dark:text-gray-400 transition-colors duration-300">Bank:</span>
