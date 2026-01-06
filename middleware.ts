@@ -1,3 +1,4 @@
+///home/hp/JERE/AutoNest/middleware.ts
 import { NextRequest, NextResponse } from 'next/server';
 
 // NOTE: Middleware runs in the Edge runtime. Avoid importing Node-only

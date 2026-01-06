@@ -1,3 +1,4 @@
+///home/hp/JERE/AutoNest/app/layout.tsx
 import type { Metadata } from "next";
 import { Toaster } from "sonner";
 import "./globals.css";
