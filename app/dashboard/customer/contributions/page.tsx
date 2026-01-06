@@ -44,13 +44,43 @@ function DepositModal({ isOpen, onClose, account, onSuccess }: DepositModalProps
     setSubmitting(true);
 
     try {
-      const accountIdentifier = account.accountNumber || account.id;
-      
-      const response = await accountsApi.deposit(accountIdentifier, {
+      // Determine account number: prefer the provided account.accountNumber,
+      // otherwise try to read the currently logged-in user's associated account from localStorage.
+      let accountIdentifier: string | undefined = account.accountNumber || account.id;
+
+      if (!accountIdentifier) {
+        const userStr = typeof window !== 'undefined' ? localStorage.getItem('user') : null;
+        if (userStr) {
+          try {
+            const u = JSON.parse(userStr);
+            // Common shapes: u.accounts = [{ accountNumber }], or u.accountNumber
+            if (Array.isArray(u.accounts) && u.accounts.length > 0) {
+              accountIdentifier = u.accounts[0].accountNumber || u.accounts[0].id;
+            } else if (u.accountNumber) {
+              accountIdentifier = String(u.accountNumber);
+            } else if (u.account && u.account.accountNumber) {
+              accountIdentifier = u.account.accountNumber;
+            }
+          } catch (err) {
+            console.warn('Failed to parse user from localStorage', err);
+          }
+        }
+      }
+
+      if (!accountIdentifier) {
+        toast.error('No account number available for deposit');
+        setSubmitting(false);
+        return;
+      }
+
+      // Only send the allowed fields: amount, phone, description
+      const payload = {
         amount: parseFloat(amount),
         phone,
-        description: 'M-Pesa deposit',
-      });
+        description: 'Deposit to pension account',
+      } as const;
+
+      const response = await accountsApi.deposit(accountIdentifier, payload);
 
       if (response.success) {
         toast.success('📱 M-Pesa STK Push initiated! Check your phone.');

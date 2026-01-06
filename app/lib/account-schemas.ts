@@ -89,10 +89,30 @@ export type UpdateAccountData = z.infer<typeof updateAccountSchema>;
 // Helper function to safely parse account data
 export function parseAccount(data: any): Account {
   try {
-    return accountSchema.parse({
+    // Normalize common type mismatches from the API:
+    const normalized: any = {
       ...data,
-      totalBalance: data.totalBalance ?? 0,
-    });
+      // ensure id is a string
+      id: data.id !== undefined && data.id !== null ? String(data.id) : undefined,
+      // accountNumber may come as a number
+      accountNumber: data.accountNumber != null ? String(data.accountNumber) : undefined,
+      // normalize totalBalance to a number (fallback to 0)
+      totalBalance: (() => {
+        const v = data.totalBalance ?? data.balance ?? 0;
+        const n = typeof v === 'string' ? Number(v) : v;
+        return Number.isFinite(n) ? n : 0;
+      })(),
+      // normalize accountType: sometimes the API returns an id string/number instead of an object
+      accountType: (() => {
+        const at = data.accountType ?? data.account_type ?? data.accountTypeId;
+        if (!at) return { name: 'Unknown' };
+        if (typeof at === 'object') return at;
+        // primitive -> convert to object with id
+        return { id: String(at), name: (data.accountTypeName || data.account_type_name) ?? 'Unknown' };
+      })(),
+    };
+
+    return accountSchema.parse(normalized);
   } catch (error) {
     console.error('Error parsing account:', error);
     // Return a safe default account

@@ -65,7 +65,7 @@ export default function BankDetailsComponent({ bankAccount, loading = false }: B
         </h3>
         <Link
           href="/settings/bank-details"
-          className="text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 transition-colors p-2 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded-lg"
+          className="text-indigo-500 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 transition-colors p-2 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded-lg"
           title="Edit bank details"
         >
           <Edit size={18} />
@@ -74,7 +74,7 @@ export default function BankDetailsComponent({ bankAccount, loading = false }: B
       
       <div className="space-y-3 text-sm">
         <div className="flex justify-between">
-          <span className="text-gray-600 dark:text-gray-400 transition-colors duration-300">Bank:</span>
+          <span className="text-gray-500 dark:text-gray-400 transition-colors duration-300">Bank:</span>
           <span className="font-semibold text-gray-900 dark:text-white transition-colors duration-300">
             {bankAccount.bankName}
           </span>
@@ -82,7 +82,7 @@ export default function BankDetailsComponent({ bankAccount, loading = false }: B
         
         {bankAccount.accountName && (
           <div className="flex justify-between">
-            <span className="text-gray-600 dark:text-gray-400 transition-colors duration-300">Account Name:</span>
+            <span className="text-gray-500 dark:text-gray-400 transition-colors duration-300">Account Name:</span>
             <span className="font-semibold text-gray-900 dark:text-white transition-colors duration-300">
               {bankAccount.accountName}
             </span>
@@ -90,7 +90,7 @@ export default function BankDetailsComponent({ bankAccount, loading = false }: B
         )}
         
         <div className="flex justify-between">
-          <span className="text-gray-600 dark:text-gray-400 transition-colors duration-300">Account Number:</span>
+          <span className="text-gray-500 dark:text-gray-400 transition-colors duration-300">Account Number:</span>
           <span className="font-semibold text-gray-900 dark:text-white transition-colors duration-300">
             ****{bankAccount.accountNumber?.slice(-4) || '****'}
           </span>
@@ -98,7 +98,7 @@ export default function BankDetailsComponent({ bankAccount, loading = false }: B
         
         {bankAccount.branchName && (
           <div className="flex justify-between">
-            <span className="text-gray-600 dark:text-gray-400 transition-colors duration-300">Branch:</span>
+            <span className="text-gray-500 dark:text-gray-400 transition-colors duration-300">Branch:</span>
             <span className="font-semibold text-gray-900 dark:text-white transition-colors duration-300">
               {bankAccount.branchName}
             </span>
@@ -107,7 +107,7 @@ export default function BankDetailsComponent({ bankAccount, loading = false }: B
         
         {bankAccount.branchCode && (
           <div className="flex justify-between">
-            <span className="text-gray-600 dark:text-gray-400 transition-colors duration-300">Branch Code:</span>
+            <span className="text-gray-500 dark:text-gray-400 transition-colors duration-300">Branch Code:</span>
             <span className="font-semibold text-gray-900 dark:text-white transition-colors duration-300">
               {bankAccount.branchCode}
             </span>
@@ -115,7 +115,7 @@ export default function BankDetailsComponent({ bankAccount, loading = false }: B
         )}
         
         <div className="flex justify-between border-t border-gray-200 dark:border-gray-700 pt-3 mt-3 transition-colors duration-300">
-          <span className="text-gray-600 dark:text-gray-400 transition-colors duration-300">Status:</span>
+          <span className="text-gray-500 dark:text-gray-400 transition-colors duration-300">Status:</span>
           <span className="px-2 py-1 bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-200 rounded text-xs font-semibold transition-colors duration-300">
             Active
           </span>

@@ -42,6 +42,7 @@ interface User {
   kra?: string;
   nssfNumber?: string;
   role?: 'customer' | 'admin';
+  bankDetails?: any[];
 }
 
 interface Transaction {
@@ -79,8 +80,19 @@ export default function CustomerDashboard() {
   // Helper function to extract bank details from user object
   const getBankDetails = (user: User | null): BankAccount | undefined => {
     if (!user) return undefined;
-    
-    // Check if any bank details exist as direct fields on user
+    // Prefer nested bankDetails array if present (API returns array)
+    if (Array.isArray(user.bankDetails) && user.bankDetails.length > 0) {
+      const bd: any = user.bankDetails[0];
+      return {
+        bankName: bd.bankName || bd.bank || bd.bank_name,
+        accountNumber: bd.accountNumber || bd.account_number || bd.account || bd.accountNo,
+        accountName: bd.bankAccountName || bd.accountName || bd.account_name || bd.accountHolder,
+        branchCode: bd.branchCode || bd.branch_code,
+        branchName: bd.branchName || bd.branch_name,
+      };
+    }
+
+    // Fallback to direct fields on user object
     const hasDirectDetails = user.bankName || user.accountNumber || user.accountName;
     if (hasDirectDetails) {
       return {
@@ -91,7 +103,7 @@ export default function CustomerDashboard() {
         branchName: user.branchName,
       };
     }
-    
+
     return undefined;
   };
 
@@ -129,7 +141,7 @@ export default function CustomerDashboard() {
           
           // Update localStorage with fresh data
           localStorage.setItem('user', JSON.stringify(userResponse.user));
-          
+          console.log(userResponse.user);
           // Check for bank details using the helper function
           const bankDetails = getBankDetails(userResponse.user);
           

@@ -26,6 +26,7 @@ interface User {
   branchCode?: string;
   branchName?: string;
   role?: string;
+  bankDetails?: any[];
 }
 
 export default function BankDetailsSettingsPage() {
@@ -102,7 +103,19 @@ export default function BankDetailsSettingsPage() {
   // Extract bank details from user object
   const getBankDetails = (): BankAccount => {
     if (!user) return {};
-    
+
+    // Prefer nested bankDetails array if present
+    if (Array.isArray((user as any).bankDetails) && (user as any).bankDetails.length > 0) {
+      const bd: any = (user as any).bankDetails[0];
+      return {
+        bankName: bd.bankName || bd.bank || bd.bank_name,
+        accountNumber: bd.accountNumber || bd.account_number || bd.account || bd.accountNo,
+        accountName: bd.bankAccountName || bd.accountName || bd.account_name || bd.accountHolder,
+        branchCode: bd.branchCode || bd.branch_code,
+        branchName: bd.branchName || bd.branch_name,
+      };
+    }
+
     return {
       bankName: user.bankName,
       accountNumber: user.accountNumber,
