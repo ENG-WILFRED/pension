@@ -1,3 +1,4 @@
+///home/hp/JERE/AutoNest/app/components/sections/PaymentPendingModal.tsx
 import { Loader2, CheckCircle2, XCircle, Clock } from 'lucide-react';
 import { useEffect, useState } from 'react';
 

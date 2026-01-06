@@ -19,15 +19,17 @@ import TermsAndConditionsModal from './TermsAndConditionsModal';
 
 // API TIMEOUT CONSTANTS
 const API_TIMEOUT = 60000; // 60 seconds per request
-const PAYMENT_TOTAL_TIMEOUT = 24000; // 4 minutes total for payment confirmation
+const PAYMENT_TOTAL_TIMEOUT = 240000; // 4 minutes total for payment confirmation
+const POLL_INTERVAL = 2000; // 2 seconds between polls
 
 export default function RegisterForm() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [polling, setPolling] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const pollRef = useRef<number | null>(null);
+  const pollRef = useRef<NodeJS.Timeout | null>(null);
   const pollStartTimeRef = useRef<number | null>(null);
+  const pollAttemptsRef = useRef<number>(0);
 
   const [showTermsModal, setShowTermsModal] = useState(false);
   const [termsAccepted, setTermsAccepted] = useState(false);
@@ -107,13 +109,11 @@ export default function RegisterForm() {
     if (idx === 0) {
       if (!formData.email) e.email = 'Email is required';
       if (!formData.phone) e.phone = 'Phone is required';
-      // PIN is optional - only validate if provided
       if (formData.pin && formData.pin.trim() !== '' && !/^\d{4}$/.test(formData.pin)) {
         e.pin = 'PIN must be exactly 4 digits if provided';
       }
     }
     if (idx === 4) {
-      // Pension & Bank details
       if (!formData.bankAccountName) e.bankAccountName = 'Bank account name is required';
       if (!formData.bankAccountNumber) e.bankAccountNumber = 'Bank account number is required';
       if (!formData.bankBranchName) e.bankBranchName = 'Bank branch name is required';
@@ -146,14 +146,12 @@ export default function RegisterForm() {
       return;
     }
     
-    // Validate terms on final step
     if (!termsAccepted) {
       setTermsError('You must accept the Terms and Conditions to continue');
       toast.error('⚠️ Please accept the Terms and Conditions');
       return;
     }
     
-    // Terms accepted, proceed with registration
     handleSubmit(new Event('submit') as unknown as FormEvent);
   };
 
@@ -164,7 +162,6 @@ export default function RegisterForm() {
 
   const validateForm = () => {
     try {
-      // Clean the PIN field - if empty, set to undefined
       const cleanedData = {
         ...formData,
         pin: formData.pin && formData.pin.trim() !== '' ? formData.pin : undefined,
@@ -198,7 +195,6 @@ export default function RegisterForm() {
     toast.info('ℹ️ You must accept the Terms and Conditions to proceed');
   };
 
-  // Helper function to add timeout to API calls
   const apiCallWithTimeout = async <T,>(
     apiPromise: Promise<T>,
     timeoutMs: number = API_TIMEOUT
@@ -209,6 +205,41 @@ export default function RegisterForm() {
         setTimeout(() => reject(new Error('Request timeout')), timeoutMs)
       ),
     ]);
+  };
+
+  // ✅ FIXED: Clear polling interval helper
+  const stopPolling = () => {
+    console.log('[Register] Stopping polling...');
+    setPolling(false);
+    if (pollRef.current) {
+      clearInterval(pollRef.current);
+      pollRef.current = null;
+    }
+    pollAttemptsRef.current = 0;
+    pollStartTimeRef.current = null;
+  };
+
+  const handleRegistrationSuccess = (token?: string, user?: any) => {
+    console.log('[Register] Registration successful!', { hasToken: !!token, hasUser: !!user });
+    
+    stopPolling();
+    setPaymentPending(null);
+    setLoading(false);
+    
+    // Save auth data
+    if (token && typeof window !== 'undefined') {
+      localStorage.setItem('auth_token', token);
+      if (user) {
+        localStorage.setItem('user', JSON.stringify(user));
+      }
+    }
+    
+    toast.success('🎉 Registration completed! Redirecting to dashboard...');
+    
+    // Redirect after short delay
+    setTimeout(() => {
+      router.push('/dashboard');
+    }, 1500);
   };
 
   const handleSubmit = async (e: FormEvent) => {
@@ -224,9 +255,7 @@ export default function RegisterForm() {
     try {
       const dataToSend = {
         ...formData,
-        // Clean PIN - if empty, don't send it
         pin: formData.pin && formData.pin.trim() !== '' ? formData.pin : undefined,
-        // Ensure defaults are set
         accountType: formData.accountType || 'MANDATORY',
         riskProfile: formData.riskProfile || 'MEDIUM',
         currency: formData.currency || 'KES',
@@ -235,7 +264,6 @@ export default function RegisterForm() {
         complianceStatus: formData.complianceStatus || 'PENDING',
       };
       
-      // Add timeout to registration call
       const result = await apiCallWithTimeout(
         authApi.register(dataToSend as RegistrationFormData),
         API_TIMEOUT
@@ -256,18 +284,27 @@ export default function RegisterForm() {
         return;
       }
 
-      const { checkoutRequestId, statusCheckUrl, transactionId, message, status } = result as any;
+      const { checkoutRequestId, statusCheckUrl, transactionId, message, status, token, user } = result as any;
+
+      // ✅ FIXED: Check if already completed
+      if (status === 'registration_completed' || token) {
+        handleRegistrationSuccess(token, user);
+        return;
+      }
 
       if (status === 'payment_initiated' || checkoutRequestId) {
+        console.log('[Register] Payment initiated, starting polling...', { transactionId });
         toast.success('💳 M-Pesa prompt sent to your phone!');
         toast.info('📱 Please check your phone and enter your M-Pesa PIN');
         setPaymentPending({ transactionId, checkoutRequestId, statusCheckUrl });
         setLoading(false);
         setPolling(true);
         pollStartTimeRef.current = Date.now();
+        pollAttemptsRef.current = 0;
         return;
       }
 
+      // Fallback - shouldn't happen but handle gracefully
       toast.success('✅ Account created successfully! Redirecting to login...');
       setTimeout(() => router.push('/login'), 1500);
     } catch (err: any) {
@@ -276,12 +313,12 @@ export default function RegisterForm() {
       } else {
         toast.error('⚠️ An unexpected error occurred');
       }
-      console.error(err);
+      console.error('[Register] Submit error:', err);
       setLoading(false);
     }
   };
 
-  // Fetch Terms and Conditions on component mount
+  // Fetch Terms and Conditions
   useEffect(() => {
     const fetchTerms = async () => {
       setLoadingTerms(true);
@@ -289,17 +326,9 @@ export default function RegisterForm() {
         const res = await apiCallWithTimeout(termsApi.getCurrent(), API_TIMEOUT);
         if (res.success && res.body) {
           setTermsContent(res.body);
-        } else {
-          console.error('Failed to load terms:', res.error);
-          toast.error('⚠️ Unable to load Terms and Conditions. Please try again.');
         }
       } catch (err: any) {
-        if (err.message === 'Request timeout') {
-          toast.error('⏱️ Request timed out loading Terms. Please refresh the page.');
-        } else {
-          console.error('Failed to load terms:', err);
-          toast.error('⚠️ Unable to load Terms and Conditions. Please try again.');
-        }
+        console.error('[Register] Failed to load terms:', err);
       } finally {
         setLoadingTerms(false);
       }
@@ -308,115 +337,126 @@ export default function RegisterForm() {
     fetchTerms();
   }, []);
 
-  // Payment status polling with timeout
+  // ✅ FIXED: Payment status polling with proper cleanup
   useEffect(() => {
-    if (!paymentPending?.transactionId || !polling) return;
+    if (!paymentPending?.transactionId || !polling) {
+      return;
+    }
 
-    let attempts = 0;
-    const maxAttempts = 120; // 120 attempts * 2 seconds = 240 seconds (4 minutes max)
-    const TOTAL_TIMEOUT = 240000; // 4 minutes total timeout for payment
+    console.log('[Register] Starting payment polling...', { transactionId: paymentPending.transactionId });
+
+    const maxAttempts = 120; // 120 * 2s = 240s (4 minutes)
 
     const poll = async () => {
-      attempts++;
+      pollAttemptsRef.current++;
+      const attempts = pollAttemptsRef.current;
       
-      // Check if total timeout exceeded
+      // Check total timeout
       const elapsedTime = Date.now() - (pollStartTimeRef.current || Date.now());
-      if (elapsedTime > TOTAL_TIMEOUT) {
+      if (elapsedTime > PAYMENT_TOTAL_TIMEOUT) {
+        console.log('[Register] Payment timeout reached');
         toast.error('⏱️ Payment confirmation timeout. Please contact support if payment was deducted.');
-        setPolling(false);
+        stopPolling();
         setPaymentPending(null);
         setLoading(false);
-        if (pollRef.current) window.clearInterval(pollRef.current);
+        return;
+      }
+
+      // Check max attempts
+      if (attempts >= maxAttempts) {
+        console.log('[Register] Max polling attempts reached');
+        toast.error('⏱️ Maximum attempts reached. Please check the transaction status.');
+        stopPolling();
+        setPaymentPending(null);
+        setLoading(false);
         return;
       }
 
       try {
+        console.log(`[Register] Polling attempt ${attempts}/${maxAttempts}...`);
+        
         const res = await apiCallWithTimeout(
           authApi.getRegisterStatus(paymentPending.transactionId as string),
           API_TIMEOUT
         );
         
-        if (!res.success) {
+        console.log('[Register] Poll response:', { success: res.success, status: (res as any).status });
+
+        if (res.success) {
+          const { status, token, user } = res as any;
+          
+          // ✅ FIXED: Immediately handle success
+          if (status === 'registration_completed' && token) {
+            console.log('[Register] Payment confirmed! Registration complete.');
+            handleRegistrationSuccess(token, user);
+            return; // Stop polling immediately
+          }
+
+          if (status === 'payment_failed') {
+            console.log('[Register] Payment failed');
+            toast.error('❌ Payment failed. Please try again.');
+            stopPolling();
+            setPaymentPending(null);
+            setLoading(false);
+            return;
+          }
+
+          // Still pending - continue polling
+          if (status === 'payment_pending' && attempts === 1) {
+            toast.loading('⏳ Waiting for payment confirmation...');
+          }
+        } else {
+          // Handle error responses
           const status = (res as any).status;
           
           if (status === 'payment_failed') {
+            console.log('[Register] Payment failed (from error response)');
             toast.error('❌ Payment failed. Please try again.');
-            setPolling(false);
+            stopPolling();
             setPaymentPending(null);
             setLoading(false);
-            if (pollRef.current) window.clearInterval(pollRef.current);
             return;
           }
-          
-          // Don't log warnings for expected timeout behavior during polling
-          if (!res.error?.includes('timeout') && !res.error?.includes('Timeout')) {
-            console.warn('Status check returned non-success', res);
-          }
-        } else {
-          const s = (res as any).status;
-          
-          if (s === 'payment_pending' && attempts === 1) {
-            toast.loading('⏳ Waiting for payment confirmation...');
-          }
-
-          if (s === 'registration_completed') {
-            const token = (res as any).token;
-            if (token && typeof window !== 'undefined') {
-              localStorage.setItem('auth_token', token);
-            }
-            toast.success('🎉 Registration completed! You are now signed in.');
-            setPolling(false);
-            setPaymentPending(null);
-            setLoading(false);
-            if (pollRef.current) window.clearInterval(pollRef.current);
-            setTimeout(() => router.push('/dashboard'), 1500);
-            return;
-          }
-
-          if (s === 'payment_failed') {
-            toast.error('❌ Payment failed. Please try again.');
-            setPolling(false);
-            setPaymentPending(null);
-            setLoading(false);
-            if (pollRef.current) window.clearInterval(pollRef.current);
-            return;
-          }
-        }
-
-        if (attempts >= maxAttempts) {
-          toast.error('⏱️ Maximum attempts reached. Please check the transaction status and try again.');
-          setPolling(false);
-          setPaymentPending(null);
-          setLoading(false);
-          if (pollRef.current) window.clearInterval(pollRef.current);
-          return;
         }
       } catch (err: any) {
-        // Silently handle timeout errors during polling - they're expected behavior
+        // Silently handle expected timeout errors during polling
         if (err.message !== 'Request timeout') {
-          console.error('Poll error:', err);
+          console.error('[Register] Poll error:', err);
         }
-        // Continue polling even on timeout - the total timeout will eventually stop it
       }
     };
 
+    // Start polling immediately
     poll();
-    pollRef.current = window.setInterval(poll, 2000) as unknown as number;
+    
+    // Then poll every 2 seconds
+    pollRef.current = setInterval(poll, POLL_INTERVAL);
 
+    // Cleanup
     return () => {
-      if (pollRef.current) window.clearInterval(pollRef.current);
-      pollRef.current = null;
+      if (pollRef.current) {
+        clearInterval(pollRef.current);
+        pollRef.current = null;
+      }
     };
   }, [paymentPending?.transactionId, polling, router]);
+
+  // ✅ FIXED: Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      stopPolling();
+    };
+  }, []);
 
   if (paymentPending) {
     return (
       <PaymentPendingModal
         transactionId={paymentPending.transactionId}
         onCancel={() => {
-          setPolling(false);
+          console.log('[Register] User cancelled payment');
+          stopPolling();
           setPaymentPending(null);
-          if (pollRef.current) window.clearInterval(pollRef.current);
+          setLoading(false);
           toast.info('ℹ️ Payment confirmation cancelled. You can try registering again.');
         }}
       />
