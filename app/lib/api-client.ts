@@ -16,6 +16,7 @@ import type {
   UssdLoginFormData,
   UssdLoginResponse,
 } from './schemas';
+import { parseAccount, parseAccounts } from './account-schemas';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000';
 const DEFAULT_TIMEOUT = 20000; // 20 seconds
@@ -356,12 +357,34 @@ export const adminApi = {
 };
 
 // ========================================
-// ACCOUNTS API
+// ACCOUNTS API - ✅ WITH VALIDATION
 // ========================================
 export const accountsApi = {
-  getAll: (timeout?: number) => apiCall('/api/accounts', { method: 'GET' }, timeout),
-  getById: (id: string, timeout?: number) => apiCall(`/api/accounts/${id}`, { method: 'GET' }, timeout),
-  getSummary: (id: string, timeout?: number) => apiCall(`/api/accounts/${id}/summary`, { method: 'GET' }, timeout),
+  getAll: async (timeout?: number) => {
+    const response = await apiCall('/api/accounts', { method: 'GET' }, timeout);
+    
+    // ✅ Validate and normalize account data
+    if (response.success && response.accounts) {
+      response.accounts = parseAccounts(response.accounts);
+    }
+    
+    return response;
+  },
+  
+  getById: async (id: string, timeout?: number) => {
+    const response = await apiCall(`/api/accounts/${id}`, { method: 'GET' }, timeout);
+    
+    // ✅ Validate and normalize account data
+    if (response.success && response.account) {
+      response.account = parseAccount(response.account);
+    }
+    
+    return response;
+  },
+  
+  getSummary: (id: string, timeout?: number) => 
+    apiCall(`/api/accounts/${id}/summary`, { method: 'GET' }, timeout),
+  
   create: (data: {
     userId: string;
     accountTypeId: string;
@@ -372,8 +395,18 @@ export const accountsApi = {
       method: 'POST',
       body: JSON.stringify(data),
     }, timeout),
-  getByUserId: (userId: string, timeout?: number) =>
-    apiCall(`/api/accounts/user/${userId}`, { method: 'GET' }, timeout),
+  
+  getByUserId: async (userId: string, timeout?: number) => {
+    const response = await apiCall(`/api/accounts/user/${userId}`, { method: 'GET' }, timeout);
+    
+    // ✅ Validate and normalize account data
+    if (response.success && response.accounts) {
+      response.accounts = parseAccounts(response.accounts);
+    }
+    
+    return response;
+  },
+  
   addContribution: (id: string, data: {
     employeeAmount: number;
     employerAmount: number;
@@ -383,6 +416,7 @@ export const accountsApi = {
       method: 'POST',
       body: JSON.stringify(data),
     }, timeout),
+  
   deposit: (accountNumber: string, data: {
     amount: number;
     phone: string;
@@ -392,6 +426,7 @@ export const accountsApi = {
       method: 'POST',
       body: JSON.stringify(data),
     }, timeout),
+  
   withdraw: (id: string, data: {
     amount: number;
     withdrawalType: string;
@@ -401,6 +436,7 @@ export const accountsApi = {
       method: 'POST',
       body: JSON.stringify(data),
     }, timeout),
+  
   addEarnings: (id: string, data: {
     type: 'interest' | 'investment' | 'dividend';
     amount: number;
@@ -410,6 +446,7 @@ export const accountsApi = {
       method: 'POST',
       body: JSON.stringify(data),
     }, timeout),
+  
   updateStatus: (id: string, data: {
     accountStatus: 'ACTIVE' | 'INACTIVE' | 'SUSPENDED';
   }, timeout?: number) =>
@@ -417,6 +454,7 @@ export const accountsApi = {
       method: 'PUT',
       body: JSON.stringify(data),
     }, timeout),
+  
   update: (id: string, data: {
     accountTypeId?: string;
     accountStatus?: 'ACTIVE' | 'INACTIVE' | 'SUSPENDED';
@@ -425,6 +463,7 @@ export const accountsApi = {
       method: 'PUT',
       body: JSON.stringify(data),
     }, timeout),
+  
   delete: (id: string, timeout?: number) =>
     apiCall(`/api/accounts/${id}`, { method: 'DELETE' }, timeout),
 };

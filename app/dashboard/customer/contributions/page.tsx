@@ -1,3 +1,4 @@
+///home/hp/JERE/AutoNest/app/dashboard/customer/contributions/page.tsx
 "use client";
 
 import { useEffect, useState } from "react";
@@ -95,7 +96,7 @@ function DepositModal({ isOpen, onClose, account, onSuccess }: DepositModalProps
           )}
           <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
             Current Balance: <span className="font-semibold text-indigo-600 dark:text-indigo-400">
-              KES {account.totalBalance.toLocaleString()}
+              KES {(account.totalBalance ?? 0).toLocaleString()}
             </span>
           </p>
         </div>
@@ -347,7 +348,7 @@ export default function CustomerContributionsPage() {
                           {account.accountType.name}
                           {account.accountNumber && ` (${account.accountNumber})`}
                           {' - KES '}
-                          {account.totalBalance.toLocaleString()}
+                          {(account.totalBalance ?? 0).toLocaleString()}
                         </option>
                       ))}
                     </select>
@@ -469,7 +470,7 @@ export default function CustomerContributionsPage() {
                   <TrendingUp size={20} />
                   <span className="text-sm">Current Balance</span>
                 </div>
-                <p className="text-3xl font-bold">KES {selectedAccount.totalBalance.toLocaleString()}</p>
+                <p className="text-3xl font-bold">KES {(selectedAccount.totalBalance ?? 0).toLocaleString()}</p>
               </div>
             )}
           </div>
