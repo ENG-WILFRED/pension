@@ -8,7 +8,11 @@ import { toast } from 'sonner';
 import { Loader2, Lock, Eye, EyeOff, CheckCircle2 } from 'lucide-react';
 import { ZodError } from 'zod';
 
-export default function ChangePinForm() {
+type Props = {
+  onSuccess?: () => void;
+};
+
+export default function ChangePinForm({ onSuccess }: Props) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -97,14 +101,25 @@ export default function ChangePinForm() {
         return;
       }
 
-      toast.success('✅ PIN changed successfully! Please sign in again.');
-      
-      // Clear auth data and redirect to login (security measure)
+      toast.success('✅ PIN changed successfully!');
+
+      // If an onSuccess handler is provided (e.g. modal usage), call it
+      if (onSuccess) {
+        try {
+          onSuccess();
+        } catch (err) {
+          console.warn('onSuccess handler threw', err);
+        }
+        setLoading(false);
+        return;
+      }
+
+      // Default behavior: Clear auth data and redirect to login (security measure)
       if (typeof window !== 'undefined') {
         localStorage.removeItem('auth_token');
         localStorage.removeItem('user');
       }
-      
+
       setTimeout(() => router.push('/login'), 1500);
     } catch (err) {
       toast.error('⚠️ An unexpected error occurred');

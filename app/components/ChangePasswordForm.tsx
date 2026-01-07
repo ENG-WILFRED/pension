@@ -6,7 +6,11 @@ import { authApi } from '@/app/lib/api-client';
 import { toast } from 'sonner';
 import { Lock, Eye, EyeOff, Loader2, CheckCircle } from 'lucide-react';
 
-export default function ChangePasswordForm() {
+type Props = {
+  onSuccess?: () => void;
+};
+
+export default function ChangePasswordForm({ onSuccess }: Props) {
   const [formData, setFormData] = useState({
     currentPassword: '',
     newPassword: '',
@@ -84,7 +88,16 @@ export default function ChangePasswordForm() {
           newPassword: '',
           confirmPassword: '',
         });
-        
+
+        // If parent provided onSuccess, call it to allow closing modal
+        if (onSuccess) {
+          try {
+            onSuccess();
+          } catch (err) {
+            console.warn('onSuccess handler threw', err);
+          }
+        }
+
         // Reset success message after 3 seconds
         setTimeout(() => setSuccess(false), 3000);
       } else {
