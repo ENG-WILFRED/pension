@@ -24,9 +24,9 @@ export default function CustomerInvestmentsPage() {
         
         if (response.success && response.accounts) {
           setAccounts(response.accounts);
-          
+
           const total = response.accounts.reduce((sum: number, acc: Account) => 
-            sum + acc.earningsBalance, 0
+            sum + Number(acc.earningsBalance ?? 0), 0
           );
           setTotalEarnings(total);
         }
@@ -66,7 +66,7 @@ export default function CustomerInvestmentsPage() {
           <TrendingUp size={32} />
           <h2 className="text-xl font-bold">Total Earnings</h2>
         </div>
-        <p className="text-4xl sm:text-5xl font-bold">KES {totalEarnings.toLocaleString()}</p>
+        <p className="text-4xl sm:text-5xl font-bold">KES {Number(totalEarnings ?? 0).toLocaleString()}</p>
         <p className="text-green-100 dark:text-green-200 mt-2">Investment returns, interest, and dividends</p>
       </div>
 
@@ -101,15 +101,15 @@ export default function CustomerInvestmentsPage() {
                         <span className="text-sm font-semibold text-green-600 dark:text-green-400">{earningsPercentage}% of balance</span>
                       </div>
                       <p className="text-3xl font-bold text-gray-900 dark:text-gray-100">
-                        KES {account.earningsBalance.toLocaleString()}
-                      </p>
+                              KES {Number(account.earningsBalance ?? 0).toLocaleString()}
+                            </p>
                     </div>
 
                     <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
                       <div className="flex justify-between text-sm">
                         <span className="text-gray-600 dark:text-gray-400">Account Balance:</span>
                         <span className="font-semibold text-gray-900 dark:text-gray-100">
-                          KES {account.totalBalance.toLocaleString()}
+                          KES {Number(account.totalBalance ?? 0).toLocaleString()}
                         </span>
                       </div>
                     </div>

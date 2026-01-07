@@ -35,7 +35,7 @@ export default function CustomerPensionPage() {
         
         if (response.success && response.accounts) {
           setAccounts(response.accounts);
-          const total = response.accounts.reduce((sum: number, acc: Account) => sum + acc.totalBalance, 0);
+          const total = response.accounts.reduce((sum: number, acc: Account) => sum + Number(acc.totalBalance ?? 0), 0);
           setTotalBalance(total);
           toast.success(`Loaded ${response.accounts.length} pension account(s)`);
         } else {
@@ -88,7 +88,7 @@ export default function CustomerPensionPage() {
           <Wallet size={32} />
           <h2 className="text-xl font-bold">Total Pension Balance</h2>
         </div>
-        <p className="text-4xl sm:text-5xl font-bold">KES {totalBalance.toLocaleString()}</p>
+        <p className="text-4xl sm:text-5xl font-bold">KES {Number(totalBalance ?? 0).toLocaleString()}</p>
         <p className="text-indigo-100 dark:text-indigo-200 mt-2">Across {accounts.length} account(s)</p>
       </div>
 
@@ -124,7 +124,7 @@ export default function CustomerPensionPage() {
                     <p className="text-xs font-semibold text-blue-900 dark:text-blue-300">Total Balance</p>
                   </div>
                   <p className="text-2xl font-bold text-blue-900 dark:text-blue-100">
-                    {account.totalBalance.toLocaleString()}
+                    {Number(account.totalBalance ?? 0).toLocaleString()}
                   </p>
                 </div>
 
@@ -134,7 +134,7 @@ export default function CustomerPensionPage() {
                     <p className="text-xs font-semibold text-green-900 dark:text-green-300">Employee</p>
                   </div>
                   <p className="text-2xl font-bold text-green-900 dark:text-green-100">
-                    {account.employeeBalance.toLocaleString()}
+                    {Number(account.employeeBalance ?? 0).toLocaleString()}
                   </p>
                 </div>
 
@@ -144,7 +144,7 @@ export default function CustomerPensionPage() {
                     <p className="text-xs font-semibold text-purple-900 dark:text-purple-300">Employer</p>
                   </div>
                   <p className="text-2xl font-bold text-purple-900 dark:text-purple-100">
-                    {account.employerBalance.toLocaleString()}
+                    {Number(account.employerBalance ?? 0).toLocaleString()}
                   </p>
                 </div>
 
@@ -154,7 +154,7 @@ export default function CustomerPensionPage() {
                     <p className="text-xs font-semibold text-orange-900 dark:text-orange-300">Earnings</p>
                   </div>
                   <p className="text-2xl font-bold text-orange-900 dark:text-orange-100">
-                    {account.earningsBalance.toLocaleString()}
+                    {Number(account.earningsBalance ?? 0).toLocaleString()}
                   </p>
                 </div>
               </div>

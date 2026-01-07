@@ -54,9 +54,9 @@ export default function CustomerPortfolioPage() {
     );
   }
 
-  const totalEmployee = accounts.reduce((sum, acc) => sum + acc.employeeBalance, 0);
-  const totalEmployer = accounts.reduce((sum, acc) => sum + acc.employerBalance, 0);
-  const totalEarnings = accounts.reduce((sum, acc) => sum + acc.earningsBalance, 0);
+  const totalEmployee = accounts.reduce((sum, acc) => sum + Number(acc.employeeBalance ?? 0), 0);
+  const totalEmployer = accounts.reduce((sum, acc) => sum + Number(acc.employerBalance ?? 0), 0);
+  const totalEarnings = accounts.reduce((sum, acc) => sum + Number(acc.earningsBalance ?? 0), 0);
 
   const employeePercent = totalBalance > 0 ? ((totalEmployee / totalBalance) * 100).toFixed(1) : 0;
   const employerPercent = totalBalance > 0 ? ((totalEmployer / totalBalance) * 100).toFixed(1) : 0;
@@ -76,7 +76,7 @@ export default function CustomerPortfolioPage() {
           <Wallet size={32} />
           <h2 className="text-xl font-bold">Total Portfolio Value</h2>
         </div>
-        <p className="text-4xl sm:text-5xl font-bold">KES {totalBalance.toLocaleString()}</p>
+        <p className="text-4xl sm:text-5xl font-bold">KES {Number(totalBalance ?? 0).toLocaleString()}</p>
         <p className="text-purple-100 dark:text-purple-200 mt-2">Across {accounts.length} pension account(s)</p>
       </div>
 
@@ -107,7 +107,7 @@ export default function CustomerPortfolioPage() {
                     style={{width: `${employeePercent}%`}}
                   />
                 </div>
-                <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">KES {totalEmployee.toLocaleString()}</p>
+                <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">KES {Number(totalEmployee ?? 0).toLocaleString()}</p>
               </div>
 
               {/* Employer Contributions */}
@@ -122,7 +122,7 @@ export default function CustomerPortfolioPage() {
                     style={{width: `${employerPercent}%`}}
                   />
                 </div>
-                <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">KES {totalEmployer.toLocaleString()}</p>
+                <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">KES {Number(totalEmployer ?? 0).toLocaleString()}</p>
               </div>
 
               {/* Earnings */}
@@ -137,7 +137,7 @@ export default function CustomerPortfolioPage() {
                     style={{width: `${earningsPercent}%`}}
                   />
                 </div>
-                <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">KES {totalEarnings.toLocaleString()}</p>
+                <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">KES {Number(totalEarnings ?? 0).toLocaleString()}</p>
               </div>
             </div>
           )}
@@ -190,8 +190,8 @@ export default function CustomerPortfolioPage() {
                   <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-4">{account.accountType.name}</h3>
                   
                   <div className="mb-4">
-                    <p className="text-3xl font-bold text-gray-900 dark:text-gray-100">
-                      KES {account.totalBalance.toLocaleString()}
+                      <p className="text-3xl font-bold text-gray-900 dark:text-gray-100">
+                      KES {Number(account.totalBalance ?? 0).toLocaleString()}
                     </p>
                     <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">{accountPercent}% of total portfolio</p>
                   </div>
@@ -200,19 +200,19 @@ export default function CustomerPortfolioPage() {
                     <div className="flex justify-between">
                       <span className="text-gray-600 dark:text-gray-400">Employee:</span>
                       <span className="font-semibold text-gray-900 dark:text-gray-100">
-                        {account.employeeBalance.toLocaleString()}
+                        {Number(account.employeeBalance ?? 0).toLocaleString()}
                       </span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-gray-600 dark:text-gray-400">Employer:</span>
                       <span className="font-semibold text-gray-900 dark:text-gray-100">
-                        {account.employerBalance.toLocaleString()}
+                        {Number(account.employerBalance ?? 0).toLocaleString()}
                       </span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-gray-600 dark:text-gray-400">Earnings:</span>
                       <span className="font-semibold text-green-600 dark:text-green-500">
-                        {account.earningsBalance.toLocaleString()}
+                        {Number(account.earningsBalance ?? 0).toLocaleString()}
                       </span>
                     </div>
                   </div>
