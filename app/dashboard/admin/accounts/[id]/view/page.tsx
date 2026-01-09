@@ -187,12 +187,20 @@ export default function AccountViewPage() {
                 {account.user?.firstName} {account.user?.lastName} - {account.accountType.name}
               </p>
             </div>
-            <button
-              onClick={() => router.push(`/dashboard/admin/accounts/${account.id}`)}
-              className="bg-indigo-600 text-white px-6 py-3 rounded-xl hover:bg-indigo-700 transition font-semibold shadow-lg"
-            >
-              Manage Account
-            </button>
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => router.push(`/dashboard/admin/accounts/${account.id}/bank-details`)}
+                className="bg-white border border-gray-200 text-gray-800 px-4 py-2 rounded-xl hover:bg-gray-50 transition font-semibold"
+              >
+                Bank Details
+              </button>
+              <button
+                onClick={() => router.push(`/dashboard/admin/accounts/${account.id}`)}
+                className="bg-indigo-600 text-white px-6 py-3 rounded-xl hover:bg-indigo-700 transition font-semibold shadow-lg"
+              >
+                Manage Account
+              </button>
+            </div>
           </div>
         </div>
 

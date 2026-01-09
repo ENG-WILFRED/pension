@@ -171,6 +171,18 @@ export const authApi = {
       method: 'POST',
       body: JSON.stringify(data),
     }, timeout),
+  // Request OTP to set PIN (authenticated)
+  setPin: (data: { phone?: string }, timeout?: number) =>
+    apiCall('/api/auth/set-pin', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }, timeout),
+  // Verify OTP and set PIN (authenticated)
+  verifySetPin: (data: { otp: string; pin: string }, timeout?: number) =>
+    apiCall('/api/auth/set-pin/verify', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }, timeout),
   changePassword: (data: { currentPassword: string; newPassword: string }, timeout?: number) =>
     apiCall('/api/auth/change-password', {
       method: 'POST',
@@ -384,6 +396,10 @@ export const accountsApi = {
   
   getSummary: (id: string, timeout?: number) => 
     apiCall(`/api/accounts/${id}/summary`, { method: 'GET' }, timeout),
+
+  // Get transactions for an account (full list)
+  getTransactions: (id: string, timeout?: number) =>
+    apiCall(`/api/accounts/${id}/transactions`, { method: 'GET' }, timeout),
   
   create: (data: {
     userId: string;
@@ -478,9 +494,21 @@ export const accountsApi = {
     branchCode?: string;
     branchName?: string;
   }, timeout?: number) =>
+    // Map client field names to API schema expected keys
     apiCall(`/api/accounts/${accountId}/bank-details`, {
       method: 'POST',
-      body: JSON.stringify(data),
+      body: JSON.stringify({
+        bankAccountName: data.bankName || data.accountName,
+        bankAccountNumber: data.accountNumber,
+        bankBranchName: data.branchName,
+        bankBranchCode: data.branchCode,
+        // keep backward-compat fields too
+        bankName: data.bankName,
+        accountName: data.accountName,
+        accountNumber: data.accountNumber,
+        branchCode: data.branchCode,
+        branchName: data.branchName,
+      }),
     }, timeout),
 
   updateBankDetails: (accountId: string, data: {
@@ -490,9 +518,20 @@ export const accountsApi = {
     branchCode?: string;
     branchName?: string;
   }, timeout?: number) =>
+    // Map to API expected keys while preserving compatibility
     apiCall(`/api/accounts/${accountId}/bank-details`, {
       method: 'PUT',
-      body: JSON.stringify(data),
+      body: JSON.stringify({
+        bankAccountName: data.bankName || data.accountName,
+        bankAccountNumber: data.accountNumber,
+        bankBranchName: data.branchName,
+        bankBranchCode: data.branchCode,
+        bankName: data.bankName,
+        accountName: data.accountName,
+        accountNumber: data.accountNumber,
+        branchCode: data.branchCode,
+        branchName: data.branchName,
+      }),
     }, timeout),
 
   deleteBankDetails: (accountId: string, timeout?: number) =>
@@ -550,6 +589,9 @@ export const accountTypeApi = {
 // ========================================
 export const transactionsApi = {
   getAll: (timeout?: number) => apiCall('/api/transactions', { method: 'GET' }, timeout),
+  // Get recent deposit transactions for the authenticated user
+  getRecentDeposits: (limit: number = 10, timeout?: number) =>
+    apiCall(`/api/transactions/user/recent-deposits?limit=${limit}`, { method: 'GET' }, timeout),
 };
 
 // ========================================
