@@ -71,86 +71,140 @@ export default function LoginForm() {
   };
 
   return (
-    <div className="min-h-screen w-full bg-white flex flex-col lg:flex-row">
+    <div className="min-h-screen w-full bg-[#0a0e1a] flex flex-col lg:flex-row">
       {/* Branding Panel - Desktop only */}
-      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-indigo-600 via-blue-600 to-cyan-500 items-center justify-center p-12 min-h-screen relative overflow-hidden">
-        {/* Decorative elements */}
-        <div className="absolute top-0 right-0 w-96 h-96 bg-blue-400 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse"></div>
-        <div className="absolute bottom-0 left-0 w-96 h-96 bg-indigo-400 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse" style={{ animationDelay: '2s' }}></div>
+      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-[#0f1624] via-[#1a2332] to-[#0a0e1a] items-center justify-center p-16 min-h-screen relative overflow-hidden">
+        {/* Decorative elements - static */}
+        <div className="absolute top-0 right-0 w-96 h-96 bg-orange-600/10 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-0 left-0 w-96 h-96 bg-orange-500/5 rounded-full blur-3xl"></div>
         
-        <div className="relative z-10 text-center max-w-md">
+        {/* Geometric decorative elements */}
+        <div className="absolute top-20 right-20 w-72 h-72 border border-orange-500/10 rounded-full"></div>
+        <div className="absolute bottom-32 left-16 w-96 h-96 border border-orange-500/5 rounded-full"></div>
+        <div className="absolute top-1/2 right-1/3 w-2 h-2 bg-orange-400/40 rounded-full"></div>
+        <div className="absolute top-1/3 right-1/4 w-1 h-1 bg-orange-300/30 rounded-full"></div>
+        <div className="absolute bottom-1/4 left-1/3 w-1.5 h-1.5 bg-orange-400/35 rounded-full"></div>
+        
+        <div className="relative z-10 max-w-lg">
           {/* Logo */}
-          <div className="mb-12 flex justify-center">
-            <div className="relative">
+          <div className="mb-16">
+            <div className="relative inline-block">
+              <div className="absolute inset-0 bg-gradient-to-br from-orange-500/20 to-transparent rounded-3xl blur-2xl"></div>
               <img
                 src="/pensions.jpeg"
                 alt="AutoNest Pension logo"
-                className="w-28 h-28 object-cover rounded-2xl shadow-xl border-2 border-white/20"
+                className="relative w-32 h-32 object-cover rounded-2xl shadow-2xl border-2 border-orange-500/20"
               />
-              <div className="absolute -bottom-2 -right-2 w-10 h-10 bg-gradient-to-r from-green-400 to-emerald-500 rounded-full flex items-center justify-center text-white text-lg">
+              <div className="absolute -bottom-3 -right-3 w-12 h-12 bg-gradient-to-r from-orange-500 to-orange-600 rounded-xl flex items-center justify-center text-white text-xl font-bold shadow-lg">
                 ✓
               </div>
             </div>
           </div>
 
           {/* Heading */}
-          <h1 className="text-5xl font-black text-white mb-4 leading-tight">Welcome Back</h1>
+          <h1 className="text-6xl font-black text-white mb-6 leading-tight tracking-tight">
+            Welcome Back
+          </h1>
           
           {/* Subheading */}
-          <p className="text-xl text-blue-100 mb-8 font-medium">Access your AutoNest Pension account</p>
+          <p className="text-xl text-gray-300 mb-12 font-medium leading-relaxed">
+            Secure access to your AutoNest Pension account and retirement planning tools
+          </p>
+
+          {/* Divider */}
+          <div className="w-20 h-1 bg-gradient-to-r from-orange-500 to-transparent mb-12 rounded-full"></div>
 
           {/* Features List */}
-          <div className="space-y-4 text-left mt-12 pt-8 border-t border-white/20">
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center">
-                <span className="text-white text-lg">🔒</span>
+          <div className="space-y-5">
+            <div className="flex items-start gap-4 group">
+              <div className="w-12 h-12 rounded-xl bg-orange-500/10 backdrop-blur-sm border border-orange-500/20 flex items-center justify-center flex-shrink-0 group-hover:bg-orange-500/15 transition-all duration-300">
+                <svg className="w-6 h-6 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                </svg>
               </div>
-              <span className="text-white text-sm font-medium">Two-factor authentication</span>
+              <div>
+                <h3 className="text-white font-semibold mb-1">Two-factor authentication</h3>
+                <p className="text-gray-400 text-sm leading-relaxed">Enhanced security with OTP verification</p>
+              </div>
             </div>
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center">
-                <span className="text-white text-lg">📊</span>
+            
+            <div className="flex items-start gap-4 group">
+              <div className="w-12 h-12 rounded-xl bg-orange-500/10 backdrop-blur-sm border border-orange-500/20 flex items-center justify-center flex-shrink-0 group-hover:bg-orange-500/15 transition-all duration-300">
+                <svg className="w-6 h-6 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                </svg>
               </div>
-              <span className="text-white text-sm font-medium">Real-time pension tracking</span>
+              <div>
+                <h3 className="text-white font-semibold mb-1">Real-time pension tracking</h3>
+                <p className="text-gray-400 text-sm leading-relaxed">Monitor your retirement savings growth</p>
+              </div>
             </div>
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center">
-                <span className="text-white text-lg">🎯</span>
+            
+            <div className="flex items-start gap-4 group">
+              <div className="w-12 h-12 rounded-xl bg-orange-500/10 backdrop-blur-sm border border-orange-500/20 flex items-center justify-center flex-shrink-0 group-hover:bg-orange-500/15 transition-all duration-300">
+                <svg className="w-6 h-6 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                </svg>
               </div>
-              <span className="text-white text-sm font-medium">Retirement goal planning</span>
+              <div>
+                <h3 className="text-white font-semibold mb-1">Retirement goal planning</h3>
+                <p className="text-gray-400 text-sm leading-relaxed">Personalized strategies for your future</p>
+              </div>
             </div>
           </div>
 
           {/* Footer text */}
-          <p className="text-white/60 text-xs mt-12 pt-8 border-t border-white/10">
-            Your financial future starts here with AutoNest Pension
-          </p>
+          <div className="mt-16 pt-8 border-t border-white/10">
+            <p className="text-gray-400 text-sm font-light">
+              Your financial future starts here with AutoNest Pension
+            </p>
+          </div>
         </div>
       </div>
 
       {/* Form Panel */}
-      <div className="w-full lg:w-1/2 min-h-screen overflow-y-auto flex flex-col justify-center bg-white">
-        <div className="lg:hidden flex items-center justify-between gap-4 p-6 border-b bg-white sticky top-0 z-10">
-          <div className="flex items-center gap-2">
-            <img src="/pensions.jpeg" alt="AutoNest Pension" className="w-8 h-8 rounded-md object-cover shadow-sm" />
-            <div className="text-lg font-semibold text-gray-900">AutoNest Pension</div>
+      <div className="w-full lg:w-1/2 min-h-screen overflow-y-auto flex flex-col justify-center bg-[#0f1624] relative">
+        {/* Subtle background pattern */}
+        <div className="absolute inset-0 opacity-[0.02]" style={{
+          backgroundImage: `radial-gradient(circle at 2px 2px, #ff6b35 1px, transparent 0)`,
+          backgroundSize: '40px 40px'
+        }}></div>
+        
+        {/* Mobile header */}
+        <div className="lg:hidden flex items-center justify-between gap-4 p-6 border-b border-gray-800 bg-[#0f1624]/90 backdrop-blur-sm sticky top-0 z-10">
+          <div className="flex items-center gap-3">
+            <img src="/pensions.jpeg" alt="AutoNest Pension" className="w-9 h-9 rounded-lg object-cover shadow-sm border border-orange-500/20" />
+            <div className="text-lg font-bold text-white">AutoNest Pension</div>
           </div>
-          <Link href="/register" className="text-sm bg-gradient-to-r from-indigo-50 to-blue-50 border border-indigo-200 px-4 py-2 rounded-lg text-indigo-600 font-semibold transition hover:bg-indigo-50">Create account</Link>
+          <Link 
+            href="/register" 
+            className="text-sm bg-gradient-to-r from-orange-600 to-orange-500 px-5 py-2.5 rounded-lg text-white font-semibold transition-all hover:from-orange-700 hover:to-orange-600 shadow-sm hover:shadow-md"
+          >
+            Create account
+          </Link>
         </div>
 
-        <div className="p-4 sm:p-6 lg:p-8 max-w-md mx-auto w-full">
-          <div className="mb-8">
-            <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-2">Welcome Back</h2>
-            <p className="text-gray-600">Sign in to your AutoNest Pension account</p>
+        <div className="p-6 sm:p-8 lg:p-16 max-w-md mx-auto w-full relative z-10">
+          {/* Header */}
+          <div className="mb-12">
+            <div className="inline-block px-4 py-1.5 rounded-full bg-orange-500/10 text-orange-400 text-xs font-semibold mb-6 tracking-wide uppercase border border-orange-500/20">
+              Secure Login
+            </div>
+            <h2 className="text-4xl lg:text-5xl font-black text-white mb-3 leading-tight tracking-tight">
+              Welcome Back
+            </h2>
+            <p className="text-gray-400 text-base leading-relaxed">
+              Sign in to your AutoNest Pension account
+            </p>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-6">
             <div>
-              <label htmlFor="identifier" className="block text-sm font-semibold text-gray-700 mb-2">
+              <label htmlFor="identifier" className="block text-sm font-bold text-gray-300 mb-3 tracking-wide">
                 Email, Username, or Phone
               </label>
-              <div className="relative">
-                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+              <div className="relative group">
+                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500 group-focus-within:text-orange-400 transition-colors" />
                 <input
                   id="identifier"
                   name="identifier"
@@ -158,7 +212,7 @@ export default function LoginForm() {
                   value={formData.identifier}
                   onChange={handleChange}
                   required
-                  className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-gray-900 placeholder-gray-500 transition"
+                  className="w-full pl-12 pr-4 py-4 border-2 border-gray-700 bg-[#1a2332] rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-white placeholder-gray-500 transition-all hover:border-gray-600"
                   placeholder="you@example.com"
                   disabled={loading}
                 />
@@ -166,11 +220,11 @@ export default function LoginForm() {
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-semibold text-gray-700 mb-2">
+              <label htmlFor="password" className="block text-sm font-bold text-gray-300 mb-3 tracking-wide">
                 Password
               </label>
-              <div className="relative">
-                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+              <div className="relative group">
+                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500 group-focus-within:text-orange-400 transition-colors" />
                 <input
                   id="password"
                   name="password"
@@ -178,12 +232,12 @@ export default function LoginForm() {
                   value={formData.password}
                   onChange={handleChange}
                   required
-                  className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-gray-900 placeholder-gray-500 transition"
-                  placeholder="••••••••"
+                  className="w-full pl-12 pr-4 py-4 border-2 border-gray-700 bg-[#1a2332] rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-white placeholder-gray-500 transition-all hover:border-gray-600"
+                  placeholder="Enter your password"
                   disabled={loading}
                 />
               </div>
-              <p className="text-xs text-gray-500 mt-2">
+              <p className="text-xs text-gray-500 mt-3 leading-relaxed">
                 Use your temporary password from registration or your permanent password
               </p>
             </div>
@@ -191,31 +245,35 @@ export default function LoginForm() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-gradient-to-r from-indigo-600 to-blue-600 text-white py-3 px-4 rounded-xl hover:from-indigo-700 hover:to-blue-700 disabled:from-gray-400 disabled:to-gray-400 disabled:cursor-not-allowed transition font-semibold text-base flex items-center justify-center gap-2 mt-8 shadow-lg hover:shadow-xl"
+              className="w-full bg-gradient-to-r from-orange-600 to-orange-500 text-white py-4 px-6 rounded-xl hover:from-orange-700 hover:to-orange-600 disabled:from-gray-600 disabled:to-gray-700 disabled:cursor-not-allowed transition-all font-bold text-base flex items-center justify-center gap-3 mt-8 shadow-lg hover:shadow-xl hover:shadow-orange-500/20 hover:-translate-y-0.5 active:translate-y-0 group"
             >
               {loading ? (
                 <>
                   <Loader2 className="w-5 h-5 animate-spin" />
-                  Signing In...
+                  <span>Signing In...</span>
                 </>
               ) : (
                 <>
-                  <span>Sign In</span>
-                  <span className="text-lg">→</span>
+                  <span>Sign In to Dashboard</span>
+                  <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                  </svg>
                 </>
               )}
             </button>
           </form>
 
-          <div className="mt-8 pt-8 border-t border-gray-200">
-            <p className="text-gray-600 text-center mb-4">
+          {/* Footer */}
+          <div className="mt-12 pt-8 border-t border-gray-800">
+            <p className="text-gray-400 text-center mb-5 text-base">
               New to AutoNest Pension?{' '}
-              <Link href="/register" className="text-indigo-600 hover:text-indigo-700 font-bold">
+              <Link href="/register" className="text-orange-400 hover:text-orange-300 font-bold underline decoration-2 underline-offset-4 decoration-orange-500/30 hover:decoration-orange-400/50 transition-colors">
                 Create an account
               </Link>
             </p>
-            <p className="text-gray-500 text-xs text-center">
-              Don't have your password? Contact support
+            <p className="text-gray-500 text-xs text-center leading-relaxed">
+              Don't have your password?{' '}
+              <span className="text-gray-400 font-semibold">Contact support</span>
             </p>
           </div>
         </div>
