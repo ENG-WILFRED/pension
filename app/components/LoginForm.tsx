@@ -5,48 +5,36 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { authApi } from '@/app/lib/api-client';
 import { toast } from 'sonner';
-import { Loader2, Mail, Lock } from 'lucide-react';
+import { Loader2, Mail } from 'lucide-react';
 
 export default function LoginForm() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
-  const [formData, setFormData] = useState({
-    identifier: '',
-    password: '',
-  });
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
-  };
+  const [identifier, setIdentifier] = useState('');
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     
-    if (!formData.identifier || !formData.password) {
-      toast.error('Please enter your email/username and password');
+    if (!identifier) {
+      toast.error('Please enter your email or phone number');
       return;
     }
 
     setLoading(true);
 
     try {
-      // Step 1: Verify password
+      // Step 1: Initiate login (sends OTP)
       const result = await authApi.login({
-        identifier: formData.identifier,
-        password: formData.password,
+        identifier,
       });
 
       if (!result.success) {
-        const errorMsg = result.error || 'Invalid credentials';
+        const errorMsg = result.error || 'Failed to initiate login';
         
-        // Check for specific error codes
         if (result.error?.includes('locked') || result.error?.includes('too many')) {
           toast.error('🔒 Account locked due to too many failed login attempts. Please try again later.');
-        } else if (result.error?.includes('Invalid')) {
-          toast.error('❌ Invalid email, username, or password');
+        } else if (result.error?.includes('not found') || result.error?.includes('Invalid')) {
+          toast.error('❌ User not found');
         } else {
           toast.error(errorMsg);
         }
@@ -55,14 +43,14 @@ export default function LoginForm() {
       }
 
       // Success: OTP has been sent
-      toast.success('📧 OTP sent to your email! Check your inbox.');
+      toast.success('📧 OTP sent! Check your email or SMS.');
       
       // Store identifier for OTP page and redirect
       if (typeof window !== 'undefined') {
-        localStorage.setItem('auth_identifier', formData.identifier);
+        localStorage.setItem('auth_identifier', identifier);
       }
 
-      router.push(`/verify-otp?identifier=${encodeURIComponent(formData.identifier)}`);
+      router.push(`/verify-otp?identifier=${encodeURIComponent(identifier)}`);
     } catch (err) {
       toast.error('⚠️ An unexpected error occurred. Please try again.');
       console.error(err);
@@ -207,39 +195,15 @@ export default function LoginForm() {
                 <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500 group-focus-within:text-orange-400 transition-colors" />
                 <input
                   id="identifier"
-                  name="identifier"
                   type="text"
-                  value={formData.identifier}
-                  onChange={handleChange}
+                  placeholder="you@example.com or +254712345678"
+                  value={identifier}
+                  onChange={(e) => setIdentifier(e.target.value)}
                   required
-                  className="w-full pl-12 pr-4 py-4 border-2 border-gray-700 bg-[#1a2332] rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-white placeholder-gray-500 transition-all hover:border-gray-600"
-                  placeholder="you@example.com"
                   disabled={loading}
+                  className="w-full pl-12 pr-5 py-4 rounded-xl bg-[#1a2332] border border-gray-700 text-white placeholder-gray-500 transition-all duration-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-500/30 focus:outline-none hover:border-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
                 />
               </div>
-            </div>
-
-            <div>
-              <label htmlFor="password" className="block text-sm font-bold text-gray-300 mb-3 tracking-wide">
-                Password
-              </label>
-              <div className="relative group">
-                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500 group-focus-within:text-orange-400 transition-colors" />
-                <input
-                  id="password"
-                  name="password"
-                  type="password"
-                  value={formData.password}
-                  onChange={handleChange}
-                  required
-                  className="w-full pl-12 pr-4 py-4 border-2 border-gray-700 bg-[#1a2332] rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-white placeholder-gray-500 transition-all hover:border-gray-600"
-                  placeholder="Enter your password"
-                  disabled={loading}
-                />
-              </div>
-              <p className="text-xs text-gray-500 mt-3 leading-relaxed">
-                Use your temporary password from registration or your permanent password
-              </p>
             </div>
 
             <button
@@ -250,11 +214,11 @@ export default function LoginForm() {
               {loading ? (
                 <>
                   <Loader2 className="w-5 h-5 animate-spin" />
-                  <span>Signing In...</span>
+                  <span>Sending OTP...</span>
                 </>
               ) : (
                 <>
-                  <span>Sign In to Dashboard</span>
+                  <span>Continue</span>
                   <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
                   </svg>
@@ -263,17 +227,12 @@ export default function LoginForm() {
             </button>
           </form>
 
-          {/* Footer */}
           <div className="mt-12 pt-8 border-t border-gray-800">
             <p className="text-gray-400 text-center mb-5 text-base">
               New to AutoNest Pension?{' '}
               <Link href="/register" className="text-orange-400 hover:text-orange-300 font-bold underline decoration-2 underline-offset-4 decoration-orange-500/30 hover:decoration-orange-400/50 transition-colors">
                 Create an account
               </Link>
-            </p>
-            <p className="text-gray-500 text-xs text-center leading-relaxed">
-              Don't have your password?{' '}
-              <span className="text-gray-400 font-semibold">Contact support</span>
             </p>
           </div>
         </div>

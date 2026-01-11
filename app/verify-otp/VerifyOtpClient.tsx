@@ -72,7 +72,6 @@ export default function VerifyOtpClient() {
       const res = await authApi.loginOtp({
         identifier: id,
         otp: otpValue,
-        newPassword: newPassword || undefined,
       });
 
       if (!res.success) {

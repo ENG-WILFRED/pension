@@ -130,12 +130,14 @@ export const authApi = {
     apiCall<RegistrationStatusResponse>(`/api/auth/register/status/${transactionId}`, {
       method: 'GET',
     }, timeout),
-  login: (data: { identifier: string; password: string }, timeout?: number) =>
+  // Initiate login and generate OTP
+  login: (data: { identifier: string }, timeout?: number) =>
     apiCall<LoginResponse>('/api/auth/login', {
       method: 'POST',
       body: JSON.stringify(data),
     }, timeout),
-  loginOtp: (data: { identifier: string; otp: string; newPassword?: string }, timeout?: number) =>
+  // Verify OTP and obtain login token
+  loginOtp: (data: { identifier: string; otp: string }, timeout?: number) =>
     apiCall<OtpVerificationResponse>('/api/auth/login/otp', {
       method: 'POST',
       body: JSON.stringify(data),
@@ -146,11 +148,7 @@ export const authApi = {
       body: JSON.stringify(data),
     }, timeout),
   verify: (timeout?: number) => apiCall('/api/auth/verify', { method: 'GET' }, timeout),
-  sendOtp: (data: { identifier: string }, timeout?: number) =>
-    apiCall('/api/auth/send-otp', {
-      method: 'POST',
-      body: JSON.stringify(data),
-    }, timeout),
+  // Resend OTP to user
   resendOtp: (data: { identifier: string }, timeout?: number) =>
     apiCall('/api/auth/resend-otp', {
       method: 'POST',
@@ -580,8 +578,6 @@ export const accountTypeApi = {
     }, timeout),
   delete: (id: string, timeout?: number) =>
     apiCall(`/api/account-types/${id}`, { method: 'DELETE' }, timeout),
-  getAccounts: (id: string, timeout?: number) =>
-    apiCall(`/api/account-types/${id}/accounts`, { method: 'GET' }, timeout),
 };
 
 // ========================================

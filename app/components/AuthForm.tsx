@@ -18,7 +18,6 @@ export default function AuthForm({ isLogin = false }: AuthFormProps) {
   const [formData, setFormData] = useState({
     // Login fields
     email: '',
-    password: '',
     
     // Registration fields
     phone: '',
@@ -46,13 +45,13 @@ export default function AuthForm({ isLogin = false }: AuthFormProps) {
 
     try {
       if (isLogin) {
+        // Step 1: Initiate login (send OTP)
         const result = await authApi.login({
           identifier: formData.email,
-          password: formData.password,
         });
 
         if (!result.success) {
-          toast.error(result.error || 'Invalid credentials');
+          toast.error(result.error || 'Login initiation failed');
           setLoading(false);
           return;
         }
@@ -253,28 +252,11 @@ export default function AuthForm({ isLogin = false }: AuthFormProps) {
                 onChange={handleChange}
                 required
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
-                placeholder={isLogin ? 'your@email.com or username' : 'your@email.com'}
+                placeholder={isLogin ? 'your@email.com or +254712345678' : 'your@email.com'}
               />
             </div>
 
-            {isLogin ? (
-              /* Login Fields */
-              <div>
-                <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
-                  Password
-                </label>
-                <input
-                  id="password"
-                  name="password"
-                  type="password"
-                  value={formData.password}
-                  onChange={handleChange}
-                  required
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
-                  placeholder="••••••••"
-                />
-              </div>
-            ) : (
+            {!isLogin && (
               /* Registration Fields */
               <>
                 {/* Personal Information */}
