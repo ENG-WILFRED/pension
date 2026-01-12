@@ -29,7 +29,8 @@ export default function Dashboard() {
         if (!token) {
           console.log('[Dashboard] No token found, redirecting to login');
           if (mounted) {
-            toast.error('Please login to continue');
+            // Don't show toast when redirecting to login - it interferes with the redirect
+            setChecking(false);
             router.replace('/login');
           }
           return;
@@ -42,8 +43,8 @@ export default function Dashboard() {
         if (!userStr) {
           console.log('[Dashboard] No user data, redirecting to login');
           if (mounted) {
-            toast.error('Session expired. Please login again.');
             localStorage.clear(); // Clear everything
+            setChecking(false);
             router.replace('/login');
           }
           return;
@@ -73,6 +74,7 @@ export default function Dashboard() {
             router.replace('/dashboard/customer');
           } else {
             console.error('[Dashboard] Unknown role:', user.role);
+            setChecking(false);
             toast.error('Invalid user role');
             router.replace('/login');
           }
@@ -82,7 +84,6 @@ export default function Dashboard() {
         if (mounted) {
           const errorMessage = err instanceof Error ? err.message : 'Unknown error';
           setError(errorMessage);
-          toast.error('Session error. Please login again.');
           
           // Clear storage and redirect after a delay
           setTimeout(() => {
@@ -92,10 +93,10 @@ export default function Dashboard() {
         }
       } finally {
         if (mounted) {
-          // Set a maximum timeout
+          // Set a maximum timeout to prevent infinite loading
           setTimeout(() => {
             setChecking(false);
-          }, 500);
+          }, 5000);
         }
       }
     };
