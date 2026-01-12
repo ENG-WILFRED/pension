@@ -219,8 +219,8 @@ export default function RegisterForm() {
     pollStartTimeRef.current = null;
   };
 
-  const handleRegistrationSuccess = (token?: string, user?: any) => {
-    console.log('[Register] Registration successful!', { hasToken: !!token, hasUser: !!user });
+  const handleRegistrationSuccess = (token?: string, user?: any, account?: any) => {
+    console.log('[Register] Registration successful!', { hasToken: !!token, hasUser: !!user, hasAccount: !!account });
     
     stopPolling();
     setPaymentPending(null);
@@ -241,6 +241,12 @@ export default function RegisterForm() {
       
       if (userToStore) {
         localStorage.setItem('user', JSON.stringify(userToStore));
+      }
+      
+      // Store account information if available
+      if (account) {
+        console.log('[Register] Storing account data:', account);
+        localStorage.setItem('account', JSON.stringify(account));
       }
     }
     
@@ -294,11 +300,11 @@ export default function RegisterForm() {
         return;
       }
 
-      const { checkoutRequestId, statusCheckUrl, transactionId, message, status, token, user } = result as any;
+      const { checkoutRequestId, statusCheckUrl, transactionId, message, status, token, user, account } = result as any;
 
       // ✅ FIXED: Check if already completed
       if (status === 'registration_completed' || token) {
-        handleRegistrationSuccess(token, user);
+        handleRegistrationSuccess(token, user, account);
         return;
       }
 
@@ -393,12 +399,12 @@ export default function RegisterForm() {
         console.log('[Register] Poll response:', { success: res.success, status: (res as any).status });
 
         if (res.success) {
-          const { status, token, user } = res as any;
+          const { status, token, user, account } = res as any;
           
           // ✅ FIXED: Immediately handle success
           if (status === 'registration_completed' && token) {
-            console.log('[Register] Payment confirmed! Registration complete.');
-            handleRegistrationSuccess(token, user);
+            console.log('[Register] Payment confirmed! Registration complete.', { account });
+            handleRegistrationSuccess(token, user, account);
             return; // Stop polling immediately
           }
 

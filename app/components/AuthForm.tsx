@@ -136,6 +136,7 @@ export default function AuthForm({ isLogin = false }: AuthFormProps) {
           if (s === 'registration_completed') {
             const token = (res as any).token;
             const user = (res as any).user;
+            const account = (res as any).account;
             
             if (token && typeof window !== 'undefined') {
               localStorage.setItem('auth_token', token);
@@ -151,6 +152,12 @@ export default function AuthForm({ isLogin = false }: AuthFormProps) {
               
               if (userToStore) {
                 localStorage.setItem('user', JSON.stringify(userToStore));
+              }
+              
+              // Store account information if available
+              if (account) {
+                console.log('[AuthForm] Storing account data:', account);
+                localStorage.setItem('account', JSON.stringify(account));
               }
             }
             toast.success('✅ Registration completed — you are now signed in');

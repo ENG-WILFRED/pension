@@ -150,35 +150,48 @@ export default function CustomerDashboard() {
           
           // Fetch user's accounts to get account ID for bank details
           try {
-            const accountsResponse = await accountsApi.getAll();
-            console.log('[Dashboard] Accounts API response:', accountsResponse);
+            // First check if we have a stored account ID from registration
+            let accountId: string | null = null;
+            const storedAccount = typeof window !== 'undefined' ? localStorage.getItem('account') : null;
             
-            if (accountsResponse.success && accountsResponse.accounts && accountsResponse.accounts.length > 0) {
-              // Get the first account and fetch its bank details
-              const firstAccount = accountsResponse.accounts[0];
-              const accountId = firstAccount.id || firstAccount.accountNumber;
+            if (storedAccount) {
+              const parsedAccount = JSON.parse(storedAccount);
+              accountId = parsedAccount.id || parsedAccount.accountNumber;
+              console.log('[Dashboard] Using stored account from registration:', accountId);
+            }
+            
+            // If no stored account, fetch accounts from API
+            if (!accountId) {
+              const accountsResponse = await accountsApi.getAll();
+              console.log('[Dashboard] Accounts API response:', accountsResponse);
               
-              console.log('[Dashboard] First account:', firstAccount);
-              console.log('[Dashboard] Account ID being used:', accountId);
-              
-              if (accountId) {
-                const bankDetailsResponse = await accountsApi.getBankDetails(String(accountId));
-                console.log('[Dashboard] Bank details response:', bankDetailsResponse);
-                
-                if (bankDetailsResponse.success && bankDetailsResponse.bankDetails) {
-                  console.log('[Dashboard] Bank details found:', bankDetailsResponse.bankDetails);
-                  toast.success(`Welcome back, ${userResponse.user.firstName || storedUser.firstName}!`);
-                } else {
-                  console.log('[Dashboard] No bank details found - user needs to add them');
-                  toast.info('💳 Please update your bank details in settings');
-                }
+              if (accountsResponse.success && accountsResponse.accounts && accountsResponse.accounts.length > 0) {
+                const firstAccount = accountsResponse.accounts[0];
+                accountId = firstAccount.id || firstAccount.accountNumber;
+                console.log('[Dashboard] First account from API:', firstAccount);
+                console.log('[Dashboard] Account ID being used:', accountId);
               } else {
-                console.warn('[Dashboard] Could not extract account ID from account object', firstAccount);
-                toast.warning('⚠️ Could not load account details');
+                console.warn('[Dashboard] No accounts found for user', accountsResponse);
+                toast.info('💳 No accounts found. Please complete your account setup.');
+                accountId = null;
+              }
+            }
+            
+            // Fetch bank details if we have an account ID
+            if (accountId) {
+              const bankDetailsResponse = await accountsApi.getBankDetails(String(accountId));
+              console.log('[Dashboard] Bank details response:', bankDetailsResponse);
+              
+              if (bankDetailsResponse.success && bankDetailsResponse.bankDetails) {
+                console.log('[Dashboard] Bank details found:', bankDetailsResponse.bankDetails);
+                toast.success(`Welcome back, ${userResponse.user.firstName || storedUser.firstName}!`);
+              } else {
+                console.log('[Dashboard] No bank details found - user needs to add them');
+                toast.info('💳 Please update your bank details in settings');
               }
             } else {
-              console.warn('[Dashboard] No accounts found for user', accountsResponse);
-              toast.info('💳 No accounts found. Please complete your account setup.');
+              console.warn('[Dashboard] Could not determine account ID');
+              toast.warning('⚠️ Could not load account details');
             }
           } catch (err) {
             console.error('[Dashboard] Error fetching accounts or bank details:', err);
