@@ -50,17 +50,17 @@ export default function AdminSettings() {
       firstName={user?.firstName ?? 'Admin'} 
       lastName={user?.lastName ?? ''}
     >
-      <div className="px-4 sm:px-6 lg:px-8 py-8">
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950 px-4 sm:px-6 lg:px-8 py-8">
         <div className="max-w-4xl mx-auto">
           {/* Header */}
           <div className="mb-8">
             <div className="flex items-center gap-3 mb-2">
-              <div className="w-12 h-12 bg-gradient-to-r from-red-600 to-orange-600 rounded-xl flex items-center justify-center">
+              <div className="w-12 h-12 bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-500 dark:to-purple-500 rounded-xl flex items-center justify-center">
                 <Shield className="w-6 h-6 text-white" />
               </div>
               <div>
-                <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Admin Settings</h1>
-                <p className="text-sm text-gray-600">System configuration and security settings</p>
+                <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white">Admin Settings</h1>
+                <p className="text-sm text-gray-600 dark:text-gray-400">System configuration and security settings</p>
               </div>
             </div>
           </div>

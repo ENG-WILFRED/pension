@@ -145,7 +145,7 @@ export default function AdminAccountsPage() {
 
   if (loading) {
     return (
-      <div className="px-4 sm:px-6 lg:px-8 py-8">
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950 px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex items-center justify-center py-20">
           <div className="h-12 w-12 border-4 border-red-600 dark:border-red-400 border-t-transparent rounded-full animate-spin"></div>
           <p className="ml-4 text-gray-600 dark:text-gray-400 font-medium transition-colors duration-300">Loading accounts...</p>
@@ -155,11 +155,11 @@ export default function AdminAccountsPage() {
   }
 
   return (
-    <div className="px-4 sm:px-6 lg:px-8 py-8">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950 px-4 sm:px-6 lg:px-8 py-8">
       {/* Header */}
       <div className="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white transition-colors duration-300">Manage Pension Accounts</h1>
+          <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white transition-colors duration-300">Manage Pension Accounts</h1>
           <p className="text-gray-600 dark:text-gray-300 mt-2 transition-colors duration-300">View and manage all user pension accounts</p>
         </div>
         <div className="flex gap-3">

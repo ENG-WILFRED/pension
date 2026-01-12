@@ -112,7 +112,7 @@ export default function CustomersPage() {
 
   if (loading) {
     return (
-      <div className="px-4 sm:px-6 lg:px-8 py-8">
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950 px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex items-center justify-center py-20">
           <Loader2 className="w-12 h-12 animate-spin text-indigo-600" />
           <p className="ml-4 text-gray-600 font-medium">Loading customers...</p>
@@ -122,12 +122,12 @@ export default function CustomersPage() {
   }
 
   return (
-    <div className="px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950 px-4 sm:px-6 lg:px-8 py-8 space-y-6">
       {/* Header */}
       <div className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-2xl shadow-lg p-6 sm:p-8">
         <div className="flex items-center justify-between flex-wrap gap-4">
           <div>
-            <h1 className="text-2xl sm:text-3xl font-bold flex items-center gap-3">
+            <h1 className="text-3xl sm:text-4xl font-bold flex items-center gap-3">
               <Users size={32} />
               Customer Management
             </h1>

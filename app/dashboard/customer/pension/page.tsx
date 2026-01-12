@@ -65,20 +65,20 @@ export default function CustomerPensionPage() {
 
   if (loading) {
     return (
-      <div className="px-4 sm:px-6 lg:px-8 py-8">
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950 px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex items-center justify-center py-20">
           <div className="h-12 w-12 border-4 border-indigo-600 dark:border-indigo-400 border-t-transparent rounded-full animate-spin"></div>
-          <p className="ml-4 text-gray-600 dark:text-gray-400 font-medium">Loading pension accounts...</p>
+          <p className="ml-4 text-gray-600 dark:text-gray-400 font-medium">Loading pension plans...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="px-4 sm:px-6 lg:px-8 py-8">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950 px-4 sm:px-6 lg:px-8 py-8">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100">My Pension Accounts</h1>
+        <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white">Pension Plans</h1>
         <p className="text-gray-600 dark:text-gray-400 mt-2">View and manage your pension accounts</p>
       </div>
 

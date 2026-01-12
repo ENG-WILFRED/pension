@@ -359,7 +359,7 @@ export default function CustomerDashboard() {
 
   return (
     <>
-    <div className="px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950 px-4 sm:px-6 lg:px-8 py-8 space-y-8">
       <UserProfile user={user} onOpenSettings={handleOpenSettings} />
       
       <BalanceCards 
