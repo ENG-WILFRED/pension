@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
+import ChangePinForm from '@/app/components/ChangePinForm';
 import ChangePasswordForm from '@/app/components/ChangePasswordForm';
 import { Settings, Bell, User, Save, Key, Lock } from 'lucide-react';
 import { toast } from 'sonner';
@@ -15,6 +16,7 @@ export default function CustomerSettings() {
   });
   const [saving, setSaving] = useState(false);
   const [showPasswordModal, setShowPasswordModal] = useState(false);
+  const [showPinModal, setShowPinModal] = useState(false);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -146,6 +148,29 @@ export default function CustomerSettings() {
               </div>
             </div>
 
+            {/* Change PIN */}
+            <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl border border-gray-200 dark:border-gray-700 rounded-2xl shadow-lg p-6 sm:p-8 transition-colors duration-300">
+              <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2 flex items-center gap-2">
+                <Lock size={24} />
+                Change PIN
+              </h2>
+              <div className="space-y-3">
+                <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">Update your 4-digit security PIN</p>
+                <button
+                  onClick={() => setShowPinModal(true)}
+                  className="px-4 py-2 bg-indigo-600 text-white rounded-md font-medium hover:bg-indigo-700"
+                >
+                  Change PIN
+                </button>
+              </div>
+            </div>
+
+            <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-xl p-4 transition-colors duration-300">
+              <p className="text-sm text-blue-900 dark:text-blue-300">
+                <strong>Forgot your PIN or Password?</strong> Visit the <a href="/reset-pin" className="underline font-semibold hover:text-blue-700 dark:hover:text-blue-400">PIN Reset page</a> or use the forgot password option on the login page.
+              </p>
+            </div>
+
 
           </div>
         )}
@@ -229,6 +254,32 @@ export default function CustomerSettings() {
                 <Save size={20} />
                 {saving ? 'Saving...' : 'Save Notification Settings'}
               </button>
+            </div>
+          </div>
+        )}
+
+        {/* Password modal */}
+        {showPasswordModal && (
+          <div className="fixed inset-0 bg-black/50 dark:bg-black/70 flex items-center justify-center z-50 p-4">
+            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-lg w-full p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-bold text-gray-900 dark:text-white">Change Password</h3>
+                <button onClick={() => setShowPasswordModal(false)} className="text-gray-500 hover:text-gray-700">✕</button>
+              </div>
+              <ChangePasswordForm onSuccess={() => setShowPasswordModal(false)} />
+            </div>
+          </div>
+        )}
+
+        {/* PIN modal */}
+        {showPinModal && (
+          <div className="fixed inset-0 bg-black/50 dark:bg-black/70 flex items-center justify-center z-50 p-4">
+            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-lg w-full p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-bold text-gray-900 dark:text-white">Change PIN</h3>
+                <button onClick={() => setShowPinModal(false)} className="text-gray-500 hover:text-gray-700">✕</button>
+              </div>
+              <ChangePinForm onSuccess={() => setShowPinModal(false)} />
             </div>
           </div>
         )}
