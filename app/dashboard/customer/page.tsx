@@ -12,7 +12,7 @@ import PensionPlans from "@/app/components/dashboard/PensionPlans";
 import TransactionHistory from "@/app/components/dashboard/TransactionHistory";
 import QuickActions from "@/app/components/dashboard/QuickActions";
 import CustomerSettings from '@/app/dashboard/customer/settings/page';
-import { userApi, dashboardApi } from "@/app/lib/api-client";
+import { userApi, dashboardApi, accountsApi } from "@/app/lib/api-client";
 
 interface BankAccount {
   bankName?: string;
@@ -146,13 +146,29 @@ export default function CustomerDashboard() {
           // Update localStorage with fresh data
           localStorage.setItem('user', JSON.stringify(userResponse.user));
           console.log(userResponse.user);
-          // Check for bank details using the helper function
-          const bankDetails = getBankDetails(userResponse.user);
           
-          if (bankDetails && bankDetails.bankName) {
-            toast.success(`Welcome back, ${userResponse.user.firstName || storedUser.firstName}!`);
-          } else {
-            toast.info('💳 Please update your bank details in settings');
+          // Fetch user's accounts to get account ID for bank details
+          try {
+            const accountsResponse = await accountsApi.getAll();
+            if (accountsResponse.success && accountsResponse.accounts && accountsResponse.accounts.length > 0) {
+              // Get the first account and fetch its bank details
+              const firstAccount = accountsResponse.accounts[0];
+              const accountId = firstAccount.id || firstAccount.accountNumber;
+              
+              if (accountId) {
+                const bankDetailsResponse = await accountsApi.getBankDetails(accountId);
+                if (bankDetailsResponse.success && bankDetailsResponse.bankDetails) {
+                  toast.success(`Welcome back, ${userResponse.user.firstName || storedUser.firstName}!`);
+                } else {
+                  toast.info('💳 Please update your bank details in settings');
+                }
+              }
+            } else {
+              toast.info('💳 No accounts found. Please complete your account setup.');
+            }
+          } catch (err) {
+            console.warn('Failed to fetch accounts or bank details:', err);
+            toast.info('💳 Could not load bank details');
           }
         } else {
           // Fallback to cached data

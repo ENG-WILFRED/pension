@@ -128,7 +128,6 @@ export default function AuthForm({ isLogin = false }: AuthFormProps) {
         } else {
           const s = (res as any).status;
           
-          // Only show waiting message on first poll, and only if still pending
           if (s === 'payment_pending' && !toastShown) {
             toastShown = true;
             toast('⏳ Waiting for payment confirmation...', { duration: 3000 });
