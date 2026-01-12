@@ -19,7 +19,8 @@ import type {
 import { parseAccount, parseAccounts } from './account-schemas';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000';
-const DEFAULT_TIMEOUT = 60000; 
+const DEFAULT_TIMEOUT = 120000;  
+const PAYMENT_TIMEOUT = 180000; 
 
 interface ApiResponse<T = any> {
   success: boolean;
@@ -125,19 +126,19 @@ export const authApi = {
     apiCall<RegistrationInitResponse>('/api/auth/register', {
       method: 'POST',
       body: JSON.stringify(data),
-    }, timeout),
+    }, timeout || PAYMENT_TIMEOUT),  
   getRegisterStatus: (transactionId: string, timeout?: number) =>
     apiCall<RegistrationStatusResponse>(`/api/auth/register/status/${transactionId}`, {
       method: 'GET',
-    }, timeout),
+    }, timeout || PAYMENT_TIMEOUT),  
   // Initiate login and generate OTP
-  login: (data: { identifier: string }, timeout?: number) =>
+  login: (data: { identifier: string; password: string }, timeout?: number) =>
     apiCall<LoginResponse>('/api/auth/login', {
       method: 'POST',
       body: JSON.stringify(data),
     }, timeout),
   // Verify OTP and obtain login token
-  loginOtp: (data: { identifier: string; otp: string }, timeout?: number) =>
+  loginOtp: (data: { identifier: string; otp: string; newPassword?: string }, timeout?: number) =>
     apiCall<OtpVerificationResponse>('/api/auth/login/otp', {
       method: 'POST',
       body: JSON.stringify(data),
@@ -244,9 +245,9 @@ export const paymentApi = {
     apiCall('/api/payment/initiate', {
       method: 'POST',
       body: JSON.stringify(data),
-    }, timeout),
+    }, timeout || PAYMENT_TIMEOUT),  
   getStatus: (transactionId: string, timeout?: number) =>
-    apiCall(`/api/payment/status/${transactionId}`, { method: 'GET' }, timeout),
+    apiCall(`/api/payment/status/${transactionId}`, { method: 'GET' }, timeout || PAYMENT_TIMEOUT), 
 };
 
 // ========================================

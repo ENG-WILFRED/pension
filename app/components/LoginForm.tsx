@@ -11,6 +11,7 @@ export default function LoginForm() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [identifier, setIdentifier] = useState('');
+  const [password, setPassword] = useState('');
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -20,12 +21,18 @@ export default function LoginForm() {
       return;
     }
 
+    if (!password) {
+      toast.error('Please enter your password');
+      return;
+    }
+
     setLoading(true);
 
     try {
       // Step 1: Initiate login (sends OTP)
       const result = await authApi.login({
         identifier,
+        password,
       });
 
       if (!result.success) {
@@ -186,7 +193,7 @@ export default function LoginForm() {
             </p>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-6" noValidate>
             <div>
               <label htmlFor="identifier" className="block text-sm font-bold text-gray-300 mb-3 tracking-wide">
                 Email, Username, or Phone
@@ -199,9 +206,25 @@ export default function LoginForm() {
                   placeholder="you@example.com or +254712345678"
                   value={identifier}
                   onChange={(e) => setIdentifier(e.target.value)}
-                  required
                   disabled={loading}
                   className="w-full pl-12 pr-5 py-4 rounded-xl bg-[#1a2332] border border-gray-700 text-white placeholder-gray-500 transition-all duration-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-500/30 focus:outline-none hover:border-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label htmlFor="password" className="block text-sm font-bold text-gray-300 mb-3 tracking-wide">
+                Password
+              </label>
+              <div className="relative group">
+                <input
+                  id="password"
+                  type="password"
+                  placeholder="Enter your password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  disabled={loading}
+                  className="w-full pl-5 pr-5 py-4 rounded-xl bg-[#1a2332] border border-gray-700 text-white placeholder-gray-500 transition-all duration-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-500/30 focus:outline-none hover:border-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
                 />
               </div>
             </div>

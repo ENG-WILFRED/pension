@@ -46,19 +46,10 @@ export default function AuthForm({ isLogin = false }: AuthFormProps) {
     try {
       if (isLogin) {
         // Step 1: Initiate login (send OTP)
-        const result = await authApi.login({
-          identifier: formData.email,
-        });
-
-        if (!result.success) {
-          toast.error(result.error || 'Login initiation failed');
-          setLoading(false);
-          return;
-        }
-
-        try { localStorage.setItem('auth_identifier', formData.email); } catch {}
-        toast.success(result.message || 'OTP sent to your email');
-        router.push(`/verify-otp?identifier=${encodeURIComponent(formData.email)}`);
+        // Note: LoginForm.tsx is used for login, not this component
+        // This is kept for backward compatibility but redirects to LoginForm
+        router.push('/login');
+        return;
       } else {
         // Validate PIN is 4 digits
         if (!/^\d{4}$/.test(formData.pin)) {
@@ -238,7 +229,7 @@ export default function AuthForm({ isLogin = false }: AuthFormProps) {
             </p>
           </div>
         ) : (
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-4" noValidate>
             {/* Email Field (Both Login & Register) */}
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
@@ -250,7 +241,6 @@ export default function AuthForm({ isLogin = false }: AuthFormProps) {
                 type={isLogin ? 'text' : 'email'}
                 value={formData.email}
                 onChange={handleChange}
-                required
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
                 placeholder={isLogin ? 'your@email.com or +254712345678' : 'your@email.com'}
               />
@@ -304,7 +294,6 @@ export default function AuthForm({ isLogin = false }: AuthFormProps) {
                       type="tel"
                       value={formData.phone}
                       onChange={handleChange}
-                      required
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
                       placeholder="+254712345678"
                     />
@@ -321,7 +310,6 @@ export default function AuthForm({ isLogin = false }: AuthFormProps) {
                       maxLength={4}
                       value={formData.pin}
                       onChange={handleChange}
-                      required
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
                       placeholder="1234"
                     />
@@ -343,7 +331,6 @@ export default function AuthForm({ isLogin = false }: AuthFormProps) {
                         type="text"
                         value={formData.bankName}
                         onChange={handleChange}
-                        required
                         className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
                         placeholder="e.g., Equity Bank, KCB"
                       />
@@ -359,7 +346,6 @@ export default function AuthForm({ isLogin = false }: AuthFormProps) {
                         type="text"
                         value={formData.bankAccountName}
                         onChange={handleChange}
-                        required
                         className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
                         placeholder="John Doe"
                       />
@@ -375,7 +361,6 @@ export default function AuthForm({ isLogin = false }: AuthFormProps) {
                         type="text"
                         value={formData.bankAccountNumber}
                         onChange={handleChange}
-                        required
                         className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
                         placeholder="1234567890"
                       />
@@ -392,7 +377,6 @@ export default function AuthForm({ isLogin = false }: AuthFormProps) {
                           type="text"
                           value={formData.bankBranchName}
                           onChange={handleChange}
-                          required
                           className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
                           placeholder="Nairobi"
                         />
@@ -408,7 +392,6 @@ export default function AuthForm({ isLogin = false }: AuthFormProps) {
                           type="text"
                           value={formData.bankBranchCode}
                           onChange={handleChange}
-                          required
                           className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
                           placeholder="001"
                         />

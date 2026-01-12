@@ -18,9 +18,9 @@ import PaymentPendingModal from './sections/PaymentPendingModal';
 import TermsAndConditionsModal from './TermsAndConditionsModal';
 
 // API TIMEOUT CONSTANTS
-const API_TIMEOUT = 60000; // 60 seconds per request
-const PAYMENT_TOTAL_TIMEOUT = 240000; // 4 minutes total for payment confirmation
-const POLL_INTERVAL = 2000; // 2 seconds between polls
+const API_TIMEOUT = 180000; 
+const PAYMENT_TOTAL_TIMEOUT = 240000; 
+const POLL_INTERVAL = 2000; 
 
 export default function RegisterForm() {
   const router = useRouter();
