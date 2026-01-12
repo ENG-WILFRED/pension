@@ -177,16 +177,49 @@ export default function CustomerDashboard() {
               }
             }
             
-            // Fetch bank details if we have an account ID
+            // Fetch bank details if we have an account ID.
+            // Try the likely `id` first; if backend returns 404, retry using `accountNumber`.
             if (accountId) {
-              const bankDetailsResponse = await accountsApi.getBankDetails(String(accountId));
-              console.log('[Dashboard] Bank details response:', bankDetailsResponse);
-              
+              let bankDetailsResponse = await accountsApi.getBankDetails(String(accountId));
+              console.log('[Dashboard] Bank details response (first attempt):', bankDetailsResponse);
+
+              // If not found and we have a different accountNumber, try that as a fallback
+              const maybeAccountNumber = (() => {
+                try {
+                  // If we fetched accountsResponse earlier, get the first account object
+                  if (typeof window !== 'undefined') {
+                    const sa = localStorage.getItem('account');
+                    if (sa) {
+                      const parsed = JSON.parse(sa);
+                      return parsed.accountNumber || parsed.account_number || null;
+                    }
+                  }
+                } catch (e) {
+                  // ignore
+                }
+                return null;
+              })();
+
+              if (!bankDetailsResponse.success && bankDetailsResponse.error && bankDetailsResponse.error.toString().includes('404')) {
+                // attempt fallback with account number if different
+                if (maybeAccountNumber && String(maybeAccountNumber) !== String(accountId)) {
+                  console.log('[Dashboard] Primary bank-details lookup returned 404; retrying with accountNumber:', maybeAccountNumber);
+                  bankDetailsResponse = await accountsApi.getBankDetails(String(maybeAccountNumber));
+                  console.log('[Dashboard] Bank details response (fallback):', bankDetailsResponse);
+                }
+              }
+
               if (bankDetailsResponse.success && bankDetailsResponse.bankDetails) {
                 console.log('[Dashboard] Bank details found:', bankDetailsResponse.bankDetails);
                 toast.success(`Welcome back, ${userResponse.user.firstName || storedUser.firstName}!`);
+              } else if (!bankDetailsResponse.success && bankDetailsResponse.error && bankDetailsResponse.error.toString().includes('404')) {
+                console.log('[Dashboard] No bank details found (404) - user needs to add them');
+                toast.info('💳 Please update your bank details in settings');
+              } else if (!bankDetailsResponse.success) {
+                console.error('[Dashboard] Error fetching bank details:', bankDetailsResponse.error || bankDetailsResponse);
+                toast.info('💳 Could not load bank details');
               } else {
-                console.log('[Dashboard] No bank details found - user needs to add them');
+                console.log('[Dashboard] Bank details response was empty or unexpected:', bankDetailsResponse);
                 toast.info('💳 Please update your bank details in settings');
               }
             } else {
