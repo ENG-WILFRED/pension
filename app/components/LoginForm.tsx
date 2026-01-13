@@ -29,10 +29,19 @@ export default function LoginForm() {
     setLoading(true);
 
     try {
+      // Normalize inputs
+      const idRaw = identifier.trim();
+      const pwd = password.trim();
+
+      // Debug: log what we will send (safe to log identifier, not password)
+      console.debug('[Login] Sending login request for identifier:', idRaw);
+
       const result = await authApi.login({
-        identifier,
-        password,
+        identifier: idRaw,
+        password: pwd,
       });
+
+      console.debug('[Login] Login response:', result);
 
       if (!result.success) {
         const errorMsg = result.error || 'Failed to initiate login';

@@ -71,7 +71,7 @@ export default function Sidebar({ userType, firstName, lastName }: SidebarProps)
       {/* Mobile Toggle */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="lg:hidden fixed top-4 left-4 z-50 p-2 bg-gray-900 dark:bg-gray-800 text-white rounded-lg"
+        className="lg:hidden fixed top-4 left-4 z-50 p-2 bg-white dark:bg-slate-900 text-slate-900 dark:text-white rounded-lg shadow-sm"
       >
         {isOpen ? <X size={24} /> : <Menu size={24} />}
       </button>
@@ -86,21 +86,21 @@ export default function Sidebar({ userType, firstName, lastName }: SidebarProps)
 
       {/* Sidebar */}
       <aside
-        className={`fixed top-0 left-0 z-40 h-screen w-64 bg-gray-900 dark:bg-gray-800 border-r border-gray-800 dark:border-gray-700 flex flex-col transition-transform lg:translate-x-0 ${
+        className={`fixed top-0 left-0 z-40 h-screen w-64 bg-white dark:bg-gray-900 border-r border-gray-100 dark:border-gray-700 flex flex-col transition-transform lg:translate-x-0 ${
           isOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
         {/* User Info */}
-        <div className="p-6 border-b border-gray-700 dark:border-gray-600">
+        <div className="p-6 border-b border-gray-200 dark:border-gray-600">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-full bg-indigo-600 dark:bg-indigo-500 flex items-center justify-center text-white font-bold">
               {firstName?.[0] || "U"}
             </div>
             <div>
-              <h3 className="text-white text-sm font-semibold">
+              <h3 className="text-slate-900 dark:text-white text-sm font-semibold">
                 {firstName} {lastName}
               </h3>
-              <p className="text-gray-400 dark:text-gray-500 text-xs">
+              <p className="text-gray-600 dark:text-gray-400 text-xs">
                 {userType === "admin" ? "Administrator" : "Customer"}
               </p>
             </div>
@@ -119,8 +119,8 @@ export default function Sidebar({ userType, firstName, lastName }: SidebarProps)
                 onClick={() => setIsOpen(false)}
                 className={`flex items-center gap-3 px-4 py-3 rounded-lg transition ${
                   isActive
-                    ? "bg-indigo-600 dark:bg-indigo-500 text-white"
-                    : "text-gray-300 dark:text-gray-400 hover:bg-gray-800 dark:hover:bg-gray-700"
+                    ? "bg-indigo-600 text-white dark:bg-indigo-500"
+                    : "text-slate-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
                 }`}
               >
                 <Icon size={20} />
@@ -131,11 +131,11 @@ export default function Sidebar({ userType, firstName, lastName }: SidebarProps)
         </nav>
 
         {/* Footer */}
-        <div className="p-4 border-t border-gray-700 dark:border-gray-600 space-y-2">
+        <div className="p-4 border-t border-gray-200 dark:border-gray-600 space-y-2">
           {/* Theme Toggle - FIXED: Shows current mode and switches to opposite */}
           <button
             onClick={toggleTheme}
-            className="w-full flex items-center justify-between px-4 py-3 rounded-lg text-gray-300 dark:text-gray-400 hover:bg-gray-800 dark:hover:bg-gray-700 transition"
+            className="w-full flex items-center justify-between px-4 py-3 rounded-lg text-slate-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition"
           >
             <div className="flex items-center gap-3">
               {/* FIXED: Show current theme icon */}
@@ -149,7 +149,7 @@ export default function Sidebar({ userType, firstName, lastName }: SidebarProps)
             </div>
             <div
               className={`w-12 h-6 rounded-full relative transition ${
-                theme === "dark" ? "bg-indigo-600" : "bg-gray-600"
+                theme === "dark" ? "bg-indigo-600" : "bg-gray-200"
               }`}
             >
               <div
@@ -163,7 +163,7 @@ export default function Sidebar({ userType, firstName, lastName }: SidebarProps)
           {/* Logout */}
           <button
             onClick={handleLogout}
-            className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-red-400 dark:text-red-500 hover:bg-red-900/20 dark:hover:bg-red-900/30 transition"
+            className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 transition"
           >
             <LogOut size={20} />
             <span>Logout</span>

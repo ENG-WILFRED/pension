@@ -39,32 +39,13 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
   const applyTheme = (newTheme: Theme) => {
     const root = document.documentElement;
-    
-    console.log("🔧 Applying theme - Before:", root.className);
-    
-    // Remove BOTH classes first
-    root.classList.remove("light", "dark");
-    
-    // Force browser to process the removal
-    void root.offsetHeight;
-    
-    // Add the new theme
-    root.classList.add(newTheme);
-    
-    console.log("✅ Applying theme - After:", root.className);
-    
-    // Double check it was applied
-    setTimeout(() => {
-      console.log("🔍 Verification - HTML classes:", root.className);
-      console.log("🔍 Verification - Has dark?", root.classList.contains("dark"));
-      console.log("🔍 Verification - Has light?", root.classList.contains("light"));
-      
-      // Additional debugging
-      const body = document.body;
-      const computedStyle = window.getComputedStyle(body);
-      console.log("🎨 Body background-color:", computedStyle.backgroundColor);
-      console.log("🎨 Body color:", computedStyle.color);
-    }, 50);
+    // Tailwind expects a `dark` class on the root element to enable dark mode.
+    // Add `dark` when requested, otherwise ensure it's removed so light styles apply by default.
+    if (newTheme === 'dark') {
+      root.classList.add('dark');
+    } else {
+      root.classList.remove('dark');
+    }
   };
 
   const setTheme = (newTheme: Theme) => {
