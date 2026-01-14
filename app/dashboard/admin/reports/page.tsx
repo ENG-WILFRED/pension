@@ -14,11 +14,11 @@ import {
   User,
   Receipt,
   Eye,
-  Loader2,
   Search,
   Users,
   X,
 } from "lucide-react";
+import { DashboardSectionLoader, ButtonLoader } from "@/app/components/loaders";
 import { reportsApi, dashboardApi, userApi } from "@/app/lib/api-client";
 
 interface Report {
@@ -251,8 +251,8 @@ export default function AdminReportsPage() {
 
   if (loading && !user) {
     return (
-      <div className="h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 via-white to-gray-50 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950 transition-colors duration-300">
-        <Loader2 className="w-12 h-12 animate-spin text-indigo-600 dark:text-indigo-400" />
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-orange-50/30 to-slate-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 flex items-center justify-center">
+        <DashboardSectionLoader message="Loading reports..." />
       </div>
     );
   }
@@ -260,7 +260,7 @@ export default function AdminReportsPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950 px-4 sm:px-6 lg:px-8 py-8 space-y-6">
       {/* Header */}
-      <div className="bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-700 dark:to-purple-700 text-white rounded-2xl shadow-lg p-6 sm:p-8 transition-colors duration-300">
+      <div className="bg-gradient-to-r from-orange-600 via-blue-500 to-blue-600 dark:from-orange-700 dark:via-blue-600 dark:to-blue-700 text-white rounded-2xl shadow-lg p-6 sm:p-8 transition-colors duration-300">
         <div className="flex items-center justify-between flex-wrap gap-4">
           <div>
             <h1 className="text-3xl sm:text-4xl font-bold flex items-center gap-3">
@@ -492,9 +492,9 @@ export default function AdminReportsPage() {
               )}
 
               {generating && (
-                <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg flex items-center gap-3 transition-colors duration-300">
-                  <Loader2 className="w-5 h-5 animate-spin text-blue-600 dark:text-blue-400" />
-                  <p className="text-sm text-blue-900 dark:text-blue-200 transition-colors duration-300">Generating report...</p>
+                <div className="p-4 bg-gradient-to-r from-orange-50 to-blue-50 dark:from-orange-900/20 dark:to-blue-900/20 rounded-lg flex items-center gap-3 transition-colors duration-300 border border-orange-200 dark:border-orange-900/30">
+                  <div className="w-5 h-5 rounded-full border-2 border-orange-200 dark:border-orange-900/30 border-t-orange-600 dark:border-t-orange-400 animate-spin"></div>
+                  <p className="text-sm text-orange-900 dark:text-orange-200 transition-colors duration-300 font-medium">Generating report...</p>
                 </div>
               )}
 
@@ -509,11 +509,11 @@ export default function AdminReportsPage() {
                 <button
                   onClick={handleGenerateReport}
                   disabled={generating || (reportType === "customer" && !selectedUserId)}
-                  className="flex-1 bg-indigo-600 dark:bg-indigo-700 text-white px-6 py-3 rounded-lg hover:bg-indigo-700 dark:hover:bg-indigo-600 transition font-semibold disabled:opacity-50 flex items-center justify-center gap-2"
+                  className="flex-1 bg-gradient-to-r from-orange-600 to-orange-500 dark:from-orange-700 dark:to-orange-600 text-white px-6 py-3 rounded-lg hover:from-orange-700 hover:to-orange-600 dark:hover:from-orange-600 dark:hover:to-orange-500 transition font-semibold disabled:opacity-50 flex items-center justify-center gap-2"
                 >
                   {generating ? (
                     <>
-                      <Loader2 className="w-5 h-5 animate-spin" />
+                      <ButtonLoader size="md" />
                       Generating...
                     </>
                   ) : (

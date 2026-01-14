@@ -5,7 +5,8 @@ import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import { accountTypeApi } from "@/app/lib/api-client";
-import { Plus, Edit, Trash2, Loader2, X, CreditCard, Eye } from "lucide-react";
+import { Plus, Edit, Trash2, X, CreditCard, Eye } from "lucide-react";
+import { DashboardSectionLoader, ButtonLoader } from "@/app/components/loaders";
 
 interface AccountType {
   id: string;
@@ -125,7 +126,7 @@ function CreateEditModal({ isOpen, onClose, onSuccess, editingType }: CreateEdit
       <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full p-6 max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between mb-6">
           <h3 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-            <CreditCard className="text-indigo-600" size={28} />
+            <CreditCard className="text-orange-600" size={28} />
             {editingType ? 'Edit Account Type' : 'Create Account Type'}
           </h3>
           <button onClick={onClose} className="text-gray-400 hover:text-gray-600 transition">
@@ -248,7 +249,7 @@ function CreateEditModal({ isOpen, onClose, onSuccess, editingType }: CreateEdit
                   type="checkbox"
                   checked={formData.allowWithdrawals}
                   onChange={(e) => setFormData({ ...formData, allowWithdrawals: e.target.checked })}
-                  className="w-5 h-5 text-indigo-600 rounded focus:ring-2 focus:ring-indigo-500"
+                  className="w-5 h-5 text-orange-600 rounded focus:ring-2 focus:ring-orange-500"
                 />
                 <span className="text-sm font-medium text-gray-700">Allow Withdrawals</span>
               </label>
@@ -258,7 +259,7 @@ function CreateEditModal({ isOpen, onClose, onSuccess, editingType }: CreateEdit
                   type="checkbox"
                   checked={formData.allowLoans}
                   onChange={(e) => setFormData({ ...formData, allowLoans: e.target.checked })}
-                  className="w-5 h-5 text-indigo-600 rounded focus:ring-2 focus:ring-indigo-500"
+                  className="w-5 h-5 text-orange-600 rounded focus:ring-2 focus:ring-orange-500"
                 />
                 <span className="text-sm font-medium text-gray-700">Allow Loans</span>
               </label>
@@ -268,7 +269,7 @@ function CreateEditModal({ isOpen, onClose, onSuccess, editingType }: CreateEdit
                   type="checkbox"
                   checked={formData.active}
                   onChange={(e) => setFormData({ ...formData, active: e.target.checked })}
-                  className="w-5 h-5 text-indigo-600 rounded focus:ring-2 focus:ring-indigo-500"
+                  className="w-5 h-5 text-orange-600 rounded focus:ring-2 focus:ring-orange-500"
                 />
                 <span className="text-sm font-medium text-gray-700">Active (Available for new accounts)</span>
               </label>
@@ -287,11 +288,11 @@ function CreateEditModal({ isOpen, onClose, onSuccess, editingType }: CreateEdit
             <button
               type="submit"
               disabled={submitting}
-              className="flex-1 bg-indigo-600 text-white py-3 px-4 rounded-xl hover:bg-indigo-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition font-semibold flex items-center justify-center gap-2"
+              className="flex-1 bg-orange-600 text-white py-3 px-4 rounded-xl hover:bg-orange-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition font-semibold flex items-center justify-center gap-2"
             >
               {submitting ? (
                 <>
-                  <Loader2 className="w-5 h-5 animate-spin" />
+                  <ButtonLoader />
                   {editingType ? 'Updating...' : 'Creating...'}
                 </>
               ) : (
@@ -391,10 +392,7 @@ export default function AccountTypesPage() {
   if (loading) {
     return (
       <div className="px-4 sm:px-6 lg:px-8 py-8">
-        <div className="flex items-center justify-center py-20">
-          <Loader2 className="w-12 h-12 animate-spin text-indigo-600" />
-          <p className="ml-4 text-gray-600 font-medium">Loading account types...</p>
-        </div>
+        <DashboardSectionLoader message="Loading account types..." />
       </div>
     );
   }
@@ -402,21 +400,21 @@ export default function AccountTypesPage() {
   return (
     <div className="px-4 sm:px-6 lg:px-8 py-8">
       {/* Header */}
-      <div className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-2xl shadow-lg p-6 sm:p-8 mb-8">
+      <div className="bg-gradient-to-r from-orange-600 to-blue-600 text-white rounded-2xl shadow-lg p-6 sm:p-8 mb-8">
         <div className="flex items-center justify-between flex-wrap gap-4">
           <div>
             <h1 className="text-2xl sm:text-3xl font-bold flex items-center gap-3">
               <CreditCard size={32} />
               Account Types
             </h1>
-            <p className="text-indigo-100 mt-2">Manage pension account types</p>
+            <p className="text-orange-100 mt-2">Manage pension account types</p>
           </div>
           <button
             onClick={() => {
               setEditingType(null);
               setModalOpen(true);
             }}
-            className="flex items-center gap-2 bg-white text-indigo-600 px-6 py-3 rounded-xl hover:bg-indigo-50 transition font-semibold shadow-lg"
+            className="flex items-center gap-2 bg-white text-orange-600 px-6 py-3 rounded-xl hover:bg-orange-50 transition font-semibold shadow-lg"
           >
             <Plus size={20} />
             Create Account Type
@@ -424,7 +422,6 @@ export default function AccountTypesPage() {
         </div>
       </div>
 
-      {/* Account Types List */}
       {accountTypes.length === 0 ? (
         <div className="bg-white/80 backdrop-blur-xl border border-gray-200 rounded-2xl shadow-xl p-12 text-center">
           <CreditCard className="w-16 h-16 text-gray-300 mx-auto mb-4" />

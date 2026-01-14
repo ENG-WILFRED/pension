@@ -5,7 +5,8 @@ import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { toast } from 'sonner';
 import AnimatedFooter from '@/app/components/AnimatedFooter';
-import { Save, X, Loader2 } from 'lucide-react';
+import { Save, X } from 'lucide-react';
+import { DashboardSectionLoader, ButtonLoader } from '@/app/components/loaders';
 import { accountTypeApi } from '@/app/lib/api-client';
 
 interface AccountType {
@@ -130,10 +131,9 @@ export default function EditAccountTypePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-100 via-blue-50 to-indigo-100 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-slate-100 via-blue-50 to-orange-100 flex items-center justify-center">
         <div className="text-center">
-          <Loader2 className="h-12 w-12 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-gray-600 font-medium">Loading account type...</p>
+          <DashboardSectionLoader message="Loading account type..." />
         </div>
       </div>
     );
@@ -286,7 +286,7 @@ export default function EditAccountTypePage() {
                     name="allowWithdrawals"
                     checked={formData.allowWithdrawals}
                     onChange={handleChange}
-                    className="w-5 h-5 text-indigo-600"
+                    className="w-5 h-5 text-orange-600"
                   />
                   <label htmlFor="allowWithdrawals" className="text-sm font-medium text-gray-700 cursor-pointer">
                     Allow Withdrawals
@@ -300,7 +300,7 @@ export default function EditAccountTypePage() {
                     name="allowLoans"
                     checked={formData.allowLoans}
                     onChange={handleChange}
-                    className="w-5 h-5 text-indigo-600"
+                    className="w-5 h-5 text-orange-600"
                   />
                   <label htmlFor="allowLoans" className="text-sm font-medium text-gray-700 cursor-pointer">
                     Allow Loans Against This Account
@@ -317,7 +317,7 @@ export default function EditAccountTypePage() {
                 >
                   {saving ? (
                     <>
-                      <Loader2 className="w-5 h-5 animate-spin" />
+                      <ButtonLoader />
                       Saving...
                     </>
                   ) : (

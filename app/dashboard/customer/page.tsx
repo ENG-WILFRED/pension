@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { PageLoader } from "@/app/components/loaders";
 import UserProfile from "@/app/components/dashboard/UserProfile";
 import BalanceCards from "@/app/components/dashboard/BalanceCards";
 import EmploymentDetails from "@/app/components/dashboard/EmploymentDetails";
@@ -321,12 +322,7 @@ export default function CustomerDashboard() {
   }, [router]);
 
   if (loading) {
-    return (
-      <div className="h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-gray-950 dark:via-indigo-950 dark:to-purple-950 flex flex-col items-center justify-center transition-colors duration-300">
-        <div className="h-12 w-12 border-4 border-indigo-600 dark:border-indigo-400 border-t-transparent rounded-full animate-spin"></div>
-        <p className="mt-4 text-indigo-700 dark:text-indigo-300 font-medium">Loading your dashboard...</p>
-      </div>
-    );
+    return <PageLoader />;
   }
 
   // Get bank details using helper function

@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import Link from "next/link";
 import { adminApi } from "@/app/lib/api-client";
 import { UserPlus, Mail, Phone, User, Lock, Calendar, IdCard, ArrowLeft, Loader2 } from "lucide-react";
+import { ButtonLoader, DashboardSectionLoader } from "@/app/components/loaders";
 
 interface CreateAdminFormData {
   email: string;
@@ -122,26 +123,26 @@ export default function CreateAdminPage() {
   };
 
   return (
-    <div className="min-h-screen w-full bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-gray-950 dark:via-gray-900 dark:to-indigo-950 py-8 px-4 sm:px-6 lg:px-8 transition-colors duration-300">
+    <div className="min-h-screen w-full bg-gradient-to-br from-slate-50 via-orange-50/30 to-slate-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 py-8 px-4 sm:px-6 lg:px-8 transition-colors duration-300">
       <div className="max-w-3xl mx-auto">
         {/* Header */}
         <div className="mb-8">
           <Link
             href="/dashboard/admin"
-            className="inline-flex items-center gap-2 text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 font-medium mb-4 transition-colors duration-300"
+            className="inline-flex items-center gap-2 text-orange-600 dark:text-orange-400 hover:text-orange-700 dark:hover:text-orange-300 font-medium mb-4 transition-colors duration-300"
           >
             <ArrowLeft size={20} />
             Back to Admin Dashboard
           </Link>
 
-          <div className="bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-700 dark:to-purple-700 text-white rounded-2xl shadow-lg p-6 sm:p-8 transition-colors duration-300">
+          <div className="bg-gradient-to-r from-orange-600 to-blue-600 dark:from-orange-700 dark:to-blue-700 text-white rounded-2xl shadow-lg p-6 sm:p-8 transition-colors duration-300">
             <div className="flex items-center gap-4">
-              <div className="p-3 bg-white/20 rounded-xl">
+              <div className="p-3 bg-white/20 dark:bg-white/10 rounded-xl">
                 <UserPlus size={32} />
               </div>
               <div>
                 <h1 className="text-2xl sm:text-3xl font-bold">Create Admin User</h1>
-                <p className="text-indigo-100 mt-1">Add a new administrator to the system</p>
+                <p className="text-orange-100 dark:text-orange-200 mt-1">Add a new administrator to the system</p>
               </div>
             </div>
           </div>
@@ -169,19 +170,19 @@ export default function CreateAdminPage() {
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="bg-white dark:bg-gray-800 backdrop-blur-xl border border-gray-200 dark:border-gray-700 rounded-2xl shadow-xl p-6 sm:p-8 space-y-6 transition-colors duration-300">
+        <form onSubmit={handleSubmit} className="bg-white/90 dark:bg-slate-800/90 backdrop-blur-xl border-2 border-slate-200 dark:border-slate-700 rounded-2xl shadow-xl p-6 sm:p-8 space-y-6 transition-colors duration-300">
           
           {/* Basic Information */}
           <div>
-            <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2 transition-colors duration-300">
-              <User size={20} className="text-indigo-600 dark:text-indigo-400" />
+            <h2 className="text-lg font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2 transition-colors duration-300">
+              <User size={20} className="text-orange-600 dark:text-orange-400" />
               Basic Information
             </h2>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {/* First Name */}
               <div>
-                <label htmlFor="firstName" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 transition-colors duration-300">
+                <label htmlFor="firstName" className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2 transition-colors duration-300">
                   First Name <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -190,7 +191,7 @@ export default function CreateAdminPage() {
                   name="firstName"
                   value={formData.firstName}
                   onChange={handleChange}
-                  className={`w-full px-4 py-3 border ${errors.firstName ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'} bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors duration-300`}
+                  className={`w-full px-4 py-3 border-2 ${errors.firstName ? 'border-red-500' : 'border-slate-200 dark:border-slate-600'} bg-white dark:bg-slate-700 text-slate-900 dark:text-white rounded-xl focus:outline-none focus:ring-4 focus:ring-orange-500/10 focus:border-orange-500 dark:focus:border-orange-400 transition-all duration-300`}
                   placeholder="John"
                 />
                 {errors.firstName && <p className="text-red-500 text-xs mt-1">{errors.firstName}</p>}
@@ -198,7 +199,7 @@ export default function CreateAdminPage() {
 
               {/* Last Name */}
               <div>
-                <label htmlFor="lastName" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 transition-colors duration-300">
+                <label htmlFor="lastName" className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2 transition-colors duration-300">
                   Last Name <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -207,7 +208,7 @@ export default function CreateAdminPage() {
                   name="lastName"
                   value={formData.lastName}
                   onChange={handleChange}
-                  className={`w-full px-4 py-3 border ${errors.lastName ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'} bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors duration-300`}
+                  className={`w-full px-4 py-3 border-2 ${errors.lastName ? 'border-red-500' : 'border-slate-200 dark:border-slate-600'} bg-white dark:bg-slate-700 text-slate-900 dark:text-white rounded-xl focus:outline-none focus:ring-4 focus:ring-orange-500/10 focus:border-orange-500 dark:focus:border-orange-400 transition-all duration-300`}
                   placeholder="Doe"
                 />
                 {errors.lastName && <p className="text-red-500 text-xs mt-1">{errors.lastName}</p>}
@@ -217,20 +218,20 @@ export default function CreateAdminPage() {
 
           {/* Contact Information */}
           <div>
-            <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2 transition-colors duration-300">
-              <Mail size={20} className="text-indigo-600 dark:text-indigo-400" />
+            <h2 className="text-lg font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2 transition-colors duration-300">
+              <Mail size={20} className="text-orange-600 dark:text-orange-400" />
               Contact Information
             </h2>
 
             <div className="space-y-4">
               {/* Email */}
               <div>
-                <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 transition-colors duration-300">
+                <label htmlFor="email" className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2 transition-colors duration-300">
                   Email Address <span className="text-red-500">*</span>
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <Mail size={20} className="text-gray-400" />
+                    <Mail size={20} className="text-slate-400" />
                   </div>
                   <input
                     type="email"
@@ -238,7 +239,7 @@ export default function CreateAdminPage() {
                     name="email"
                     value={formData.email}
                     onChange={handleChange}
-                    className={`w-full pl-10 pr-4 py-3 border ${errors.email ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'} bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors duration-300`}
+                    className={`w-full pl-10 pr-4 py-3 border-2 ${errors.email ? 'border-red-500' : 'border-slate-200 dark:border-slate-600'} bg-white dark:bg-slate-700 text-slate-900 dark:text-white rounded-xl focus:outline-none focus:ring-4 focus:ring-orange-500/10 focus:border-orange-500 dark:focus:border-orange-400 transition-all duration-300`}
                     placeholder="admin@example.com"
                   />
                 </div>
@@ -247,12 +248,12 @@ export default function CreateAdminPage() {
 
               {/* Phone */}
               <div>
-                <label htmlFor="phone" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 transition-colors duration-300">
+                <label htmlFor="phone" className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2 transition-colors duration-300">
                   Phone Number <span className="text-red-500">*</span>
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <Phone size={20} className="text-gray-400" />
+                    <Phone size={20} className="text-slate-400" />
                   </div>
                   <input
                     type="tel"
@@ -260,27 +261,27 @@ export default function CreateAdminPage() {
                     name="phone"
                     value={formData.phone}
                     onChange={handleChange}
-                    className={`w-full pl-10 pr-4 py-3 border ${errors.phone ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'} bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors duration-300`}
+                    className={`w-full pl-10 pr-4 py-3 border-2 ${errors.phone ? 'border-red-500' : 'border-slate-200 dark:border-slate-600'} bg-white dark:bg-slate-700 text-slate-900 dark:text-white rounded-xl focus:outline-none focus:ring-4 focus:ring-orange-500/10 focus:border-orange-500 dark:focus:border-orange-400 transition-all duration-300`}
                     placeholder="+254712345678"
                   />
                 </div>
                 {errors.phone && <p className="text-red-500 text-xs mt-1">{errors.phone}</p>}
-                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 transition-colors duration-300">Kenyan number format: +254712345678</p>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 transition-colors duration-300">Kenyan number format: +254712345678</p>
               </div>
             </div>
           </div>
 
           {/* Optional Information */}
           <div>
-            <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2 transition-colors duration-300">
-              <IdCard size={20} className="text-indigo-600 dark:text-indigo-400" />
+            <h2 className="text-lg font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2 transition-colors duration-300">
+              <IdCard size={20} className="text-orange-600 dark:text-orange-400" />
               Additional Information (Optional)
             </h2>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {/* Gender */}
               <div>
-                <label htmlFor="gender" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 transition-colors duration-300">
+                <label htmlFor="gender" className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2 transition-colors duration-300">
                   Gender
                 </label>
                 <select
@@ -288,7 +289,7 @@ export default function CreateAdminPage() {
                   name="gender"
                   value={formData.gender || ''}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors duration-300"
+                  className="w-full px-4 py-3 border-2 border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white rounded-xl focus:outline-none focus:ring-4 focus:ring-orange-500/10 focus:border-orange-500 dark:focus:border-orange-400 transition-all duration-300"
                 >
                   <option value="">Select gender</option>
                   <option value="Male">Male</option>
@@ -299,12 +300,12 @@ export default function CreateAdminPage() {
 
               {/* Date of Birth */}
               <div>
-                <label htmlFor="dateOfBirth" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 transition-colors duration-300">
+                <label htmlFor="dateOfBirth" className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2 transition-colors duration-300">
                   Date of Birth
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <Calendar size={20} className="text-gray-400" />
+                    <Calendar size={20} className="text-slate-400" />
                   </div>
                   <input
                     type="date"
@@ -313,14 +314,14 @@ export default function CreateAdminPage() {
                     value={formData.dateOfBirth || ''}
                     onChange={handleChange}
                     max={new Date(new Date().setFullYear(new Date().getFullYear() - 18)).toISOString().split('T')[0]}
-                    className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors duration-300"
+                    className="w-full pl-10 pr-4 py-3 border-2 border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white rounded-xl focus:outline-none focus:ring-4 focus:ring-orange-500/10 focus:border-orange-500 dark:focus:border-orange-400 transition-all duration-300"
                   />
                 </div>
               </div>
 
               {/* Address */}
               <div className="sm:col-span-2">
-                <label htmlFor="address" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 transition-colors duration-300">
+                <label htmlFor="address" className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2 transition-colors duration-300">
                   Address
                 </label>
                 <input
@@ -329,14 +330,14 @@ export default function CreateAdminPage() {
                   name="address"
                   value={formData.address || ''}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors duration-300"
+                  className="w-full px-4 py-3 border-2 border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white rounded-xl focus:outline-none focus:ring-4 focus:ring-orange-500/10 focus:border-orange-500 dark:focus:border-orange-400 transition-all duration-300"
                   placeholder="123 Main Street"
                 />
               </div>
 
               {/* City */}
               <div>
-                <label htmlFor="city" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 transition-colors duration-300">
+                <label htmlFor="city" className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2 transition-colors duration-300">
                   City
                 </label>
                 <input
@@ -345,14 +346,14 @@ export default function CreateAdminPage() {
                   name="city"
                   value={formData.city || ''}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors duration-300"
+                  className="w-full px-4 py-3 border-2 border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white rounded-xl focus:outline-none focus:ring-4 focus:ring-orange-500/10 focus:border-orange-500 dark:focus:border-orange-400 transition-all duration-300"
                   placeholder="Nairobi"
                 />
               </div>
 
               {/* Country */}
               <div>
-                <label htmlFor="country" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 transition-colors duration-300">
+                <label htmlFor="country" className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2 transition-colors duration-300">
                   Country
                 </label>
                 <input
@@ -361,7 +362,7 @@ export default function CreateAdminPage() {
                   name="country"
                   value={formData.country || ''}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors duration-300"
+                  className="w-full px-4 py-3 border-2 border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white rounded-xl focus:outline-none focus:ring-4 focus:ring-orange-500/10 focus:border-orange-500 dark:focus:border-orange-400 transition-all duration-300"
                   placeholder="Kenya"
                 />
               </div>
@@ -374,14 +375,14 @@ export default function CreateAdminPage() {
               type="button"
               onClick={() => router.back()}
               disabled={loading}
-              className="flex-1 px-6 py-3 border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl font-semibold hover:bg-gray-50 dark:hover:bg-gray-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex-1 px-6 py-3 border-2 border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 rounded-xl font-semibold hover:bg-slate-50 dark:hover:bg-slate-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={loading}
-              className="flex-1 px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-700 dark:to-purple-700 text-white rounded-xl font-semibold hover:shadow-lg disabled:from-gray-400 disabled:to-gray-400 disabled:cursor-not-allowed transition flex items-center justify-center gap-2"
+              className="flex-1 px-6 py-3 bg-gradient-to-r from-orange-600 to-blue-600 dark:from-orange-700 dark:to-blue-700 text-white rounded-xl font-semibold hover:shadow-lg disabled:from-slate-400 disabled:to-slate-500 disabled:cursor-not-allowed transition flex items-center justify-center gap-2"
             >
               {loading ? (
                 <>

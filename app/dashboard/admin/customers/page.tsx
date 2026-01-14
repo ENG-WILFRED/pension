@@ -1,3 +1,4 @@
+///home/hp/JERE/AutoNest/app/dashboard/admin/customers/page.tsx
 "use client";
 
 import { useEffect, useState } from "react";
@@ -10,14 +11,13 @@ import {
   Eye,
   Shield,
   UserX,
-  Loader2,
   RefreshCw,
   Filter,
   Calendar,
   Mail,
   Phone,
+  Loader2
 } from "lucide-react";
-
 interface Customer {
   id: string;
   email: string;

@@ -2,7 +2,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { X, FileText, AlertCircle, Loader2 } from 'lucide-react';
+import { X, FileText, AlertCircle } from 'lucide-react';
+import { MinimalSpinner } from '@/app/components/loaders';
 
 interface TermsAndConditionsModalProps {
   isOpen: boolean;
@@ -69,8 +70,8 @@ export default function TermsAndConditionsModal({
         >
           {loading ? (
             <div className="flex flex-col items-center justify-center py-12">
-              <Loader2 className="w-8 h-8 animate-spin text-blue-600 mb-4" />
-              <p className="text-gray-600">Loading terms and conditions...</p>
+              <MinimalSpinner size="lg" />
+              <p className="text-gray-600 mt-4">Loading terms and conditions...</p>
             </div>
           ) : termsContent ? (
             <div dangerouslySetInnerHTML={{ __html: termsContent }} />

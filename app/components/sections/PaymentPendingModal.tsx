@@ -1,5 +1,6 @@
 ///home/hp/JERE/AutoNest/app/components/sections/PaymentPendingModal.tsx
-import { Loader2, CheckCircle2, XCircle, Clock } from 'lucide-react';
+import { CheckCircle2, XCircle, Clock } from 'lucide-react';
+import { MinimalSpinner } from '@/app/components/loaders';
 import { useEffect, useState } from 'react';
 
 interface PaymentPendingModalProps {
@@ -61,7 +62,7 @@ export default function PaymentPendingModal({ transactionId, onCancel }: Payment
               {isTimeout ? (
                 <Clock className="w-8 h-8 text-red-600" />
               ) : (
-                <Loader2 className="w-8 h-8 text-blue-600 animate-spin" />
+                <MinimalSpinner size="md" />
               )}
             </div>
 

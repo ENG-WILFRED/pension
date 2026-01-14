@@ -1,3 +1,4 @@
+///home/hp/JERE/AutoNest/app/dashboard/customer/reports/page.tsx
 "use client";
 
 import { useEffect, useState } from "react";
@@ -5,8 +6,9 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { 
   FileText, Download, Trash2, RefreshCw, Plus, 
-  Calendar, User, Receipt, Eye, Loader2, Search
+  Calendar, User, Receipt, Eye, Search
 } from "lucide-react";
+import { DashboardSectionLoader, ButtonLoader } from "@/app/components/loaders";
 import { reportsApi, dashboardApi, userApi } from "@/app/lib/api-client";
 
 interface Report {
@@ -209,10 +211,7 @@ export default function CustomerReportsPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950 px-4 sm:px-6 lg:px-8 py-8">
-        <div className="flex items-center justify-center py-20">
-          <Loader2 className="w-12 h-12 animate-spin text-indigo-600 dark:text-indigo-400" />
-          <p className="ml-4 text-gray-600 dark:text-gray-400 font-medium">Loading reports...</p>
-        </div>
+        <DashboardSectionLoader message="Loading reports..." />
       </div>
     );
   }
@@ -220,21 +219,21 @@ export default function CustomerReportsPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950 px-4 sm:px-6 lg:px-8 py-8 space-y-6">
       {/* Header */}
-      <div className="bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-700 dark:to-purple-700 text-white rounded-2xl shadow-lg p-6 sm:p-8 transition-colors duration-300">
+      <div className="bg-gradient-to-r from-orange-600 to-blue-600 dark:from-orange-700 dark:to-blue-700 text-white rounded-2xl shadow-lg p-6 sm:p-8 transition-colors duration-300">
         <div className="flex items-center justify-between flex-wrap gap-4">
           <div>
             <h1 className="text-3xl sm:text-4xl font-bold flex items-center gap-3">
               <FileText size={32} />
               My Reports
             </h1>
-            <p className="text-indigo-100 dark:text-indigo-200 mt-2">
+            <p className="text-orange-100 dark:text-orange-200 mt-2">
               Generate, view, and manage your financial reports
             </p>
           </div>
           <button
             onClick={loadReports}
             disabled={loading}
-            className="flex items-center gap-2 bg-white text-indigo-600 dark:text-indigo-700 px-6 py-3 rounded-xl hover:bg-indigo-50 dark:hover:bg-gray-100 transition font-semibold shadow-lg disabled:opacity-50"
+            className="flex items-center gap-2 bg-white text-orange-600 dark:text-orange-700 px-6 py-3 rounded-xl hover:bg-orange-50 dark:hover:bg-gray-100 transition font-semibold shadow-lg disabled:opacity-50"
           >
             <RefreshCw size={20} className={loading ? "animate-spin" : ""} />
             Refresh
@@ -242,29 +241,28 @@ export default function CustomerReportsPage() {
         </div>
       </div>
 
-      {/* Generate Reports Section */}
+      {/* Report Generation Section */}
       <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl border border-gray-200 dark:border-gray-700 rounded-2xl shadow-xl p-6 transition-colors duration-300">
         <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
-          <Plus size={24} className="text-indigo-600 dark:text-indigo-500" />
+          <Plus size={24} className="text-orange-600 dark:text-orange-500" />
           Generate New Report
         </h2>
-
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <button
             onClick={handleGenerateMyReport}
             disabled={generating}
-            className="flex flex-col items-center gap-3 bg-gradient-to-br from-purple-500 to-purple-600 dark:from-purple-600 dark:to-purple-700 text-white p-6 rounded-xl hover:from-purple-600 hover:to-purple-700 dark:hover:from-purple-700 dark:hover:to-purple-800 transition shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex flex-col items-center gap-3 bg-gradient-to-br from-orange-500 to-orange-600 dark:from-orange-600 dark:to-orange-700 text-white p-6 rounded-xl hover:from-orange-600 hover:to-orange-700 dark:hover:from-orange-700 dark:hover:to-orange-800 transition shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {generating ? (
               <>
-                <Loader2 className="w-12 h-12 animate-spin" />
+                <ButtonLoader />
                 <span className="font-semibold">Generating...</span>
               </>
             ) : (
               <>
                 <User size={48} />
                 <span className="font-semibold text-lg">My Account Report</span>
-                <span className="text-sm text-purple-100 dark:text-purple-200">
+                <span className="text-sm text-orange-100 dark:text-orange-200">
                   Complete account summary & details
                 </span>
               </>
@@ -278,7 +276,7 @@ export default function CustomerReportsPage() {
           >
             {generating ? (
               <>
-                <Loader2 className="w-12 h-12 animate-spin" />
+                <ButtonLoader />
                 <span className="font-semibold">Generating...</span>
               </>
             ) : (

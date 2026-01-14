@@ -1,3 +1,4 @@
+///home/hp/JERE/AutoNest/app/dashboard/admin/accounts/create/page.tsx
 "use client";
 
 import { useEffect, useState } from "react";
@@ -5,7 +6,8 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import DashboardLayout from "@/app/dashboard/DashboardLayout";
 import { accountsApi, userApi, accountTypeApi } from "@/app/lib/api-client";
-import { Plus, Search, Loader2, ArrowLeft, CheckCircle } from "lucide-react";
+import { Plus, Search, ArrowLeft, CheckCircle } from "lucide-react";
+import { DashboardSectionLoader, ButtonLoader } from "@/app/components/loaders";
 
 interface User {
   id: string;
@@ -123,10 +125,7 @@ export default function AdminCreateAccountPage() {
     return (
       <DashboardLayout userType="admin" firstName={currentUser?.firstName} lastName={currentUser?.lastName}>
         <div className="px-4 sm:px-6 lg:px-8 py-8">
-          <div className="flex items-center justify-center py-20">
-            <Loader2 className="w-12 h-12 animate-spin text-red-600" />
-            <p className="ml-4 text-gray-600 font-medium">Loading...</p>
-          </div>
+          <DashboardSectionLoader message="Loading..." />
         </div>
       </DashboardLayout>
     );
@@ -139,13 +138,11 @@ export default function AdminCreateAccountPage() {
         <div className="mb-8">
           <button
             onClick={() => router.push('/dashboard/admin/accounts')}
-            className="flex items-center gap-2 text-indigo-600 hover:underline mb-4"
+            className="flex items-center gap-2 text-orange-600 hover:underline mb-4"
           >
             <ArrowLeft size={20} />
             Back to Accounts
           </button>
-          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Create Pension Account</h1>
-          <p className="text-gray-600 mt-2">Create a new pension account for a customer</p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -229,7 +226,7 @@ export default function AdminCreateAccountPage() {
                   value={formData.initialBalance}
                   onChange={(e) => setFormData({ ...formData, initialBalance: e.target.value })}
                   placeholder="0.00"
-                  className="w-full border border-gray-300 rounded-xl p-3 focus:ring-2 focus:ring-indigo-500"
+                  className="w-full border border-gray-300 rounded-xl p-3 focus:ring-2 focus:ring-orange-500"
                   min="0"
                 />
                 <p className="text-xs text-gray-500 mt-1">
@@ -241,11 +238,11 @@ export default function AdminCreateAccountPage() {
               <button
                 type="submit"
                 disabled={submitting || !formData.userId || !formData.accountTypeId}
-                className="w-full flex items-center justify-center gap-2 bg-indigo-600 text-white py-3 px-4 rounded-xl hover:bg-indigo-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition font-semibold"
+                className="w-full flex items-center justify-center gap-2 bg-orange-600 text-white py-3 px-4 rounded-xl hover:bg-orange-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition font-semibold"
               >
                 {submitting ? (
                   <>
-                    <Loader2 className="w-5 h-5 animate-spin" />
+                    <ButtonLoader />
                     Creating Account...
                   </>
                 ) : (

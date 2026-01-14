@@ -5,7 +5,8 @@ import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import { accountsApi } from "@/app/lib/api-client";
-import { CreditCard, DollarSign, Loader2, TrendingUp, X, AlertCircle } from "lucide-react";
+import { CreditCard, DollarSign, TrendingUp, X, AlertCircle } from "lucide-react";
+import { DashboardSectionLoader, ButtonLoader } from "@/app/components/loaders";
 
 interface Account {
   id: string;
@@ -181,7 +182,7 @@ function DepositModal({ isOpen, onClose, account, onSuccess }: DepositModalProps
             >
               {submitting ? (
                 <>
-                  <Loader2 className="w-5 h-5 animate-spin" />
+                  <ButtonLoader />
                   Processing...
                 </>
               ) : (
@@ -291,10 +292,7 @@ export default function CustomerContributionsPage() {
   if (loading) {
     return (
       <div className="px-4 sm:px-6 lg:px-8 py-8">
-        <div className="flex items-center justify-center py-20">
-          <div className="h-12 w-12 border-4 border-indigo-600 dark:border-indigo-400 border-t-transparent rounded-full animate-spin"></div>
-          <p className="ml-4 text-gray-600 dark:text-gray-400 font-medium">Loading...</p>
-        </div>
+        <DashboardSectionLoader message="Loading..." />
       </div>
     );
   }
@@ -448,7 +446,7 @@ export default function CustomerContributionsPage() {
                   >
                     {submitting ? (
                       <>
-                        <Loader2 className="w-5 h-5 animate-spin" />
+                        <ButtonLoader />
                         Processing...
                       </>
                     ) : (

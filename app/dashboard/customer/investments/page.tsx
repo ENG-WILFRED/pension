@@ -3,7 +3,8 @@
 import { useEffect, useState } from "react";
 import { accountsApi } from "@/app/lib/api-client";
 import { toast } from "sonner";
-import { TrendingUp, DollarSign, PieChart, Calendar, Loader2 } from "lucide-react";
+import { TrendingUp, DollarSign, PieChart, Calendar } from "lucide-react";
+import { DashboardSectionLoader } from "@/app/components/loaders";
 
 interface Account {
   id: string;
@@ -44,10 +45,7 @@ export default function CustomerInvestmentsPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-orange-50/30 to-slate-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 px-4 sm:px-6 lg:px-8 py-8 transition-colors duration-300">
-        <div className="flex items-center justify-center py-20">
-          <Loader2 className="w-12 h-12 animate-spin text-orange-600 dark:text-orange-400" />
-          <p className="ml-4 text-slate-600 dark:text-slate-400 font-medium">Loading investment data...</p>
-        </div>
+        <DashboardSectionLoader message="Loading investment data..." />
       </div>
     );
   }

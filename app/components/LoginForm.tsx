@@ -1,3 +1,4 @@
+///home/hp/JERE/AutoNest/app/components/LoginForm.tsx
 'use client';
 
 import { FormEvent, useState } from 'react';
@@ -5,7 +6,8 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { authApi } from '@/app/lib/api-client';
 import { toast } from 'sonner';
-import { Loader2, Mail, Lock, ArrowRight, Shield, TrendingUp, Users } from 'lucide-react';
+import { ButtonLoader } from '@/app/components/loaders';
+import { Mail, Lock, ArrowRight, Shield, TrendingUp, Users } from 'lucide-react';
 
 export default function LoginForm() {
   const router = useRouter();
@@ -32,10 +34,14 @@ export default function LoginForm() {
       const idRaw = identifier.trim();
       const pwd = password.trim();
 
+      console.log('[Login] Submitting:', { identifier: idRaw, passwordLength: pwd.length });
+
       const result = await authApi.login({
         identifier: idRaw,
         password: pwd,
       });
+
+      console.log('[Login] Response:', result);
 
       if (!result.success) {
         const errorMsg = result.error || 'Failed to initiate login';
@@ -243,7 +249,7 @@ export default function LoginForm() {
               >
                 {loading ? (
                   <>
-                    <Loader2 className="w-5 h-5 animate-spin" />
+                    <ButtonLoader size="md" />
                     <span>Sending OTP...</span>
                   </>
                 ) : (

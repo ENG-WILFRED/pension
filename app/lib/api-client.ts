@@ -79,6 +79,14 @@ export async function apiCall<T = any>(
     }
   }
 
+  // Debug logging for login endpoint
+  if (endpoint === '/api/auth/login') {
+    console.log('[API] Login request:', {
+      identifier: (JSON.parse(options.body as string) || {}).identifier,
+      passwordLength: (JSON.parse(options.body as string) || {}).password?.length,
+    });
+  }
+
   try {
     const fetchPromise = fetch(url, {
       ...options,
@@ -92,6 +100,16 @@ export async function apiCall<T = any>(
     ]) as Response;
 
     const data = await response.json();
+
+    // Debug logging for login endpoint response
+    if (endpoint === '/api/auth/login') {
+      console.log('[API] Login response:', {
+        status: response.status,
+        success: data.success,
+        error: data.error,
+        message: data.message,
+      });
+    }
 
     if (!response.ok) {
       return {

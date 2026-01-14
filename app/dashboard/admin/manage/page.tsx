@@ -4,7 +4,8 @@
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { userApi, accountTypeApi, accountsApi } from "@/app/lib/api-client";
-import { Plus, Users, CreditCard, Loader2, Search, X } from "lucide-react";
+import { Plus, Users, CreditCard, Search, X } from "lucide-react";
+import { DashboardSectionLoader } from "@/app/components/loaders";
 
 interface User {
   id: string;
@@ -138,10 +139,7 @@ function CreateAccountModal({ isOpen, onClose, onSuccess }: CreateAccountModalPr
         </div>
 
         {loading ? (
-          <div className="flex items-center justify-center py-12">
-            <Loader2 className="w-8 h-8 animate-spin text-indigo-600 dark:text-indigo-400" />
-            <p className="ml-3 text-gray-600 dark:text-gray-300">Loading...</p>
-          </div>
+          <DashboardSectionLoader message="Loading data..." />
         ) : (
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* User Selection */}
@@ -239,11 +237,11 @@ function CreateAccountModal({ isOpen, onClose, onSuccess }: CreateAccountModalPr
               <button
                 type="submit"
                 disabled={submitting || !formData.userId || !formData.accountTypeId}
-                className="flex-1 bg-indigo-600 dark:bg-indigo-700 text-white py-3 px-4 rounded-xl hover:bg-indigo-700 dark:hover:bg-indigo-600 disabled:bg-gray-400 dark:disabled:bg-gray-600 disabled:cursor-not-allowed transition font-semibold flex items-center justify-center gap-2"
+                className="flex-1 bg-gradient-to-r from-orange-600 to-orange-500 dark:from-orange-700 dark:to-orange-600 text-white py-3 px-4 rounded-xl hover:from-orange-700 hover:to-orange-600 dark:hover:from-orange-600 dark:hover:to-orange-500 disabled:from-gray-400 disabled:to-gray-500 dark:disabled:from-gray-600 dark:disabled:to-gray-700 disabled:cursor-not-allowed transition font-semibold flex items-center justify-center gap-2"
               >
                 {submitting ? (
                   <>
-                    <Loader2 className="w-5 h-5 animate-spin" />
+                    <div className="w-5 h-5 rounded-full border-2 border-white/30 border-t-white animate-spin"></div>
                     Creating...
                   </>
                 ) : (

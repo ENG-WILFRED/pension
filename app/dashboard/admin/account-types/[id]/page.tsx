@@ -20,8 +20,8 @@ import {
   Wallet,
   Calendar,
   Info,
-  Loader2,
 } from "lucide-react";
+import { DashboardSectionLoader, MinimalSpinner } from "@/app/components/loaders";
 
 interface AccountType {
   id: string;
@@ -135,10 +135,7 @@ export default function AccountTypeDetailPage() {
     return (
       <DashboardLayout userType="admin" firstName={user?.firstName} lastName={user?.lastName}>
         <div className="px-4 sm:px-6 lg:px-8 py-8">
-          <div className="flex items-center justify-center py-20">
-            <Loader2 className="w-12 h-12 animate-spin text-indigo-600" />
-            <p className="ml-4 text-gray-600 font-medium">Loading account type details...</p>
-          </div>
+          <DashboardSectionLoader message="Loading account type details..." />
         </div>
       </DashboardLayout>
     );
@@ -167,28 +164,24 @@ export default function AccountTypeDetailPage() {
         <div className="mb-8">
           <button
             onClick={() => router.push("/dashboard/admin/account-types")}
-            className="flex items-center gap-2 text-indigo-600 hover:underline mb-4"
+            className="flex items-center gap-2 text-orange-600 hover:underline mb-4"
           >
             <ArrowLeft size={20} />
             Back to Account Types
           </button>
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">{accountType.name}</h1>
-              <p className="text-gray-600 mt-2">{accountType.description}</p>
-            </div>
-            <button
-              onClick={handleEdit}
-              className="flex items-center gap-2 bg-indigo-600 text-white px-6 py-3 rounded-xl hover:bg-indigo-700 transition font-semibold shadow-lg"
-            >
-              <Edit size={20} />
-              Edit
-            </button>
-          </div>
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">{accountType.name}</h1>
+          <p className="text-gray-600 mt-2">{accountType.description}</p>
         </div>
-
-        {/* Status Banner */}
-        <div className="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-2xl shadow-xl p-6 sm:p-8 mb-8 text-white">
+        <div className="flex items-center justify-between mb-8">
+          <button
+            onClick={handleEdit}
+            className="flex items-center gap-2 bg-orange-600 text-white px-6 py-3 rounded-xl hover:bg-orange-700 transition font-semibold shadow-lg"
+          >
+            <Edit size={20} />
+            Edit
+          </button>
+        </div>
+        <div className="bg-gradient-to-r from-orange-600 to-blue-600 rounded-2xl shadow-xl p-6 sm:p-8 mb-8 text-white">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
               <CreditCard size={32} />
@@ -349,7 +342,7 @@ export default function AccountTypeDetailPage() {
 
           {loadingAccounts ? (
             <div className="flex items-center justify-center py-8">
-              <Loader2 className="w-8 h-8 animate-spin text-indigo-600" />
+              <MinimalSpinner />
               <p className="ml-3 text-gray-600">Loading accounts...</p>
             </div>
           ) : accounts.length === 0 ? (

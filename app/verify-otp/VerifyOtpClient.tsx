@@ -6,7 +6,8 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { authApi } from '@/app/lib/api-client';
 import OtpInput from '@/app/components/OtpInput';
 import { toast } from 'sonner';
-import { Loader2, ArrowLeft, Eye, EyeOff, Mail, Lock, Shield, CheckCircle2, Clock } from 'lucide-react';
+import { ArrowLeft, Eye, EyeOff, Mail, Lock, Shield, CheckCircle2, Clock } from 'lucide-react';
+import { ButtonLoader } from '@/app/components/loaders';
 
 export default function VerifyOtpClient() {
   const router = useRouter();
@@ -444,7 +445,7 @@ export default function VerifyOtpClient() {
             >
               {loading ? (
                 <>
-                  <Loader2 className="w-5 h-5 animate-spin" />
+                  <ButtonLoader size="md" />
                   {requireNewPassword ? 'Setting Password...' : 'Verifying...'}
                 </>
               ) : (
@@ -465,7 +466,7 @@ export default function VerifyOtpClient() {
               >
                 {resendLoading ? (
                   <>
-                    <Loader2 className="w-4 h-4 animate-spin" />
+                    <ButtonLoader size="sm" />
                     Sending...
                   </>
                 ) : timer > 0 ? (

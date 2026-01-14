@@ -6,7 +6,8 @@ import { useRouter } from 'next/navigation';
 import { authApi, termsApi } from '@/app/lib/api-client';
 import { registrationSchema, type RegistrationFormData } from '@/app/lib/schemas';
 import { toast } from 'sonner';
-import { Loader2, ArrowRight, ArrowLeft, CheckCircle2, Sparkles, Zap, Lock } from 'lucide-react';
+import { ArrowRight, ArrowLeft, CheckCircle2, Sparkles, Zap, Lock } from 'lucide-react';
+import { ButtonLoader } from '@/app/components/loaders';
 import { ZodError } from 'zod';
 
 // Import section components - UPDATE THESE PATHS TO MATCH YOUR PROJECT STRUCTURE
@@ -712,7 +713,7 @@ export default function RegisterForm() {
                     >
                       {loading ? (
                         <>
-                          <Loader2 className="w-5 h-5 animate-spin" />
+                          <ButtonLoader size="md" />
                           Creating Account...
                         </>
                       ) : (

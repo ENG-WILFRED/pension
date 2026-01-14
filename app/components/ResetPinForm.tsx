@@ -10,7 +10,7 @@ import {
   type VerifyPinResetFormData,
 } from '@/app/lib/schemas';
 import { toast } from 'sonner';
-import { Loader2 } from 'lucide-react';
+import { ButtonLoader } from '@/app/components/loaders';
 import { ZodError } from 'zod';
 
 export default function ResetPinForm() {
@@ -154,7 +154,7 @@ export default function ResetPinForm() {
               disabled={loading}
               className="w-full bg-indigo-600 hover:bg-indigo-700 disabled:bg-gray-400 text-white font-semibold py-3 rounded-lg transition flex items-center justify-center gap-2"
             >
-              {loading && <Loader2 size={18} className="animate-spin" />}
+              {loading && <ButtonLoader size="sm" />}
               {loading ? 'Sending OTP...' : 'Send OTP'}
             </button>
           </form>
@@ -221,7 +221,7 @@ export default function ResetPinForm() {
             disabled={loading}
             className="w-full bg-indigo-600 hover:bg-indigo-700 disabled:bg-gray-400 text-white font-semibold py-3 rounded-lg transition flex items-center justify-center gap-2"
           >
-            {loading && <Loader2 size={18} className="animate-spin" />}
+            {loading && <ButtonLoader size="sm" />}
             {loading ? 'Resetting PIN...' : 'Reset PIN'}
           </button>
 

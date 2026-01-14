@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { authApi } from '@/app/lib/api-client';
 import { toast } from 'sonner';
-import { Loader2 } from 'lucide-react';
+import { ButtonLoader } from '@/app/components/loaders';
 
 interface AuthFormProps {
   isLogin?: boolean;
@@ -438,7 +438,7 @@ export default function AuthForm({ isLogin = false }: AuthFormProps) {
             >
               {loading ? (
                 <>
-                  <Loader2 className="w-5 h-5 animate-spin" />
+                  <ButtonLoader size="md" />
                   {isLogin ? 'Signing In...' : 'Creating Account...'}
                 </>
               ) : isLogin ? (

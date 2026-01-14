@@ -14,10 +14,11 @@ import {
   User,
   CreditCard,
   Shield,
-  Loader2,
   UserX,
   Trash2,
+  Loader2,
 } from "lucide-react";
+import { DashboardSectionLoader } from "@/app/components/loaders";
 import Link from "next/link";
 
 interface UserDetail {
@@ -152,12 +153,7 @@ export default function MemberDetail({
   if (loading) {
     return (
       <div className="px-4 sm:px-6 lg:px-8 py-8">
-        <div className="flex items-center justify-center py-20">
-          <Loader2 className="w-12 h-12 animate-spin text-indigo-600" />
-          <p className="ml-4 text-gray-600 font-medium">
-            Loading user details...
-          </p>
-        </div>
+        <DashboardSectionLoader message="Loading user details..." />
       </div>
     );
   }

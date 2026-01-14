@@ -5,7 +5,8 @@ import { useParams, useRouter } from "next/navigation";
 import DashboardLayout from "@/app/dashboard/DashboardLayout";
 import { accountsApi } from "@/app/lib/api-client";
 import { toast } from "sonner";
-import { CreditCard, Trash, Save, Loader2, ArrowLeft } from "lucide-react";
+import { CreditCard, Trash, Save, ArrowLeft } from "lucide-react";
+import { DashboardSectionLoader, ButtonLoader } from "@/app/components/loaders";
 
 interface BankDetails {
   id?: string;
@@ -141,10 +142,7 @@ export default function AccountBankDetailsCustomerPage() {
         </div>
 
         {loading ? (
-          <div className="flex items-center gap-3">
-            <Loader2 className="w-6 h-6 animate-spin text-indigo-600" />
-            <span className="text-gray-600">Loading bank details...</span>
-          </div>
+          <DashboardSectionLoader message="Loading bank details..." />
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
@@ -204,7 +202,7 @@ export default function AccountBankDetailsCustomerPage() {
                     <button type="submit" disabled={saving} className="px-4 py-2 bg-indigo-600 text-white rounded-lg flex items-center gap-2">
                       {saving ? (
                         <>
-                          <Loader2 className="w-4 h-4 animate-spin" /> Saving...
+                          <ButtonLoader size="sm" /> Saving...
                         </>
                       ) : (
                         <>

@@ -17,11 +17,11 @@ import {
   User,
   Info,
   Activity,
-  Loader2,
   CheckCircle,
   XCircle,
   Clock,
 } from "lucide-react";
+import { DashboardSectionLoader } from "@/app/components/loaders";
 
 interface Account {
   id: string;
@@ -131,10 +131,7 @@ export default function AccountViewPage() {
     return (
       <DashboardLayout userType="admin" firstName={user?.firstName} lastName={user?.lastName}>
         <div className="px-4 sm:px-6 lg:px-8 py-8">
-          <div className="flex items-center justify-center py-20">
-            <Loader2 className="w-12 h-12 animate-spin text-indigo-600" />
-            <p className="ml-4 text-gray-600 font-medium">Loading account details...</p>
-          </div>
+          <DashboardSectionLoader message="Loading account details..." />
         </div>
       </DashboardLayout>
     );
@@ -175,7 +172,7 @@ export default function AccountViewPage() {
         <div className="mb-8">
           <button
             onClick={() => router.push("/dashboard/admin/accounts")}
-            className="flex items-center gap-2 text-indigo-600 hover:underline mb-4"
+            className="flex items-center gap-2 text-orange-600 hover:underline mb-4"
           >
             <ArrowLeft size={20} />
             Back to Accounts
@@ -196,7 +193,7 @@ export default function AccountViewPage() {
               </button>
               <button
                 onClick={() => router.push(`/dashboard/admin/accounts/${account.id}`)}
-                className="bg-indigo-600 text-white px-6 py-3 rounded-xl hover:bg-indigo-700 transition font-semibold shadow-lg"
+                className="bg-orange-600 text-white px-6 py-3 rounded-xl hover:bg-orange-700 transition font-semibold shadow-lg"
               >
                 Manage Account
               </button>

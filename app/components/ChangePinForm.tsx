@@ -4,7 +4,7 @@ import { FormEvent, useState } from 'react';
 import { authApi } from '@/app/lib/api-client';
 import { changePinSchema, type ChangePinFormData } from '@/app/lib/schemas';
 import { toast } from 'sonner';
-import { Loader2 } from 'lucide-react';
+import { ButtonLoader } from '@/app/components/loaders';
 import { ZodError } from 'zod';
 
 interface Props {
@@ -129,7 +129,7 @@ export default function ChangePinForm({ onSuccess }: Props) {
         disabled={loading}
         className="w-full bg-indigo-600 hover:bg-indigo-700 disabled:bg-gray-400 text-white font-semibold py-3 rounded-lg transition flex items-center justify-center gap-2"
       >
-        {loading && <Loader2 size={18} className="animate-spin" />}
+        {loading && <ButtonLoader size="sm" />}
         {loading ? 'Changing PIN...' : 'Change PIN'}
       </button>
     </form>

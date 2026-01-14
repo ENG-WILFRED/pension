@@ -4,7 +4,8 @@
 import { useState } from 'react';
 import { authApi } from '@/app/lib/api-client';
 import { toast } from 'sonner';
-import { Lock, Eye, EyeOff, Loader2, CheckCircle } from 'lucide-react';
+import { Lock, Eye, EyeOff, CheckCircle } from 'lucide-react';
+import { ButtonLoader } from '@/app/components/loaders';
 
 type Props = {
   onSuccess?: () => void;
@@ -237,7 +238,7 @@ export default function ChangePasswordForm({ onSuccess }: Props) {
       >
         {loading ? (
           <>
-            <Loader2 className="w-5 h-5 animate-spin" />
+            <ButtonLoader size="md" />
             Changing Password...
           </>
         ) : (

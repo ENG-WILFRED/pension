@@ -93,16 +93,13 @@ export function ContentCard({ children, className = '', noPadding = false }: Con
   );
 }
 
+import { PageLoader } from '@/app/components/loaders';
+
 /**
  * Loading skeleton for dashboard
  */
 export function DashboardLoading() {
-  return (
-    <div className="h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950 flex flex-col items-center justify-center transition-colors duration-300">
-      <div className="h-12 w-12 border-4 border-indigo-600 dark:border-indigo-400 border-t-transparent rounded-full animate-spin"></div>
-      <p className="mt-4 text-indigo-700 dark:text-indigo-300 font-medium">Loading dashboard...</p>
-    </div>
-  );
+  return <PageLoader />;
 }
 
 /**
