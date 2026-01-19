@@ -47,7 +47,7 @@ export default function CustomerPortfolioPage() {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950 px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex items-center justify-center py-20">
-          <div className="h-12 w-12 border-4 border-indigo-600 dark:border-indigo-400 border-t-transparent rounded-full animate-spin"></div>
+          <div className="h-12 w-12 border-4 border-orange-600 dark:border-orange-400 border-t-transparent rounded-full animate-spin"></div>
           <p className="ml-4 text-gray-600 dark:text-gray-400 font-medium">Loading portfolio...</p>
         </div>
       </div>
@@ -71,13 +71,15 @@ export default function CustomerPortfolioPage() {
       </div>
 
       {/* Total Portfolio Value */}
-      <div className="bg-gradient-to-r from-purple-600 to-indigo-600 dark:from-purple-700 dark:to-indigo-700 rounded-2xl shadow-xl p-6 sm:p-8 mb-8 text-white transition-colors duration-300">
+      <div className="bg-gradient-to-r from-orange-500 via-pink-500 to-purple-600 rounded-2xl shadow-xl p-6 sm:p-8 mb-8 text-white transition-colors duration-300">
         <div className="flex items-center gap-3 mb-4">
-          <Wallet size={32} />
+          <div className="bg-white/20 backdrop-blur-sm p-3 rounded-xl">
+            <Wallet size={28} />
+          </div>
           <h2 className="text-xl font-bold">Total Portfolio Value</h2>
         </div>
         <p className="text-4xl sm:text-5xl font-bold">KES {Number(totalBalance ?? 0).toLocaleString()}</p>
-        <p className="text-purple-100 dark:text-purple-200 mt-2">Across {accounts.length} pension account(s)</p>
+        <p className="text-white/90 mt-2">Across {accounts.length} pension account(s)</p>
       </div>
 
       {/* Asset Allocation */}
@@ -103,7 +105,7 @@ export default function CustomerPortfolioPage() {
                 </div>
                 <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3">
                   <div 
-                    className="bg-gradient-to-r from-green-500 to-green-600 dark:from-green-600 dark:to-green-700 h-3 rounded-full transition-all"
+                    className="bg-gradient-to-r from-orange-500 to-orange-600 dark:from-orange-600 dark:to-orange-700 h-3 rounded-full transition-all"
                     style={{width: `${employeePercent}%`}}
                   />
                 </div>
@@ -118,7 +120,7 @@ export default function CustomerPortfolioPage() {
                 </div>
                 <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3">
                   <div 
-                    className="bg-gradient-to-r from-blue-500 to-blue-600 dark:from-blue-600 dark:to-blue-700 h-3 rounded-full transition-all"
+                    className="bg-gradient-to-r from-pink-500 to-pink-600 dark:from-pink-600 dark:to-pink-700 h-3 rounded-full transition-all"
                     style={{width: `${employerPercent}%`}}
                   />
                 </div>
@@ -147,7 +149,7 @@ export default function CustomerPortfolioPage() {
         <div className="space-y-6">
           <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl border border-gray-200 dark:border-gray-700 rounded-xl shadow-lg p-6 transition-colors duration-300">
             <div className="flex items-center gap-2 mb-4">
-              <TrendingUp size={20} className="text-green-600 dark:text-green-500" />
+              <TrendingUp size={20} className="text-orange-600 dark:text-orange-500" />
               <span className="text-sm font-semibold text-gray-600 dark:text-gray-400">Growth Rate</span>
             </div>
             <p className="text-3xl font-bold text-gray-900 dark:text-gray-100">+12.5%</p>
@@ -156,7 +158,7 @@ export default function CustomerPortfolioPage() {
 
           <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl border border-gray-200 dark:border-gray-700 rounded-xl shadow-lg p-6 transition-colors duration-300">
             <div className="flex items-center gap-2 mb-4">
-              <Target size={20} className="text-indigo-600 dark:text-indigo-500" />
+              <Target size={20} className="text-pink-600 dark:text-pink-500" />
               <span className="text-sm font-semibold text-gray-600 dark:text-gray-400">Retirement Goal</span>
             </div>
             <p className="text-3xl font-bold text-gray-900 dark:text-gray-100">68%</p>
@@ -185,12 +187,12 @@ export default function CustomerPortfolioPage() {
               return (
                 <div 
                   key={account.id}
-                  className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl border border-gray-200 dark:border-gray-700 rounded-xl shadow-lg p-6 transition-colors duration-300"
+                  className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl border border-gray-200 dark:border-gray-700 rounded-xl shadow-lg p-6 hover:shadow-xl hover:border-orange-300 dark:hover:border-orange-600 transition-all duration-300"
                 >
                   <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-4">{account.accountType.name}</h3>
                   
                   <div className="mb-4">
-                      <p className="text-3xl font-bold text-gray-900 dark:text-gray-100">
+                    <p className="text-3xl font-bold text-gray-900 dark:text-gray-100">
                       KES {Number(account.totalBalance ?? 0).toLocaleString()}
                     </p>
                     <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">{accountPercent}% of total portfolio</p>
@@ -211,7 +213,7 @@ export default function CustomerPortfolioPage() {
                     </div>
                     <div className="flex justify-between">
                       <span className="text-gray-600 dark:text-gray-400">Earnings:</span>
-                      <span className="font-semibold text-green-600 dark:text-green-500">
+                      <span className="font-semibold text-orange-600 dark:text-orange-500">
                         {Number(account.earningsBalance ?? 0).toLocaleString()}
                       </span>
                     </div>
@@ -224,12 +226,12 @@ export default function CustomerPortfolioPage() {
       </div>
 
       {/* Insights & Recommendations */}
-      <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-2xl p-6 transition-colors duration-300">
+      <div className="bg-gradient-to-r from-orange-50 to-orange-100/50 dark:from-orange-900/20 dark:to-orange-800/10 border border-orange-200 dark:border-orange-700 rounded-2xl p-6 transition-colors duration-300">
         <div className="flex items-start gap-3">
-          <AlertCircle size={24} className="text-blue-600 dark:text-blue-500 flex-shrink-0 mt-1" />
+          <AlertCircle size={24} className="text-orange-600 dark:text-orange-500 flex-shrink-0 mt-1" />
           <div>
-            <h3 className="text-lg font-bold text-blue-900 dark:text-blue-300 mb-2">Portfolio Insights</h3>
-            <ul className="space-y-2 text-sm text-blue-800 dark:text-blue-400">
+            <h3 className="text-lg font-bold text-orange-900 dark:text-orange-300 mb-2">Portfolio Insights</h3>
+            <ul className="space-y-2 text-sm text-orange-800 dark:text-orange-400">
               <li>✓ Your portfolio is well-balanced with a good mix of contributions and earnings</li>
               <li>✓ Investment returns are performing above the industry average of 8%</li>
               <li>✓ Consider increasing monthly contributions to reach retirement goals faster</li>

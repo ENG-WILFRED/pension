@@ -1,4 +1,3 @@
-///home/hp/JERE/AutoNest/app/dashboard/customer/reports/page.tsx
 "use client";
 
 import { useEffect, useState } from "react";
@@ -219,21 +218,21 @@ export default function CustomerReportsPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950 px-4 sm:px-6 lg:px-8 py-8 space-y-6">
       {/* Header */}
-      <div className="bg-gradient-to-r from-orange-600 to-blue-600 dark:from-orange-700 dark:to-blue-700 text-white rounded-2xl shadow-lg p-6 sm:p-8 transition-colors duration-300">
+      <div className="bg-gradient-to-r from-orange-500 via-pink-500 to-purple-600 text-white rounded-2xl shadow-lg p-6 sm:p-8 transition-colors duration-300">
         <div className="flex items-center justify-between flex-wrap gap-4">
           <div>
             <h1 className="text-3xl sm:text-4xl font-bold flex items-center gap-3">
               <FileText size={32} />
               My Reports
             </h1>
-            <p className="text-orange-100 dark:text-orange-200 mt-2">
+            <p className="text-white/90 mt-2">
               Generate, view, and manage your financial reports
             </p>
           </div>
           <button
             onClick={loadReports}
             disabled={loading}
-            className="flex items-center gap-2 bg-white text-orange-600 dark:text-orange-700 px-6 py-3 rounded-xl hover:bg-orange-50 dark:hover:bg-gray-100 transition font-semibold shadow-lg disabled:opacity-50"
+            className="flex items-center gap-2 bg-white text-orange-600 px-6 py-3 rounded-xl hover:bg-orange-50 transition font-semibold shadow-lg disabled:opacity-50"
           >
             <RefreshCw size={20} className={loading ? "animate-spin" : ""} />
             Refresh
@@ -251,7 +250,7 @@ export default function CustomerReportsPage() {
           <button
             onClick={handleGenerateMyReport}
             disabled={generating}
-            className="flex flex-col items-center gap-3 bg-gradient-to-br from-orange-500 to-orange-600 dark:from-orange-600 dark:to-orange-700 text-white p-6 rounded-xl hover:from-orange-600 hover:to-orange-700 dark:hover:from-orange-700 dark:hover:to-orange-800 transition shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex flex-col items-center gap-3 bg-gradient-to-r from-orange-500 via-orange-600 to-pink-600 text-white p-6 rounded-xl hover:from-orange-600 hover:via-orange-700 hover:to-pink-700 transition shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {generating ? (
               <>
@@ -262,7 +261,7 @@ export default function CustomerReportsPage() {
               <>
                 <User size={48} />
                 <span className="font-semibold text-lg">My Account Report</span>
-                <span className="text-sm text-orange-100 dark:text-orange-200">
+                <span className="text-sm text-white/90">
                   Complete account summary & details
                 </span>
               </>
@@ -272,7 +271,7 @@ export default function CustomerReportsPage() {
           <button
             onClick={handleGenerateTransactionReport}
             disabled={generating}
-            className="flex flex-col items-center gap-3 bg-gradient-to-br from-blue-500 to-blue-600 dark:from-blue-600 dark:to-blue-700 text-white p-6 rounded-xl hover:from-blue-600 hover:to-blue-700 dark:hover:from-blue-700 dark:hover:to-blue-800 transition shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex flex-col items-center gap-3 bg-gradient-to-r from-orange-500 via-pink-500 to-purple-600 text-white p-6 rounded-xl hover:from-orange-600 hover:via-pink-600 hover:to-purple-700 transition shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {generating ? (
               <>
@@ -283,7 +282,7 @@ export default function CustomerReportsPage() {
               <>
                 <Receipt size={48} />
                 <span className="font-semibold text-lg">Transaction Report</span>
-                <span className="text-sm text-blue-100 dark:text-blue-200">
+                <span className="text-sm text-white/90">
                   All your transactions
                 </span>
               </>
@@ -304,7 +303,7 @@ export default function CustomerReportsPage() {
             placeholder="Search reports by title, type, or filename..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300"
+            className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300"
           />
         </div>
       </div>
@@ -325,7 +324,7 @@ export default function CustomerReportsPage() {
             <button
               onClick={handleGenerateMyReport}
               disabled={generating}
-              className="px-6 py-3 bg-indigo-600 dark:bg-indigo-500 text-white rounded-lg hover:bg-indigo-700 dark:hover:bg-indigo-600 transition disabled:opacity-50"
+              className="px-6 py-3 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition disabled:opacity-50"
             >
               {generating ? "Generating..." : "Generate My Report"}
             </button>
@@ -336,17 +335,17 @@ export default function CustomerReportsPage() {
           {filteredReports.map((report) => (
             <div
               key={report.id}
-              className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl border border-gray-200 dark:border-gray-700 rounded-xl shadow-lg p-6 hover:shadow-xl transition-all duration-300"
+              className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl border border-gray-200 dark:border-gray-700 rounded-xl shadow-lg p-6 hover:shadow-xl hover:border-orange-300 dark:hover:border-orange-600 transition-all duration-300"
             >
               <div className="flex items-start justify-between mb-4">
                 <div className="flex items-center gap-3">
                   {report.type === "transaction" ? (
-                    <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center">
-                      <Receipt className="text-blue-600 dark:text-blue-400" size={24} />
+                    <div className="w-12 h-12 bg-pink-100 dark:bg-pink-900/30 rounded-lg flex items-center justify-center">
+                      <Receipt className="text-pink-600 dark:text-pink-400" size={24} />
                     </div>
                   ) : (
-                    <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900/30 rounded-lg flex items-center justify-center">
-                      <User className="text-purple-600 dark:text-purple-400" size={24} />
+                    <div className="w-12 h-12 bg-orange-100 dark:bg-orange-900/30 rounded-lg flex items-center justify-center">
+                      <User className="text-orange-600 dark:text-orange-400" size={24} />
                     </div>
                   )}
                   <div>
@@ -370,7 +369,7 @@ export default function CustomerReportsPage() {
               <div className="grid grid-cols-3 gap-2">
                 <button
                   onClick={() => handleView(report)}
-                  className="flex items-center justify-center gap-1 px-3 py-2 bg-indigo-600 dark:bg-indigo-500 text-white rounded-lg hover:bg-indigo-700 dark:hover:bg-indigo-600 transition text-xs"
+                  className="flex items-center justify-center gap-1 px-3 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition text-xs"
                   title="View Report"
                 >
                   <Eye size={14} />
@@ -378,7 +377,7 @@ export default function CustomerReportsPage() {
                 </button>
                 <button
                   onClick={() => handleDownload(report)}
-                  className="flex items-center justify-center gap-1 px-3 py-2 bg-green-600 dark:bg-green-500 text-white rounded-lg hover:bg-green-700 dark:hover:bg-green-600 transition text-xs"
+                  className="flex items-center justify-center gap-1 px-3 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition text-xs"
                   title="Download Report"
                 >
                   <Download size={14} />
@@ -413,7 +412,7 @@ export default function CustomerReportsPage() {
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => handleDownload(viewingReport)}
-                  className="flex items-center gap-2 px-4 py-2 bg-green-600 dark:bg-green-500 text-white rounded-lg hover:bg-green-700 dark:hover:bg-green-600 transition"
+                  className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
                 >
                   <Download size={16} />
                   Download

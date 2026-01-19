@@ -1,4 +1,3 @@
-///home/hp/JERE/AutoNest/app/dashboard/customer/contributions/page.tsx
 "use client";
 
 import { useEffect, useState } from "react";
@@ -45,8 +44,6 @@ function DepositModal({ isOpen, onClose, account, onSuccess }: DepositModalProps
     setSubmitting(true);
 
     try {
-      // Determine account number: prefer the provided account.accountNumber,
-      // otherwise try to read the currently logged-in user's associated account from localStorage.
       let accountIdentifier: string | undefined = account.accountNumber || account.id;
 
       if (!accountIdentifier) {
@@ -54,7 +51,6 @@ function DepositModal({ isOpen, onClose, account, onSuccess }: DepositModalProps
         if (userStr) {
           try {
             const u = JSON.parse(userStr);
-            // Common shapes: u.accounts = [{ accountNumber }], or u.accountNumber
             if (Array.isArray(u.accounts) && u.accounts.length > 0) {
               accountIdentifier = u.accounts[0].accountNumber || u.accounts[0].id;
             } else if (u.accountNumber) {
@@ -74,7 +70,6 @@ function DepositModal({ isOpen, onClose, account, onSuccess }: DepositModalProps
         return;
       }
 
-      // Only send the allowed fields: amount, phone, description
       const payload = {
         amount: parseFloat(amount),
         phone,
@@ -126,7 +121,7 @@ function DepositModal({ isOpen, onClose, account, onSuccess }: DepositModalProps
             <p className="text-sm text-gray-600 dark:text-gray-400">Account: {account.accountNumber}</p>
           )}
           <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
-            Current Balance: <span className="font-semibold text-indigo-600 dark:text-indigo-400">
+            Current Balance: <span className="font-semibold text-orange-600 dark:text-orange-400">
               KES {(account.totalBalance ?? 0).toLocaleString()}
             </span>
           </p>
@@ -143,7 +138,7 @@ function DepositModal({ isOpen, onClose, account, onSuccess }: DepositModalProps
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
               placeholder="Enter amount"
-              className="w-full border border-gray-300 dark:border-gray-600 rounded-xl p-3 focus:ring-2 focus:ring-green-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 transition-colors duration-300"
+              className="w-full border border-gray-300 dark:border-gray-600 rounded-xl p-3 focus:ring-2 focus:ring-orange-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 transition-colors duration-300"
               required
               min="1"
             />
@@ -158,7 +153,7 @@ function DepositModal({ isOpen, onClose, account, onSuccess }: DepositModalProps
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
               placeholder="+254712345678"
-              className="w-full border border-gray-300 dark:border-gray-600 rounded-xl p-3 focus:ring-2 focus:ring-green-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 transition-colors duration-300"
+              className="w-full border border-gray-300 dark:border-gray-600 rounded-xl p-3 focus:ring-2 focus:ring-orange-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 transition-colors duration-300"
               required
               pattern="^\+254\d{9}$"
             />
@@ -368,7 +363,7 @@ export default function CustomerContributionsPage() {
                     <select
                       value={selectedAccountId}
                       onChange={(e) => setSelectedAccountId(e.target.value)}
-                      className="w-full border border-gray-300 dark:border-gray-600 rounded-xl p-3 focus:ring-2 focus:ring-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 transition-colors duration-300"
+                      className="w-full border border-gray-300 dark:border-gray-600 rounded-xl p-3 focus:ring-2 focus:ring-orange-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 transition-colors duration-300"
                       required
                     >
                       {accounts.map((account) => (
@@ -393,7 +388,7 @@ export default function CustomerContributionsPage() {
                       value={formData.employeeAmount}
                       onChange={(e) => setFormData({ ...formData, employeeAmount: e.target.value })}
                       placeholder="0.00"
-                      className="w-full border border-gray-300 dark:border-gray-600 rounded-xl p-3 focus:ring-2 focus:ring-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 transition-colors duration-300"
+                      className="w-full border border-gray-300 dark:border-gray-600 rounded-xl p-3 focus:ring-2 focus:ring-orange-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 transition-colors duration-300"
                     />
                   </div>
 
@@ -408,7 +403,7 @@ export default function CustomerContributionsPage() {
                       value={formData.employerAmount}
                       onChange={(e) => setFormData({ ...formData, employerAmount: e.target.value })}
                       placeholder="0.00"
-                      className="w-full border border-gray-300 dark:border-gray-600 rounded-xl p-3 focus:ring-2 focus:ring-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 transition-colors duration-300"
+                      className="w-full border border-gray-300 dark:border-gray-600 rounded-xl p-3 focus:ring-2 focus:ring-orange-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 transition-colors duration-300"
                     />
                   </div>
 
@@ -422,16 +417,16 @@ export default function CustomerContributionsPage() {
                       onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                       placeholder="e.g., Monthly contribution for December"
                       rows={3}
-                      className="w-full border border-gray-300 dark:border-gray-600 rounded-xl p-3 focus:ring-2 focus:ring-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 transition-colors duration-300"
+                      className="w-full border border-gray-300 dark:border-gray-600 rounded-xl p-3 focus:ring-2 focus:ring-orange-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 transition-colors duration-300"
                     />
                   </div>
 
                   {/* Total */}
                   {(formData.employeeAmount || formData.employerAmount) && (
-                    <div className="bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-200 dark:border-indigo-700 rounded-xl p-4 transition-colors duration-300">
+                    <div className="bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-700 rounded-xl p-4 transition-colors duration-300">
                       <div className="flex justify-between items-center">
-                        <span className="text-sm font-semibold text-indigo-900 dark:text-indigo-300">Total Contribution:</span>
-                        <span className="text-2xl font-bold text-indigo-900 dark:text-indigo-200">
+                        <span className="text-sm font-semibold text-orange-900 dark:text-orange-300">Total Contribution:</span>
+                        <span className="text-2xl font-bold text-orange-900 dark:text-orange-200">
                           KES {((parseFloat(formData.employeeAmount) || 0) + (parseFloat(formData.employerAmount) || 0)).toLocaleString()}
                         </span>
                       </div>
@@ -442,7 +437,7 @@ export default function CustomerContributionsPage() {
                   <button
                     type="submit"
                     disabled={submitting || (!formData.employeeAmount && !formData.employerAmount)}
-                    className="w-full flex items-center justify-center gap-2 bg-indigo-600 dark:bg-indigo-500 text-white py-3 px-4 rounded-xl hover:bg-indigo-700 dark:hover:bg-indigo-600 disabled:bg-gray-400 dark:disabled:bg-gray-600 disabled:cursor-not-allowed transition font-semibold"
+                    className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-orange-500 to-orange-600 text-white py-3 px-4 rounded-xl hover:from-orange-600 hover:to-orange-700 disabled:bg-gray-400 dark:disabled:bg-gray-600 disabled:cursor-not-allowed transition font-semibold shadow-lg"
                   >
                     {submitting ? (
                       <>
@@ -475,7 +470,7 @@ export default function CustomerContributionsPage() {
               <button
                 onClick={handleDepositClick}
                 disabled={!selectedAccountId || accounts.length === 0}
-                className="w-full bg-green-600 dark:bg-green-500 text-white py-3 px-4 rounded-xl hover:bg-green-700 dark:hover:bg-green-600 disabled:bg-gray-400 dark:disabled:bg-gray-600 disabled:cursor-not-allowed transition font-semibold"
+                className="w-full bg-gradient-to-r from-orange-500 to-orange-600 text-white py-3 px-4 rounded-xl hover:from-orange-600 hover:to-orange-700 disabled:bg-gray-400 dark:disabled:bg-gray-600 disabled:cursor-not-allowed transition font-semibold shadow-lg"
               >
                 Deposit via M-Pesa
               </button>
@@ -488,7 +483,7 @@ export default function CustomerContributionsPage() {
 
             {/* Account Summary */}
             {selectedAccount && (
-              <div className="bg-gradient-to-br from-indigo-600 to-purple-600 dark:from-indigo-700 dark:to-purple-700 rounded-2xl shadow-lg p-6 text-white transition-colors duration-300">
+              <div className="bg-gradient-to-r from-orange-500 via-pink-500 to-purple-600 rounded-2xl shadow-lg p-6 text-white transition-colors duration-300">
                 <h3 className="text-lg font-bold mb-2">Selected Account</h3>
                 <p className="text-sm opacity-90 mb-1">{selectedAccount.accountType.name}</p>
                 {selectedAccount.accountNumber && (

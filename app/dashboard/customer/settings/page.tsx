@@ -53,7 +53,7 @@ export default function CustomerSettings() {
             onClick={() => setActiveTab('general')}
             className={`px-4 py-2 rounded-lg font-semibold text-sm whitespace-nowrap transition ${
               activeTab === 'general' 
-                ? 'bg-indigo-600 dark:bg-indigo-500 text-white' 
+                ? 'bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-lg' 
                 : 'bg-white/80 dark:bg-gray-800/80 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700'
             }`}
           >
@@ -66,7 +66,7 @@ export default function CustomerSettings() {
             onClick={() => setActiveTab('security')}
             className={`px-4 py-2 rounded-lg font-semibold text-sm whitespace-nowrap transition ${
               activeTab === 'security' 
-                ? 'bg-indigo-600 dark:bg-indigo-500 text-white' 
+                ? 'bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-lg' 
                 : 'bg-white/80 dark:bg-gray-800/80 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700'
             }`}
           >
@@ -79,7 +79,7 @@ export default function CustomerSettings() {
             onClick={() => setActiveTab('notifications')}
             className={`px-4 py-2 rounded-lg font-semibold text-sm whitespace-nowrap transition ${
               activeTab === 'notifications' 
-                ? 'bg-indigo-600 dark:bg-indigo-500 text-white' 
+                ? 'bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-lg' 
                 : 'bg-white/80 dark:bg-gray-800/80 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700'
             }`}
           >
@@ -120,7 +120,7 @@ export default function CustomerSettings() {
                 </div>
               </div>
 
-              <p className="text-sm text-gray-600 dark:text-gray-400 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-lg p-3">
+              <p className="text-sm text-gray-600 dark:text-gray-400 bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-700 rounded-lg p-3">
                 <strong>Note:</strong> To update your personal information, please contact customer support.
               </p>
             </div>
@@ -141,7 +141,7 @@ export default function CustomerSettings() {
                 <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">Update your account password</p>
                 <button
                   onClick={() => setShowPasswordModal(true)}
-                  className="px-4 py-2 bg-indigo-600 text-white rounded-md font-medium hover:bg-indigo-700"
+                  className="px-4 py-2 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-lg font-medium hover:from-orange-600 hover:to-orange-700 shadow-lg"
                 >
                   Change Password
                 </button>
@@ -158,37 +158,20 @@ export default function CustomerSettings() {
                 <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">Update your 4-digit security PIN</p>
                 <button
                   onClick={() => setShowPinModal(true)}
-                  className="px-4 py-2 bg-indigo-600 text-white rounded-md font-medium hover:bg-indigo-700"
+                  className="px-4 py-2 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-lg font-medium hover:from-orange-600 hover:to-orange-700 shadow-lg"
                 >
                   Change PIN
                 </button>
               </div>
             </div>
 
-            <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-xl p-4 transition-colors duration-300">
-              <p className="text-sm text-blue-900 dark:text-blue-300">
-                <strong>Forgot your PIN or Password?</strong> Visit the <a href="/reset-pin" className="underline font-semibold hover:text-blue-700 dark:hover:text-blue-400">PIN Reset page</a> or use the forgot password option on the login page.
+            <div className="bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-700 rounded-xl p-4 transition-colors duration-300">
+              <p className="text-sm text-orange-900 dark:text-orange-300">
+                <strong>Forgot your PIN or Password?</strong> Visit the <a href="/reset-pin" className="underline font-semibold hover:text-orange-700 dark:hover:text-orange-400">PIN Reset page</a> or use the forgot password option on the login page.
               </p>
             </div>
-
-
           </div>
         )}
-
-        {/* Password modal */}
-        {showPasswordModal && (
-          <div className="fixed inset-0 bg-black/50 dark:bg-black/70 flex items-center justify-center z-50 p-4">
-            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-lg w-full p-6">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-bold text-gray-900 dark:text-white">Change Password</h3>
-                <button onClick={() => setShowPasswordModal(false)} className="text-gray-500 hover:text-gray-700">✕</button>
-              </div>
-              <ChangePasswordForm onSuccess={() => setShowPasswordModal(false)} />
-            </div>
-          </div>
-        )}
-
-
 
         {activeTab === 'notifications' && (
           <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl border border-gray-200 dark:border-gray-700 rounded-2xl shadow-lg p-6 sm:p-8 transition-colors duration-300">
@@ -249,7 +232,7 @@ export default function CustomerSettings() {
               <button 
                 onClick={handleSaveSettings} 
                 disabled={saving}
-                className="w-full mt-6 px-6 py-3 bg-indigo-600 dark:bg-indigo-500 text-white font-semibold rounded-lg hover:bg-indigo-700 dark:hover:bg-indigo-600 transition disabled:opacity-50 flex items-center justify-center gap-2"
+                className="w-full mt-6 px-6 py-3 bg-gradient-to-r from-orange-500 to-orange-600 text-white font-semibold rounded-lg hover:from-orange-600 hover:to-orange-700 transition disabled:opacity-50 flex items-center justify-center gap-2 shadow-lg"
               >
                 <Save size={20} />
                 {saving ? 'Saving...' : 'Save Notification Settings'}
