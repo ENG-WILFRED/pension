@@ -80,14 +80,16 @@ export default function CustomerPensionPage() {
         <p className="text-gray-600 dark:text-gray-400 mt-2">View and manage your pension accounts</p>
       </div>
 
-      {/* Total Balance Card */}
-      <div className="bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-700 dark:to-purple-700 rounded-2xl shadow-xl p-6 sm:p-8 mb-8 text-white">
+      {/* Total Balance Card - Matching Dashboard Style */}
+      <div className="bg-gradient-to-r from-orange-500 via-pink-500 to-purple-600 rounded-2xl shadow-xl p-6 sm:p-8 mb-8 text-white">
         <div className="flex items-center gap-3 mb-4">
-          <Wallet size={32} />
-          <h2 className="text-xl font-bold">Total Pension Balance</h2>
+          <div className="bg-white/20 backdrop-blur-sm p-3 rounded-xl">
+            <Wallet size={28} />
+          </div>
+          <h2 className="text-xl font-bold">Total Balance</h2>
         </div>
-        <p className="text-4xl sm:text-5xl font-bold">KES {Number(totalBalance ?? 0).toLocaleString()}</p>
-        <p className="text-indigo-100 dark:text-indigo-200 mt-2">Across {accounts.length} account(s)</p>
+        <p className="text-4xl sm:text-5xl font-bold mb-2">KES {Number(totalBalance ?? 0).toLocaleString()}</p>
+        <p className="text-white/90 mt-2">Across all plans</p>
       </div>
 
       {/* Accounts List */}
@@ -114,46 +116,58 @@ export default function CustomerPensionPage() {
                 </span>
               </div>
 
-              {/* Balance Breakdown */}
+              {/* Balance Breakdown - Matching Dashboard Gradient Cards */}
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-                <div className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 rounded-xl p-4 transition-colors duration-300">
+                <div className="bg-gradient-to-r from-orange-500 via-pink-500 to-purple-600 rounded-xl p-4 text-white shadow-lg">
                   <div className="flex items-center gap-2 mb-2">
-                    <Wallet size={20} className="text-blue-600 dark:text-blue-400" />
-                    <p className="text-xs font-semibold text-blue-900 dark:text-blue-300">Total Balance</p>
+                    <div className="bg-white/20 backdrop-blur-sm p-2 rounded-lg">
+                      <Wallet size={18} />
+                    </div>
                   </div>
-                  <p className="text-2xl font-bold text-blue-900 dark:text-blue-100">
+                  <p className="text-xs font-semibold opacity-90 mb-1">Total Balance</p>
+                  <p className="text-2xl font-bold">
                     {Number(account.totalBalance ?? 0).toLocaleString()}
                   </p>
+                  <p className="text-xs opacity-80 mt-1">Across all plans</p>
                 </div>
 
-                <div className="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 rounded-xl p-4 transition-colors duration-300">
+                <div className="bg-gradient-to-r from-orange-500 via-yellow-500 to-green-500 rounded-xl p-4 text-white shadow-lg">
                   <div className="flex items-center gap-2 mb-2">
-                    <ArrowUpCircle size={20} className="text-green-600 dark:text-green-400" />
-                    <p className="text-xs font-semibold text-green-900 dark:text-green-300">Employee</p>
+                    <div className="bg-white/20 backdrop-blur-sm p-2 rounded-lg">
+                      <ArrowDownCircle size={18} />
+                    </div>
                   </div>
-                  <p className="text-2xl font-bold text-green-900 dark:text-green-100">
+                  <p className="text-xs font-semibold opacity-90 mb-1">Monthly Contribution</p>
+                  <p className="text-2xl font-bold">
                     {Number(account.employeeBalance ?? 0).toLocaleString()}
                   </p>
+                  <p className="text-xs opacity-80 mt-1">Total allocated</p>
                 </div>
 
-                <div className="bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-800/20 rounded-xl p-4 transition-colors duration-300">
+                <div className="bg-gradient-to-r from-orange-500 via-purple-500 to-indigo-600 rounded-xl p-4 text-white shadow-lg">
                   <div className="flex items-center gap-2 mb-2">
-                    <ArrowUpCircle size={20} className="text-purple-600 dark:text-purple-400" />
-                    <p className="text-xs font-semibold text-purple-900 dark:text-purple-300">Employer</p>
+                    <div className="bg-white/20 backdrop-blur-sm p-2 rounded-lg">
+                      <TrendingUp size={18} />
+                    </div>
                   </div>
-                  <p className="text-2xl font-bold text-purple-900 dark:text-purple-100">
+                  <p className="text-xs font-semibold opacity-90 mb-1">Projected @ 70</p>
+                  <p className="text-2xl font-bold">
                     {Number(account.employerBalance ?? 0).toLocaleString()}
                   </p>
+                  <p className="text-xs opacity-80 mt-1">8% annual growth</p>
                 </div>
 
-                <div className="bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-900/20 dark:to-orange-800/20 rounded-xl p-4 transition-colors duration-300">
+                <div className="bg-gradient-to-r from-orange-500 via-red-500 to-pink-600 rounded-xl p-4 text-white shadow-lg">
                   <div className="flex items-center gap-2 mb-2">
-                    <TrendingUp size={20} className="text-orange-600 dark:text-orange-400" />
-                    <p className="text-xs font-semibold text-orange-900 dark:text-orange-300">Earnings</p>
+                    <div className="bg-white/20 backdrop-blur-sm p-2 rounded-lg">
+                      <DollarSign size={18} />
+                    </div>
                   </div>
-                  <p className="text-2xl font-bold text-orange-900 dark:text-orange-100">
+                  <p className="text-xs font-semibold opacity-90 mb-1">Years to Retirement</p>
+                  <p className="text-2xl font-bold">
                     {Number(account.earningsBalance ?? 0).toLocaleString()}
                   </p>
+                  <p className="text-xs opacity-80 mt-1">Target age: 70</p>
                 </div>
               </div>
 
@@ -161,12 +175,12 @@ export default function CustomerPensionPage() {
               <div className="flex flex-wrap items-center gap-4 text-sm text-gray-600 dark:text-gray-400 mb-4">
                 {account.accountType.interestRate && (
                   <div className="flex items-center gap-2">
-                    <TrendingUp size={16} className="text-indigo-600 dark:text-indigo-400" />
+                    <TrendingUp size={16} className="text-orange-500 dark:text-orange-400" />
                     <span>Interest Rate: <strong className="text-gray-900 dark:text-gray-100">{account.accountType.interestRate}%</strong></span>
                   </div>
                 )}
                 <div className="flex items-center gap-2">
-                  <DollarSign size={16} className="text-indigo-600 dark:text-indigo-400" />
+                  <DollarSign size={16} className="text-orange-500 dark:text-orange-400" />
                   <span>Opened: <strong className="text-gray-900 dark:text-gray-100">{new Date(account.createdAt).toLocaleDateString()}</strong></span>
                 </div>
               </div>
@@ -175,7 +189,7 @@ export default function CustomerPensionPage() {
               <div className="flex gap-3">
                 <button
                   onClick={() => router.push(`/dashboard/customer/contributions?account=${account.id}`)}
-                  className="flex-1 flex items-center justify-center gap-2 bg-indigo-600 dark:bg-indigo-500 text-white py-3 px-4 rounded-xl hover:bg-indigo-700 dark:hover:bg-indigo-600 transition font-semibold"
+                  className="flex-1 flex items-center justify-center gap-2 bg-gradient-to-r from-orange-500 to-orange-600 text-white py-3 px-4 rounded-xl hover:from-orange-600 hover:to-orange-700 transition font-semibold shadow-lg"
                 >
                   <ArrowUpCircle size={20} />
                   Make Contribution

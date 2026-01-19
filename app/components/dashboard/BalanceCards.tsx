@@ -1,4 +1,3 @@
-///app/components/dashboard/BalanceCards.tsx
 import { Wallet, ArrowDownRight, TrendingUp, Clock } from 'lucide-react';
 
 interface BalanceCardsProps {
@@ -57,44 +56,72 @@ export default function BalanceCards({ balance, totalContributions, projectedRet
   
   return (
     <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-      {/* Total Balance - Blue/Indigo stays same in both modes */}
-      <div className="bg-gradient-to-br from-blue-600 to-indigo-600 dark:from-blue-700 dark:to-indigo-700 text-white rounded-2xl shadow-lg p-6 transition-colors duration-300">
-        <div className="flex items-center justify-between mb-4">
-          <h4 className="text-sm font-semibold opacity-90">Total Balance</h4>
-          <Wallet size={20} className="opacity-75" />
+      {/* Total Balance - Orange to Purple Luxury */}
+      <div className="relative group bg-gradient-to-br from-orange-500 via-orange-600 to-purple-600 dark:from-orange-600 dark:via-orange-700 dark:to-purple-700 text-white rounded-2xl shadow-2xl hover:shadow-orange-500/50 dark:hover:shadow-orange-700/50 p-6 transition-all duration-500 hover:-translate-y-2 overflow-hidden border border-orange-400/20">
+        <div className="absolute inset-0 bg-gradient-to-br from-white/20 via-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+        <div className="absolute -top-20 -right-20 w-40 h-40 bg-white/10 rounded-full blur-2xl"></div>
+        <div className="absolute -bottom-10 -left-10 w-32 h-32 bg-purple-500/20 rounded-full blur-xl"></div>
+        <div className="relative z-10">
+          <div className="flex items-center justify-between mb-5">
+            <h4 className="text-sm font-bold tracking-wide opacity-95">Total Balance</h4>
+            <div className="p-2.5 bg-white/25 rounded-xl backdrop-blur-md shadow-lg group-hover:bg-white/30 transition-all duration-300 group-hover:scale-110">
+              <Wallet size={22} className="drop-shadow-lg" />
+            </div>
+          </div>
+          <p className="text-4xl font-black mb-2 drop-shadow-md tracking-tight">KES {totalBalance.toLocaleString()}</p>
+          <p className="text-orange-50/90 text-xs font-medium tracking-wide">Across all plans</p>
         </div>
-        <p className="text-3xl font-bold">KES {totalBalance.toLocaleString()}</p>
-        <p className="text-indigo-100 text-xs mt-2">Across all plans</p>
       </div>
 
-      {/* Monthly Contribution - Green/Emerald stays same */}
-      <div className="bg-gradient-to-br from-green-600 to-emerald-600 dark:from-green-700 dark:to-emerald-700 text-white rounded-2xl shadow-lg p-6 transition-colors duration-300">
-        <div className="flex items-center justify-between mb-4">
-          <h4 className="text-sm font-semibold opacity-90">Monthly Contribution</h4>
-          <ArrowDownRight size={20} className="opacity-75" />
+      {/* Monthly Contribution - Orange to Teal Luxury */}
+      <div className="relative group bg-gradient-to-br from-orange-500 via-orange-600 to-teal-600 dark:from-orange-600 dark:via-orange-700 dark:to-teal-700 text-white rounded-2xl shadow-2xl hover:shadow-orange-500/50 dark:hover:shadow-orange-700/50 p-6 transition-all duration-500 hover:-translate-y-2 overflow-hidden border border-orange-400/20">
+        <div className="absolute inset-0 bg-gradient-to-br from-white/20 via-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+        <div className="absolute -top-20 -right-20 w-40 h-40 bg-white/10 rounded-full blur-2xl"></div>
+        <div className="absolute -bottom-10 -left-10 w-32 h-32 bg-teal-500/20 rounded-full blur-xl"></div>
+        <div className="relative z-10">
+          <div className="flex items-center justify-between mb-5">
+            <h4 className="text-sm font-bold tracking-wide opacity-95">Monthly Contribution</h4>
+            <div className="p-2.5 bg-white/25 rounded-xl backdrop-blur-md shadow-lg group-hover:bg-white/30 transition-all duration-300 group-hover:scale-110">
+              <ArrowDownRight size={22} className="drop-shadow-lg" />
+            </div>
+          </div>
+          <p className="text-4xl font-black mb-2 drop-shadow-md tracking-tight">KES {monthlyContrib.toLocaleString()}</p>
+          <p className="text-orange-50/90 text-xs font-medium tracking-wide">Total allocated</p>
         </div>
-        <p className="text-3xl font-bold">KES {monthlyContrib.toLocaleString()}</p>
-        <p className="text-emerald-100 text-xs mt-2">Total allocated</p>
       </div>
 
-      {/* Projected at Retirement - Purple/Pink stays same */}
-      <div className="bg-gradient-to-br from-purple-600 to-pink-600 dark:from-purple-700 dark:to-pink-700 text-white rounded-2xl shadow-lg p-6 transition-colors duration-300">
-        <div className="flex items-center justify-between mb-4">
-          <h4 className="text-sm font-semibold opacity-90">Projected @ {user?.retirementAge || 65}</h4>
-          <TrendingUp size={20} className="opacity-75" />
+      {/* Projected at Retirement - Orange to Indigo Luxury */}
+      <div className="relative group bg-gradient-to-br from-orange-500 via-orange-600 to-indigo-600 dark:from-orange-600 dark:via-orange-700 dark:to-indigo-700 text-white rounded-2xl shadow-2xl hover:shadow-orange-500/50 dark:hover:shadow-orange-700/50 p-6 transition-all duration-500 hover:-translate-y-2 overflow-hidden border border-orange-400/20">
+        <div className="absolute inset-0 bg-gradient-to-br from-white/20 via-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+        <div className="absolute -top-20 -right-20 w-40 h-40 bg-white/10 rounded-full blur-2xl"></div>
+        <div className="absolute -bottom-10 -left-10 w-32 h-32 bg-indigo-500/20 rounded-full blur-xl"></div>
+        <div className="relative z-10">
+          <div className="flex items-center justify-between mb-5">
+            <h4 className="text-sm font-bold tracking-wide opacity-95">Projected @ {user?.retirementAge || 70}</h4>
+            <div className="p-2.5 bg-white/25 rounded-xl backdrop-blur-md shadow-lg group-hover:bg-white/30 transition-all duration-300 group-hover:scale-110">
+              <TrendingUp size={22} className="drop-shadow-lg" />
+            </div>
+          </div>
+          <p className="text-4xl font-black mb-2 drop-shadow-md tracking-tight">KES {projectedAt65.toLocaleString()}</p>
+          <p className="text-orange-50/90 text-xs font-medium tracking-wide">8% annual growth</p>
         </div>
-        <p className="text-3xl font-bold">KES {projectedAt65.toLocaleString()}</p>
-        <p className="text-pink-100 text-xs mt-2">8% annual growth</p>
       </div>
 
-      {/* Years to Retirement - Orange/Red stays same */}
-      <div className="bg-gradient-to-br from-orange-600 to-red-600 dark:from-orange-700 dark:to-red-700 text-white rounded-2xl shadow-lg p-6 transition-colors duration-300">
-        <div className="flex items-center justify-between mb-4">
-          <h4 className="text-sm font-semibold opacity-90">Years to Retirement</h4>
-          <Clock size={20} className="opacity-75" />
+      {/* Years to Retirement - Orange to Pink Luxury */}
+      <div className="relative group bg-gradient-to-br from-orange-500 via-orange-600 to-pink-600 dark:from-orange-600 dark:via-orange-700 dark:to-pink-700 text-white rounded-2xl shadow-2xl hover:shadow-orange-500/50 dark:hover:shadow-orange-700/50 p-6 transition-all duration-500 hover:-translate-y-2 overflow-hidden border border-orange-400/20">
+        <div className="absolute inset-0 bg-gradient-to-br from-white/20 via-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+        <div className="absolute -top-20 -right-20 w-40 h-40 bg-white/10 rounded-full blur-2xl"></div>
+        <div className="absolute -bottom-10 -left-10 w-32 h-32 bg-pink-500/20 rounded-full blur-xl"></div>
+        <div className="relative z-10">
+          <div className="flex items-center justify-between mb-5">
+            <h4 className="text-sm font-bold tracking-wide opacity-95">Years to Retirement</h4>
+            <div className="p-2.5 bg-white/25 rounded-xl backdrop-blur-md shadow-lg group-hover:bg-white/30 transition-all duration-300 group-hover:scale-110">
+              <Clock size={22} className="drop-shadow-lg" />
+            </div>
+          </div>
+          <p className="text-4xl font-black mb-2 drop-shadow-md tracking-tight">{yearsToRetirement}</p>
+          <p className="text-orange-50/90 text-xs font-medium tracking-wide">Target age: {user?.retirementAge || 70}</p>
         </div>
-        <p className="text-3xl font-bold">{yearsToRetirement}</p>
-        <p className="text-red-100 text-xs mt-2">Target age: {user?.retirementAge || 65}</p>
       </div>
     </div>
   );

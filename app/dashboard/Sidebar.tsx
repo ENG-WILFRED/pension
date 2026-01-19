@@ -1,4 +1,3 @@
-////home/hp/JERE/AutoNest/app/dashboard/Sidebar.tsx
 "use client";
 
 import { useState, useEffect } from "react";
@@ -93,7 +92,7 @@ export default function Sidebar({ userType, firstName, lastName }: SidebarProps)
         {/* User Info */}
         <div className="p-6 border-b border-gray-200 dark:border-gray-600">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-indigo-600 dark:bg-indigo-500 flex items-center justify-center text-white font-bold">
+            <div className="w-10 h-10 rounded-full bg-orange-600 dark:bg-orange-500 flex items-center justify-center text-white font-bold">
               {firstName?.[0] || "U"}
             </div>
             <div>
@@ -119,7 +118,7 @@ export default function Sidebar({ userType, firstName, lastName }: SidebarProps)
                 onClick={() => setIsOpen(false)}
                 className={`flex items-center gap-3 px-4 py-3 rounded-lg transition ${
                   isActive
-                    ? "bg-indigo-600 text-white dark:bg-indigo-500"
+                    ? "bg-orange-600 text-white dark:bg-orange-500"
                     : "text-slate-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
                 }`}
               >
@@ -132,24 +131,22 @@ export default function Sidebar({ userType, firstName, lastName }: SidebarProps)
 
         {/* Footer */}
         <div className="p-4 border-t border-gray-200 dark:border-gray-600 space-y-2">
-          {/* Theme Toggle - FIXED: Shows current mode and switches to opposite */}
+          {/* Theme Toggle */}
           <button
             onClick={toggleTheme}
             className="w-full flex items-center justify-between px-4 py-3 rounded-lg text-slate-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition"
           >
             <div className="flex items-center gap-3">
-              {/* FIXED: Show current theme icon */}
               {theme === "dark" ? (
                 <Moon size={20} className="text-blue-400" />
               ) : (
                 <Sun size={20} className="text-yellow-400" />
               )}
-              {/* FIXED: Show current mode name */}
               <span>{theme === "dark" ? "Dark Mode" : "Light Mode"}</span>
             </div>
             <div
               className={`w-12 h-6 rounded-full relative transition ${
-                theme === "dark" ? "bg-indigo-600" : "bg-gray-200"
+                theme === "dark" ? "bg-orange-600" : "bg-gray-200"
               }`}
             >
               <div

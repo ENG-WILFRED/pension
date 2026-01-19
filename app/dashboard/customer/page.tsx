@@ -389,7 +389,7 @@ export default function CustomerDashboard() {
       
       {loadingTransactions ? (
         <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl border border-gray-200 dark:border-gray-700 rounded-2xl shadow-xl p-12 flex flex-col items-center justify-center transition-colors duration-300">
-          <div className="h-10 w-10 border-4 border-indigo-600 dark:border-indigo-400 border-t-transparent rounded-full animate-spin"></div>
+          <div className="h-10 w-10 border-4 border-orange-600 dark:border-orange-400 border-t-transparent rounded-full animate-spin"></div>
           <p className="mt-4 text-gray-600 dark:text-gray-400 font-medium">Loading transactions...</p>
         </div>
       ) : (

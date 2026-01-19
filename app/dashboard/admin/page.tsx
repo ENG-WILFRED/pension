@@ -1,4 +1,3 @@
-///app/dashboard/admin/page.tsx
 "use client";
 
 import { useEffect, useState } from "react";
@@ -168,9 +167,9 @@ export default function AdminDashboard() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950 px-4 sm:px-6 lg:px-8 py-8 space-y-8">
       {/* Welcome Banner */}
-      <div className="bg-gradient-to-r from-indigo-500 to-purple-600 dark:from-indigo-700 dark:to-purple-700 text-white rounded-2xl shadow-lg p-6 sm:p-8 transition-colors duration-300">
+      <div className="bg-gradient-to-r from-orange-500 to-red-600 dark:from-orange-700 dark:to-red-700 text-white rounded-2xl shadow-lg p-6 sm:p-8 transition-colors duration-300">
         <h1 className="text-2xl sm:text-3xl font-bold">Welcome, {user ? `${user.firstName ?? ''} ${user.lastName ?? ''}`.trim() : 'Admin'}! 👋</h1>
-        <p className="text-indigo-50 dark:text-indigo-200 mt-2">Monitor system performance, manage users, and oversee platform operations.</p>
+        <p className="text-orange-50 dark:text-orange-200 mt-2">Monitor system performance, manage users, and oversee platform operations.</p>
       </div>
 
       {/* ADMIN STATS CARDS */}
@@ -246,7 +245,7 @@ export default function AdminDashboard() {
       <div className="bg-white dark:bg-gray-800 backdrop-blur-xl border border-gray-200 dark:border-gray-700 rounded-xl sm:rounded-2xl shadow-xl overflow-hidden transition-colors duration-300">
         <div className="px-4 sm:px-6 py-4 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 flex items-center justify-between flex-wrap gap-3 transition-colors duration-300">
           <h3 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2 transition-colors duration-300">
-            <Users size={20} className="sm:w-6 sm:h-6 text-indigo-600 dark:text-indigo-400" />
+            <Users size={20} className="sm:w-6 sm:h-6 text-orange-600 dark:text-orange-400" />
             User Management ({members.length})
           </h3>
           <div className="flex gap-2">
@@ -261,7 +260,7 @@ export default function AdminDashboard() {
             <button
               onClick={loadAllTransactions}
               disabled={loadingTransactions}
-              className="text-sm bg-indigo-600 dark:bg-indigo-700 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 dark:hover:bg-indigo-600 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+              className="text-sm bg-orange-600 dark:bg-orange-700 text-white px-4 py-2 rounded-lg hover:bg-orange-700 dark:hover:bg-orange-600 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
             >
               {loadingTransactions ? (
                 <>
@@ -281,7 +280,7 @@ export default function AdminDashboard() {
         <div className="overflow-x-auto">
           {loadingUsers ? (
             <div className="flex items-center justify-center py-12 bg-white dark:bg-gray-800">
-              <div className="h-10 w-10 border-4 border-indigo-600 dark:border-indigo-400 border-t-transparent rounded-full animate-spin"></div>
+              <div className="h-10 w-10 border-4 border-orange-600 dark:border-orange-400 border-t-transparent rounded-full animate-spin"></div>
               <p className="ml-4 text-gray-600 dark:text-gray-400 transition-colors duration-300">Loading users...</p>
             </div>
           ) : members.length === 0 ? (
@@ -330,7 +329,7 @@ export default function AdminDashboard() {
                     <td className="px-3 sm:px-6 py-3 sm:py-4">
                       <button 
                         onClick={() => router.push(`/dashboard/admin/manage/${member.id}`)}
-                        className="text-xs bg-indigo-600 dark:bg-indigo-700 text-white px-2 sm:px-3 py-1 rounded hover:bg-indigo-700 dark:hover:bg-indigo-600 whitespace-nowrap transition-colors duration-300"
+                        className="text-xs bg-orange-600 dark:bg-orange-700 text-white px-2 sm:px-3 py-1 rounded hover:bg-orange-700 dark:hover:bg-orange-600 whitespace-nowrap transition-colors duration-300"
                       >
                         View
                       </button>
