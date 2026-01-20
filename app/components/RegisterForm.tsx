@@ -14,7 +14,6 @@ import { ZodError } from 'zod';
 import AccountCredentialsSection from './sections/AccountCredentialsSection';
 import PersonalSection from './sections/PersonalSection';
 import AddressSection from './sections/AddressSection';
-import EmploymentSection from './sections/EmploymentSection';
 import PensionSection from './sections/PensionSection';
 import PaymentPendingModal from './sections/PaymentPendingModal';
 import TermsAndConditionsModal from './TermsAndConditionsModal';
@@ -42,12 +41,6 @@ export default function RegisterForm() {
   const [formData, setFormData] = useState<Partial<RegistrationFormData>>({
     email: '',
     phone: '',
-    pin: '',
-    bankAccountName: '',
-    bankAccountNumber: '',
-    bankBranchName: '',
-    bankBranchCode: '',
-    bankName: '',
     firstName: '',
     lastName: '',
     dateOfBirth: '',
@@ -60,9 +53,6 @@ export default function RegisterForm() {
     address: '',
     city: '',
     country: '',
-    occupation: '',
-    employer: '',
-    salary: undefined,
     contributionRate: undefined,
     retirementAge: undefined,
     accountType: 'MANDATORY',
@@ -96,8 +86,7 @@ export default function RegisterForm() {
     { title: 'Account', icon: '👤', desc: 'Your credentials' },
     { title: 'Personal', icon: '📋', desc: 'About you' },
     { title: 'Address', icon: '📍', desc: 'Your location' },
-    { title: 'Employment', icon: '💼', desc: 'Work details' },
-    { title: 'Pension & Bank', icon: '🏦', desc: 'Final setup' }
+    { title: 'Pension', icon: '🏦', desc: 'Final setup' }
   ];
 
   const validateStep = (idx: number) => {
@@ -105,16 +94,8 @@ export default function RegisterForm() {
     if (idx === 0) {
       if (!formData.email) e.email = 'Email is required';
       if (!formData.phone) e.phone = 'Phone is required';
-      if (formData.pin && formData.pin.trim() !== '' && !/^\d{4}$/.test(formData.pin)) {
-        e.pin = 'PIN must be exactly 4 digits if provided';
-      }
     }
-    if (idx === 4) {
-      if (!formData.bankAccountName) e.bankAccountName = 'Bank account name is required';
-      if (!formData.bankAccountNumber) e.bankAccountNumber = 'Bank account number is required';
-      if (!formData.bankBranchName) e.bankBranchName = 'Bank branch name is required';
-      if (!formData.bankBranchCode) e.bankBranchCode = 'Bank branch code is required';
-      if (!formData.bankName) e.bankName = 'Bank name is required';
+    if (idx === 3) {
       if (formData.contributionRate == null) e.contributionRate = 'Select contribution rate';
     }
 
@@ -262,7 +243,6 @@ export default function RegisterForm() {
     try {
       const dataToSend = {
         ...formData,
-        pin: formData.pin && formData.pin.trim() !== '' ? formData.pin : undefined,
         accountType: formData.accountType || 'MANDATORY',
         riskProfile: formData.riskProfile || 'MEDIUM',
         currency: formData.currency || 'KES',
@@ -561,7 +541,7 @@ export default function RegisterForm() {
             </div>
             <Link 
               href="/login" 
-              className="text-sm font-bold bg-slate-100 hover:bg-slate-200 border border-slate-200 px-4 py-2 rounded-lg text-slate-700 transition"
+              className="text-sm font-bold bg-gradient-to-r from-orange-600 to-orange-500 hover:from-orange-700 hover:to-orange-600 px-4 py-2 rounded-lg text-white transition shadow-lg hover:shadow-orange-500/30"
             >
               Sign in
             </Link>
@@ -610,7 +590,6 @@ export default function RegisterForm() {
                       formData={{
                         email: formData.email as string,
                         phone: formData.phone as string,
-                        pin: formData.pin as string,
                       }}
                       errors={errors}
                       onChange={handleChange}
@@ -646,26 +625,10 @@ export default function RegisterForm() {
                   )}
 
                   {step === 3 && (
-                    <EmploymentSection
-                      formData={{
-                        occupation: formData.occupation as string,
-                        employer: formData.employer as string,
-                        salary: formData.salary,
-                      }}
-                      onChange={handleChange}
-                    />
-                  )}
-
-                  {step === 4 && (
                     <PensionSection
                       formData={{
                         contributionRate: formData.contributionRate,
                         retirementAge: formData.retirementAge,
-                        bankAccountName: formData.bankAccountName as string,
-                        bankAccountNumber: formData.bankAccountNumber as string,
-                        bankBranchName: formData.bankBranchName as string,
-                        bankBranchCode: formData.bankBranchCode as string,
-                        bankName: formData.bankName as string,
                         accountType: formData.accountType,
                         riskProfile: formData.riskProfile,
                       }}
@@ -709,7 +672,7 @@ export default function RegisterForm() {
                       type="button"
                       onClick={handleNext}
                       disabled={loading}
-                      className="flex-1 px-6 py-3.5 rounded-xl bg-gradient-to-r from-emerald-600 to-green-600 text-white font-bold hover:shadow-lg hover:shadow-green-500/30 disabled:from-slate-400 disabled:to-slate-500 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2 hover:-translate-y-0.5"
+                      className="flex-1 px-6 py-3.5 rounded-xl bg-gradient-to-r from-orange-600 to-orange-500 text-white font-bold hover:shadow-lg hover:shadow-orange-500/30 disabled:from-slate-400 disabled:to-slate-500 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2 hover:-translate-y-0.5"
                     >
                       {loading ? (
                         <>
