@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import { accountsApi } from "@/app/lib/api-client";
 import { CreditCard, DollarSign, TrendingUp, X, AlertCircle } from "lucide-react";
-import { DashboardSectionLoader, ButtonLoader } from "@/app/components/loaders";
+import { PageLoader, ButtonLoader } from "@/app/components/loaders";
 
 interface Account {
   id: string;
@@ -285,11 +285,7 @@ export default function CustomerContributionsPage() {
   };
 
   if (loading) {
-    return (
-      <div className="px-4 sm:px-6 lg:px-8 py-8">
-        <DashboardSectionLoader message="Loading..." />
-      </div>
-    );
+    return <PageLoader />;
   }
 
   const selectedAccount = accounts.find(acc => acc.id === selectedAccountId);

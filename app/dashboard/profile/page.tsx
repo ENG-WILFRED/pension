@@ -18,6 +18,7 @@ import {
   CreditCard,
   CheckCircle2
 } from "lucide-react";
+import { PageLoader } from "@/app/components/loaders";
 
 interface UserProfile {
   id: string;
@@ -123,14 +124,7 @@ export default function ProfilePage() {
   };
 
   if (loading) {
-    return (
-      <div className="px-4 sm:px-6 lg:px-8 py-8">
-        <div className="flex items-center justify-center py-20">
-          <Loader2 className="w-12 h-12 animate-spin text-orange-600 dark:text-orange-400" />
-          <p className="ml-4 text-slate-600 dark:text-slate-400 font-medium">Loading profile...</p>
-        </div>
-      </div>
-    );
+    return <PageLoader />;
   }
 
   if (!user) {
