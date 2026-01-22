@@ -27,18 +27,18 @@ export default function PensionSection({
   termsError,
 }: PensionSectionProps) {
   return (
-    <div className="space-y-6 pb-4 mb-4">
+    <div className="space-y-6 pb-6 mb-6">
       {/* Pension Planning */}
       <div>
-        <h3 className="text-xs font-bold text-gray-900 mb-4 uppercase tracking-wider border-b pb-2">
-          Pension Planning
-        </h3>
+        <h3 className="text-sm font-bold text-gray-900 mb-4 uppercase tracking-wider pb-2 border-b">Pension Planning</h3>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        {/* 2 Rows x 2 Columns Layout */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Row 1, Column 1 - Account Type */}
           <div>
             <label
               htmlFor="accountType"
-              className="block text-sm font-medium text-gray-700 mb-1"
+              className="block text-sm font-medium text-gray-700 mb-2.5"
             >
               Account Type
             </label>
@@ -47,7 +47,7 @@ export default function PensionSection({
               name="accountType"
               value={formData.accountType || "MANDATORY"}
               onChange={onChange}
-              className="w-full px-4 py-4 border border-gray-300 rounded-lg text-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg text-base focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent text-gray-900"
             >
               <option value="MANDATORY">Mandatory</option>
               <option value="VOLUNTARY">Voluntary</option>
@@ -55,10 +55,11 @@ export default function PensionSection({
             </select>
           </div>
 
+          {/* Row 1, Column 2 - Risk Profile */}
           <div>
             <label
               htmlFor="riskProfile"
-              className="block text-sm font-medium text-gray-700 mb-1"
+              className="block text-sm font-medium text-gray-700 mb-2.5"
             >
               Risk Profile
             </label>
@@ -67,7 +68,7 @@ export default function PensionSection({
               name="riskProfile"
               value={formData.riskProfile || "MEDIUM"}
               onChange={onChange}
-              className="w-full px-4 py-4 border border-gray-300 rounded-lg text-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg text-base focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent text-gray-900"
             >
               <option value="LOW">Low Risk</option>
               <option value="MEDIUM">Medium Risk</option>
@@ -75,19 +76,20 @@ export default function PensionSection({
             </select>
           </div>
 
+          {/* Row 2, Column 1 - Contribution Rate */}
           <div>
             <label
               htmlFor="contributionRate"
-              className="block text-sm font-medium text-gray-700 mb-1"
+              className="block text-sm font-medium text-gray-700 mb-2.5"
             >
-              Contribution (%)
+              Contribution Rate (%)
             </label>
             <select
               id="contributionRate"
               name="contributionRate"
               value={formData.contributionRate ?? ""}
               onChange={onChange}
-              className={`w-full px-4 py-4 border rounded-lg text-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 ${
+              className={`w-full px-4 py-3 border rounded-lg text-base focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent text-gray-900 ${
                 errors.contributionRate ? "border-red-500" : "border-gray-300"
               }`}
             >
@@ -99,16 +101,17 @@ export default function PensionSection({
               <option value="20">20%</option>
             </select>
             {errors.contributionRate && (
-              <p className="text-red-600 text-xs mt-1">
+              <p className="text-red-600 text-xs mt-1.5">
                 {errors.contributionRate}
               </p>
             )}
           </div>
 
+          {/* Row 2, Column 2 - Retirement Age */}
           <div>
             <label
               htmlFor="retirementAge"
-              className="block text-sm font-medium text-gray-700 mb-1"
+              className="block text-sm font-medium text-gray-700 mb-2.5"
             >
               Retirement Age
             </label>
@@ -121,7 +124,7 @@ export default function PensionSection({
               step="1"
               value={formData.retirementAge || ""}
               onChange={onChange}
-              className="w-full px-4 py-4 border border-gray-300 rounded-lg text-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 placeholder-gray-500"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg text-base focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent text-gray-900 placeholder-gray-500"
               placeholder="65"
             />
           </div>

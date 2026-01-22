@@ -255,29 +255,29 @@ export default function AddressSection({ formData, onChange }: AddressSectionPro
   };
 
   return (
-    <div className="space-y-5">
-      {/* Street Address Field - Full Width */}
-      <div>
-        <label htmlFor="address" className="block text-sm font-bold text-slate-700 mb-2.5">
-          Street Address
-        </label>
-        <div className="relative group">
-          <MapPin className="absolute left-4 top-4 w-5 h-5 text-slate-400 group-focus-within:text-orange-500 transition-colors" />
-          <input
-            id="address"
-            name="address"
-            type="text"
-            placeholder="123 Main Street"
-            value={formData.address}
-            onChange={onChange}
-            className="w-full pl-12 pr-4 py-3.5 rounded-xl bg-slate-50 border-2 border-slate-200 text-slate-900 placeholder-slate-400 transition-all duration-300 focus:border-orange-500 focus:bg-white focus:outline-none focus:ring-4 focus:ring-orange-500/10 hover:border-slate-300"
-          />
+    <div className="space-y-6 pb-6 mb-6">
+      {/* Single Column Layout - 3 Rows */}
+      <div className="space-y-6">
+        {/* Row 1 - Street Address */}
+        <div>
+          <label htmlFor="address" className="block text-sm font-bold text-slate-700 mb-2.5">
+            Street Address
+          </label>
+          <div className="relative group">
+            <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 group-focus-within:text-orange-500 transition-colors" />
+            <input
+              id="address"
+              name="address"
+              type="text"
+              placeholder="123 Main Street"
+              value={formData.address}
+              onChange={onChange}
+              className="w-full pl-12 pr-4 py-3.5 rounded-xl bg-slate-50 border-2 border-slate-200 text-slate-900 placeholder-slate-400 transition-all duration-300 focus:border-orange-500 focus:bg-white focus:outline-none focus:ring-4 focus:ring-orange-500/10 hover:border-slate-300"
+            />
+          </div>
         </div>
-      </div>
 
-      {/* City and Country Fields - Side by Side */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-        {/* City Field */}
+        {/* Row 2 - City */}
         <div>
           <label htmlFor="city" className="block text-sm font-bold text-slate-700 mb-2.5">
             City
@@ -296,7 +296,7 @@ export default function AddressSection({ formData, onChange }: AddressSectionPro
           </div>
         </div>
 
-        {/* Country Field with Searchable Dropdown */}
+        {/* Row 3 - Country */}
         <div className="relative" ref={dropdownRef}>
           <label htmlFor="country" className="block text-sm font-bold text-slate-700 mb-2.5">
             Country
