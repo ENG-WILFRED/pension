@@ -139,12 +139,7 @@ export default function RegisterForm() {
 
   const validateForm = () => {
     try {
-      const cleanedData = {
-        ...formData,
-        pin: formData.pin && formData.pin.trim() !== '' ? formData.pin : undefined,
-      };
-      
-      registrationSchema.parse(cleanedData);
+      registrationSchema.parse(formData);
       setErrors({});
       return true;
     } catch (err) {

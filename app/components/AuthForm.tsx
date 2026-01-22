@@ -21,14 +21,8 @@ export default function AuthForm({ isLogin = false }: AuthFormProps) {
     
     // Registration fields
     phone: '',
-    pin: '',
     firstName: '',
     lastName: '',
-    bankName: '',
-    bankAccountName: '',
-    bankAccountNumber: '',
-    bankBranchName: '',
-    bankBranchCode: '',
   });
 
   const [paymentPending, setPaymentPending] = useState<{
@@ -51,13 +45,6 @@ export default function AuthForm({ isLogin = false }: AuthFormProps) {
         router.push('/login');
         return;
       } else {
-        // Validate PIN is 4 digits
-        if (!/^\d{4}$/.test(formData.pin)) {
-          toast.error('PIN must be exactly 4 digits');
-          setLoading(false);
-          return;
-        }
-
         // Validate phone number format (Kenyan)
         if (!/^\+?254\d{9}$/.test(formData.phone.replace(/\s/g, ''))) {
           toast.error('Phone must be in format +254XXXXXXXXX');
@@ -68,12 +55,6 @@ export default function AuthForm({ isLogin = false }: AuthFormProps) {
         const result = await authApi.register({
           email: formData.email,
           phone: formData.phone,
-          pin: formData.pin,
-          bankName: formData.bankName,
-          bankAccountName: formData.bankAccountName,
-          bankAccountNumber: formData.bankAccountNumber,
-          bankBranchName: formData.bankBranchName,
-          bankBranchCode: formData.bankBranchCode,
           firstName: formData.firstName || undefined,
           lastName: formData.lastName || undefined,
         });
@@ -311,122 +292,20 @@ export default function AuthForm({ isLogin = false }: AuthFormProps) {
                   </div>
                 </div>
 
-                {/* Phone & PIN */}
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">
-                      Phone (M-Pesa) <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                      id="phone"
-                      name="phone"
-                      type="tel"
-                      value={formData.phone}
-                      onChange={handleChange}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
-                      placeholder="+254712345678"
-                    />
-                  </div>
-
-                  <div>
-                    <label htmlFor="pin" className="block text-sm font-medium text-gray-700 mb-1">
-                      4-Digit PIN <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                      id="pin"
-                      name="pin"
-                      type="password"
-                      maxLength={4}
-                      value={formData.pin}
-                      onChange={handleChange}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
-                      placeholder="1234"
-                    />
-                  </div>
-                </div>
-
-                {/* Bank Account Details */}
-                <div className="border-t border-gray-200 pt-4 mt-4">
-                  <h3 className="text-sm font-semibold text-gray-700 mb-3">Bank Account Details</h3>
-                  
-                  <div className="space-y-3">
-                    <div>
-                      <label htmlFor="bankName" className="block text-sm font-medium text-gray-700 mb-1">
-                        Bank Name <span className="text-red-500">*</span>
-                      </label>
-                      <input
-                        id="bankName"
-                        name="bankName"
-                        type="text"
-                        value={formData.bankName}
-                        onChange={handleChange}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
-                        placeholder="e.g., Equity Bank, KCB"
-                      />
-                    </div>
-
-                    <div>
-                      <label htmlFor="bankAccountName" className="block text-sm font-medium text-gray-700 mb-1">
-                        Account Name <span className="text-red-500">*</span>
-                      </label>
-                      <input
-                        id="bankAccountName"
-                        name="bankAccountName"
-                        type="text"
-                        value={formData.bankAccountName}
-                        onChange={handleChange}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
-                        placeholder="John Doe"
-                      />
-                    </div>
-
-                    <div>
-                      <label htmlFor="bankAccountNumber" className="block text-sm font-medium text-gray-700 mb-1">
-                        Account Number <span className="text-red-500">*</span>
-                      </label>
-                      <input
-                        id="bankAccountNumber"
-                        name="bankAccountNumber"
-                        type="text"
-                        value={formData.bankAccountNumber}
-                        onChange={handleChange}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
-                        placeholder="1234567890"
-                      />
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-3">
-                      <div>
-                        <label htmlFor="bankBranchName" className="block text-sm font-medium text-gray-700 mb-1">
-                          Branch Name <span className="text-red-500">*</span>
-                        </label>
-                        <input
-                          id="bankBranchName"
-                          name="bankBranchName"
-                          type="text"
-                          value={formData.bankBranchName}
-                          onChange={handleChange}
-                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
-                          placeholder="Nairobi"
-                        />
-                      </div>
-
-                      <div>
-                        <label htmlFor="bankBranchCode" className="block text-sm font-medium text-gray-700 mb-1">
-                          Branch Code <span className="text-red-500">*</span>
-                        </label>
-                        <input
-                          id="bankBranchCode"
-                          name="bankBranchCode"
-                          type="text"
-                          value={formData.bankBranchCode}
-                          onChange={handleChange}
-                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
-                          placeholder="001"
-                        />
-                      </div>
-                    </div>
-                  </div>
+                {/* Phone */}
+                <div>
+                  <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">
+                    Phone (M-Pesa) <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    id="phone"
+                    name="phone"
+                    type="tel"
+                    value={formData.phone}
+                    onChange={handleChange}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
+                    placeholder="+254712345678"
+                  />
                 </div>
               </>
             )}

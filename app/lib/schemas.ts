@@ -12,14 +12,6 @@ export const registrationSchema = z.object({
   // Account credentials
   email: z.string().email('Invalid email address'),
   phone: z.string().min(10, 'Phone number is required for M-Pesa payment'),
-  pin: z.string().regex(/^\d{4}$/, 'PIN must be exactly 4 digits').optional().or(z.literal('')),
-  
-  // Bank account details
-  bankAccountName: z.string().min(1, 'Bank account name is required'),
-  bankAccountNumber: z.string().min(1, 'Bank account number is required'),
-  bankBranchName: z.string().min(1, 'Bank branch name is required'),
-  bankBranchCode: z.string().min(1, 'Bank branch code is required'),
-  bankName: z.string().min(1, 'Bank name is required'),
   
   // Personal information
   firstName: z.string().optional(),
@@ -36,11 +28,6 @@ export const registrationSchema = z.object({
   address: z.string().optional(),
   city: z.string().optional(),
   country: z.string().optional(),
-  
-  // Employment
-  occupation: z.string().optional(),
-  employer: z.string().optional(),
-  salary: z.number().optional(),
   
   // Pension details
   contributionRate: z.number().optional(),
