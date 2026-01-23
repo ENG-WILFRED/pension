@@ -45,10 +45,6 @@ export default function RegisterForm() {
     lastName: '',
     dateOfBirth: '',
     gender: '',
-    maritalStatus: '',
-    spouseName: '',
-    spouseDob: '',
-    children: [],
     nationalId: '',
     address: '',
     city: '',
@@ -599,9 +595,6 @@ export default function RegisterForm() {
                         gender: formData.gender as string,
                         dateOfBirth: formData.dateOfBirth as string,
                         nationalId: formData.nationalId as string,
-                        maritalStatus: formData.maritalStatus as string,
-                        spouseName: formData.spouseName as string,
-                        spouseDob: formData.spouseDob as string,
                       }}
                       errors={errors}
                       onChange={handleChange}

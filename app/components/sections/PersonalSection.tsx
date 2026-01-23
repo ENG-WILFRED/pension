@@ -7,17 +7,12 @@ interface PersonalSectionProps {
     gender: string;
     dateOfBirth: string;
     nationalId: string;
-    maritalStatus: string;
-    spouseName: string;
-    spouseDob: string;
   };
   errors: Record<string, string>;
   onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => void;
 }
 
 export default function PersonalSection({ formData, errors, onChange }: PersonalSectionProps) {
-  const isMarried = formData.maritalStatus === 'Married';
-
   // Calculate max date (18 years ago from today)
   const getMaxDate = () => {
     const today = new Date();
@@ -116,62 +111,7 @@ export default function PersonalSection({ formData, errors, onChange }: Personal
             placeholder="Your ID number"
           />
         </div>
-
-        {/* Row 3 - Marital Status */}
-        <div>
-          <label htmlFor="maritalStatus" className="block text-sm font-bold text-slate-700 mb-2.5">
-            Marital Status
-          </label>
-          <select
-            id="maritalStatus"
-            name="maritalStatus"
-            value={formData.maritalStatus}
-            onChange={onChange}
-            className="w-full px-4 py-3.5 rounded-xl bg-slate-50 border-2 border-slate-200 text-slate-900 transition-all duration-300 focus:border-orange-500 focus:bg-white focus:outline-none focus:ring-4 focus:ring-orange-500/10 hover:border-slate-300 cursor-pointer"
-          >
-            <option value="">Select Status</option>
-            <option value="Single">Single</option>
-            <option value="Married">Married</option>
-            <option value="Divorced">Divorced</option>
-            <option value="Widowed">Widowed</option>
-          </select>
-        </div>
       </div>
-
-      {/* Spouse Information - Conditional (2 columns when married) */}
-      {isMarried && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-gradient-to-br from-orange-50 to-pink-50 dark:from-orange-900/10 dark:to-pink-900/10 p-6 rounded-2xl border-2 border-orange-100 dark:border-orange-800/30 mt-6">
-          <div>
-            <label htmlFor="spouseName" className="block text-sm font-bold text-slate-700 mb-2.5">
-              Spouse Name
-            </label>
-            <input
-              id="spouseName"
-              name="spouseName"
-              type="text"
-              value={formData.spouseName}
-              onChange={onChange}
-              className="w-full px-4 py-3.5 rounded-xl bg-white border-2 border-orange-200 text-slate-900 placeholder-slate-400 transition-all duration-300 focus:border-orange-500 focus:outline-none focus:ring-4 focus:ring-orange-500/10 hover:border-orange-300"
-              placeholder="Spouse's full name"
-            />
-          </div>
-
-          <div>
-            <label htmlFor="spouseDob" className="block text-sm font-bold text-slate-700 mb-2.5">
-              Spouse DOB <span className="text-xs text-slate-500 font-normal">(18+ required)</span>
-            </label>
-            <input
-              id="spouseDob"
-              name="spouseDob"
-              type="date"
-              max={getMaxDate()}
-              value={formData.spouseDob}
-              onChange={onChange}
-              className="w-full px-4 py-3.5 rounded-xl bg-white border-2 border-orange-200 text-slate-900 transition-all duration-300 focus:border-orange-500 focus:outline-none focus:ring-4 focus:ring-orange-500/10 hover:border-orange-300"
-            />
-          </div>
-        </div>
-      )}
     </div>
   );
 }

@@ -1,12 +1,6 @@
 ///home/hp/JERE/AutoNest/app/lib/schemas.ts
 import { z } from 'zod';
 
-// Child schema for the children array
-const childSchema = z.object({
-  name: z.string().optional(),
-  dob: z.string().optional(),
-});
-
 // Registration form schema - Updated to match backend API
 export const registrationSchema = z.object({
   // Account credentials
@@ -18,10 +12,6 @@ export const registrationSchema = z.object({
   lastName: z.string().optional(),
   dateOfBirth: z.string().optional(),
   gender: z.string().optional(),
-  maritalStatus: z.string().optional(),
-  spouseName: z.string().optional(),
-  spouseDob: z.string().optional(),
-  children: z.array(childSchema).optional(),
   nationalId: z.string().optional(),
   
   // Address
