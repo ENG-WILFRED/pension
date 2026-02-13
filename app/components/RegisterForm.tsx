@@ -1,27 +1,37 @@
-'use client';
+"use client";
 
-import { FormEvent, useEffect, useRef, useState } from 'react';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { authApi, termsApi } from '@/app/lib/api-client';
-import { registrationSchema, type RegistrationFormData } from '@/app/lib/schemas';
-import { toast } from 'sonner';
-import { ArrowRight, ArrowLeft, CheckCircle2, Sparkles, Zap, Lock } from 'lucide-react';
-import { ButtonLoader } from '@/app/components/loaders';
-import { ZodError } from 'zod';
+import { FormEvent, useEffect, useRef, useState } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { authApi, termsApi } from "@/app/lib/api-client";
+import {
+  registrationSchema,
+  type RegistrationFormData,
+} from "@/app/lib/schemas";
+import { toast } from "sonner";
+import {
+  ArrowRight,
+  ArrowLeft,
+  CheckCircle2,
+  Sparkles,
+  Zap,
+  Lock,
+} from "lucide-react";
+import { ButtonLoader } from "@/app/components/loaders";
+import { ZodError } from "zod";
 
 // Import section components - UPDATE THESE PATHS TO MATCH YOUR PROJECT STRUCTURE
-import AccountCredentialsSection from './sections/AccountCredentialsSection';
-import PersonalSection from './sections/PersonalSection';
-import AddressSection from './sections/AddressSection';
-import PensionSection from './sections/PensionSection';
-import PaymentPendingModal from './sections/PaymentPendingModal';
-import TermsAndConditionsModal from './TermsAndConditionsModal';
+import AccountCredentialsSection from "./sections/AccountCredentialsSection";
+import PersonalSection from "./sections/PersonalSection";
+import AddressSection from "./sections/AddressSection";
+import PensionSection from "./sections/PensionSection";
+import PaymentPendingModal from "./sections/PaymentPendingModal";
+import TermsAndConditionsModal from "./TermsAndConditionsModal";
 
 // API TIMEOUT CONSTANTS
-const API_TIMEOUT = 180000; 
-const PAYMENT_TOTAL_TIMEOUT = 240000; 
-const POLL_INTERVAL = 2000; 
+const API_TIMEOUT = 180000;
+const PAYMENT_TOTAL_TIMEOUT = 240000;
+const POLL_INTERVAL = 2000;
 
 export default function RegisterForm() {
   const router = useRouter();
@@ -34,29 +44,29 @@ export default function RegisterForm() {
 
   const [showTermsModal, setShowTermsModal] = useState(false);
   const [termsAccepted, setTermsAccepted] = useState(false);
-  const [termsError, setTermsError] = useState<string>(''); 
-  const [termsContent, setTermsContent] = useState<string>('');
+  const [termsError, setTermsError] = useState<string>("");
+  const [termsContent, setTermsContent] = useState<string>("");
   const [loadingTerms, setLoadingTerms] = useState(false);
 
   const [formData, setFormData] = useState<Partial<RegistrationFormData>>({
-    email: '',
-    phone: '',
-    firstName: '',
-    lastName: '',
-    dateOfBirth: '',
-    gender: '',
-    nationalId: '',
-    address: '',
-    city: '',
-    country: '',
+    email: "",
+    phone: "",
+    firstName: "",
+    lastName: "",
+    dateOfBirth: "",
+    gender: "",
+    nationalId: "",
+    address: "",
+    city: "",
+    country: "",
     contributionRate: undefined,
     retirementAge: undefined,
-    accountType: 'MANDATORY',
-    riskProfile: 'MEDIUM',
-    currency: 'KES',
-    accountStatus: 'ACTIVE',
+    accountType: "MANDATORY",
+    riskProfile: "MEDIUM",
+    currency: "KES",
+    accountStatus: "ACTIVE",
     kycVerified: false,
-    complianceStatus: 'PENDING',
+    complianceStatus: "PENDING",
   });
 
   const [paymentPending, setPaymentPending] = useState<{
@@ -65,34 +75,43 @@ export default function RegisterForm() {
     statusCheckUrl?: string;
   } | null>(null);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+    >,
+  ) => {
     const { name, value, type } = e.target as any;
-    const numericFields = ['salary', 'contributionRate', 'retirementAge'];
+    const numericFields = ["salary", "contributionRate", "retirementAge"];
     setFormData({
       ...formData,
-      [name]: numericFields.includes(name) ? (value ? Number(value) : undefined) : value,
+      [name]: numericFields.includes(name)
+        ? value
+          ? Number(value)
+          : undefined
+        : value,
     });
     if (errors[name]) {
-      setErrors({ ...errors, [name]: '' });
+      setErrors({ ...errors, [name]: "" });
     }
   };
 
   const [step, setStep] = useState(0);
   const steps = [
-    { title: 'Account', icon: '👤', desc: 'Your credentials' },
-    { title: 'Personal', icon: '📋', desc: 'About you' },
-    { title: 'Address', icon: '📍', desc: 'Your location' },
-    { title: 'Pension', icon: '🏦', desc: 'Final setup' }
+    { title: "Account", icon: "👤", desc: "Your credentials" },
+    { title: "Personal", icon: "📋", desc: "About you" },
+    { title: "Address", icon: "📍", desc: "Your location" },
+    { title: "Pension", icon: "🏦", desc: "Final setup" },
   ];
 
   const validateStep = (idx: number) => {
     const e: Record<string, string> = {};
     if (idx === 0) {
-      if (!formData.email) e.email = 'Email is required';
-      if (!formData.phone) e.phone = 'Phone is required';
+      if (!formData.email) e.email = "Email is required";
+      if (!formData.phone) e.phone = "Phone is required";
     }
     if (idx === 3) {
-      if (formData.contributionRate == null) e.contributionRate = 'Select contribution rate';
+      if (formData.contributionRate == null)
+        e.contributionRate = "Select contribution rate";
     }
 
     setErrors(e);
@@ -106,7 +125,7 @@ export default function RegisterForm() {
   const handleTermsChange = (checked: boolean) => {
     setTermsAccepted(checked);
     if (checked) {
-      setTermsError('');
+      setTermsError("");
     }
   };
 
@@ -115,17 +134,17 @@ export default function RegisterForm() {
     if (!validateStep(step)) return;
     if (step < steps.length - 1) {
       setStep(step + 1);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      window.scrollTo({ top: 0, behavior: "smooth" });
       return;
     }
-    
+
     if (!termsAccepted) {
-      setTermsError('You must accept the Terms and Conditions to continue');
-      toast.error('⚠️ Please accept the Terms and Conditions');
+      setTermsError("You must accept the Terms and Conditions to continue");
+      toast.error("⚠️ Please accept the Terms and Conditions");
       return;
     }
-    
-    handleSubmit(new Event('submit') as unknown as FormEvent);
+
+    handleSubmit(new Event("submit") as unknown as FormEvent);
   };
 
   const handleBack = (e?: React.MouseEvent) => {
@@ -142,7 +161,7 @@ export default function RegisterForm() {
       if (err instanceof ZodError) {
         const newErrors: Record<string, string> = {};
         err.issues.forEach((error) => {
-          const path = error.path.join('.');
+          const path = error.path.join(".");
           newErrors[path] = error.message;
         });
         setErrors(newErrors);
@@ -153,30 +172,30 @@ export default function RegisterForm() {
 
   const handleTermsAccept = () => {
     setTermsAccepted(true);
-    setTermsError('');
+    setTermsError("");
     setShowTermsModal(false);
-    toast.success('✅ Terms and Conditions accepted');
+    toast.success("✅ Terms and Conditions accepted");
   };
 
   const handleTermsDecline = () => {
     setShowTermsModal(false);
-    toast.info('ℹ️ You must accept the Terms and Conditions to proceed');
+    toast.info("ℹ️ You must accept the Terms and Conditions to proceed");
   };
 
   const apiCallWithTimeout = async <T,>(
     apiPromise: Promise<T>,
-    timeoutMs: number = API_TIMEOUT
+    timeoutMs: number = API_TIMEOUT,
   ): Promise<T> => {
     return Promise.race([
       apiPromise,
       new Promise<T>((_, reject) =>
-        setTimeout(() => reject(new Error('Request timeout')), timeoutMs)
+        setTimeout(() => reject(new Error("Request timeout")), timeoutMs),
       ),
     ]);
   };
 
   const stopPolling = () => {
-    console.log('[Register] Stopping polling...');
+    console.log("[Register] Stopping polling...");
     setPolling(false);
     if (pollRef.current) {
       clearInterval(pollRef.current);
@@ -186,46 +205,56 @@ export default function RegisterForm() {
     pollStartTimeRef.current = null;
   };
 
-  const handleRegistrationSuccess = (token?: string, user?: any, account?: any) => {
-    console.log('[Register] Registration successful!', { hasToken: !!token, hasUser: !!user, hasAccount: !!account });
-    
+  const handleRegistrationSuccess = (
+    token?: string,
+    user?: any,
+    account?: any,
+  ) => {
+    console.log("[Register] Registration successful!", {
+      hasToken: !!token,
+      hasUser: !!user,
+      hasAccount: !!account,
+    });
+
     stopPolling();
     setPaymentPending(null);
     setLoading(false);
-    
-    if (token && typeof window !== 'undefined') {
-      localStorage.setItem('auth_token', token);
-      
+
+    if (token && typeof window !== "undefined") {
+      localStorage.setItem("auth_token", token);
+
       let userToStore = user;
       if (user && !user.role) {
         userToStore = {
           ...user,
-          role: 'customer',
+          role: "customer",
         };
       }
-      
+
       if (userToStore) {
-        localStorage.setItem('user', JSON.stringify(userToStore));
+        localStorage.setItem("user", JSON.stringify(userToStore));
       }
-      
+
       if (account) {
-        console.log('[Register] Storing account data:', account);
-        localStorage.setItem('account', JSON.stringify(account));
+        console.log("[Register] Storing account data:", account);
+        localStorage.setItem("account", JSON.stringify(account));
       }
     }
-    
-    toast.success('🎉 Registration completed! Redirecting to dashboard...');
-    
+
+    toast.success("🎉 Registration completed! Redirecting to dashboard...");
+
     setTimeout(() => {
-      router.push('/dashboard');
+      router.push("/dashboard");
     }, 1500);
   };
 
   const handleSubmit = async (e: FormEvent) => {
-    try { e.preventDefault?.(); } catch {}
+    try {
+      e.preventDefault?.();
+    } catch {}
 
     if (!validateForm()) {
-      toast.error('⚠️ Please fix validation errors');
+      toast.error("⚠️ Please fix validation errors");
       return;
     }
 
@@ -234,27 +263,37 @@ export default function RegisterForm() {
     try {
       const dataToSend = {
         ...formData,
-        accountType: formData.accountType || 'MANDATORY',
-        riskProfile: formData.riskProfile || 'MEDIUM',
-        currency: formData.currency || 'KES',
-        accountStatus: formData.accountStatus || 'ACTIVE',
+        accountType: formData.accountType || "MANDATORY",
+        riskProfile: formData.riskProfile || "MEDIUM",
+        currency: formData.currency || "KES",
+        accountStatus: formData.accountStatus || "ACTIVE",
         kycVerified: formData.kycVerified || false,
-        complianceStatus: formData.complianceStatus || 'PENDING',
+        complianceStatus: formData.complianceStatus || "PENDING",
       };
-      
+
       const result = await apiCallWithTimeout(
         authApi.register(dataToSend as RegistrationFormData),
-        API_TIMEOUT
+        API_TIMEOUT,
       );
-      
+
       if (!result.success) {
-        const errorMsg = result.error || 'Registration failed';
-        if (errorMsg.includes('already')) {
-          toast.error('❌ Email or phone already registered');
-        } else if (errorMsg.includes('Payment') || errorMsg.includes('payment')) {
-          toast.error('💳 Failed to initiate payment. Please check your details and try again.');
-        } else if (errorMsg.includes('timeout') || errorMsg.includes('Timeout')) {
-          toast.error('⏱️ Request timed out. Please check your connection and try again.');
+        const errorMsg = result.error || "Registration failed";
+        if (errorMsg.includes("already")) {
+          toast.error("❌ Email or phone already registered");
+        } else if (
+          errorMsg.includes("Payment") ||
+          errorMsg.includes("payment")
+        ) {
+          toast.error(
+            "💳 Failed to initiate payment. Please check your details and try again.",
+          );
+        } else if (
+          errorMsg.includes("timeout") ||
+          errorMsg.includes("Timeout")
+        ) {
+          toast.error(
+            "⏱️ Request timed out. Please check your connection and try again.",
+          );
         } else {
           toast.error(errorMsg);
         }
@@ -262,17 +301,28 @@ export default function RegisterForm() {
         return;
       }
 
-      const { checkoutRequestId, statusCheckUrl, transactionId, message, status, token, user, account } = result as any;
+      const {
+        checkoutRequestId,
+        statusCheckUrl,
+        transactionId,
+        message,
+        status,
+        token,
+        user,
+        account,
+      } = result as any;
 
-      if (status === 'registration_completed' || token) {
+      if (status === "registration_completed" || token) {
         handleRegistrationSuccess(token, user, account);
         return;
       }
 
-      if (status === 'payment_initiated' || checkoutRequestId) {
-        console.log('[Register] Payment initiated, starting polling...', { transactionId });
-        toast.success('💳 M-Pesa prompt sent to your phone!');
-        toast.info('📱 Please check your phone and enter your M-Pesa PIN');
+      if (status === "payment_initiated" || checkoutRequestId) {
+        console.log("[Register] Payment initiated, starting polling...", {
+          transactionId,
+        });
+        toast.success("💳 M-Pesa prompt sent to your phone!");
+        toast.info("📱 Please check your phone and enter your M-Pesa PIN");
         setPaymentPending({ transactionId, checkoutRequestId, statusCheckUrl });
         setLoading(false);
         setPolling(true);
@@ -281,15 +331,17 @@ export default function RegisterForm() {
         return;
       }
 
-      toast.success('✅ Account created successfully! Redirecting to login...');
-      setTimeout(() => router.push('/login'), 1500);
+      toast.success("✅ Account created successfully! Redirecting to login...");
+      setTimeout(() => router.push("/login"), 1500);
     } catch (err: any) {
-      if (err.message === 'Request timeout') {
-        toast.error('⏱️ Request timed out. Please check your connection and try again.');
+      if (err.message === "Request timeout") {
+        toast.error(
+          "⏱️ Request timed out. Please check your connection and try again.",
+        );
       } else {
-        toast.error('⚠️ An unexpected error occurred');
+        toast.error("⚠️ An unexpected error occurred");
       }
-      console.error('[Register] Submit error:', err);
+      console.error("[Register] Submit error:", err);
       setLoading(false);
     }
   };
@@ -298,12 +350,15 @@ export default function RegisterForm() {
     const fetchTerms = async () => {
       setLoadingTerms(true);
       try {
-        const res = await apiCallWithTimeout(termsApi.getCurrent(), API_TIMEOUT);
+        const res = await apiCallWithTimeout(
+          termsApi.getCurrent(),
+          API_TIMEOUT,
+        );
         if (res.success && res.body) {
           setTermsContent(res.body);
         }
       } catch (err: any) {
-        console.error('[Register] Failed to load terms:', err);
+        console.error("[Register] Failed to load terms:", err);
       } finally {
         setLoadingTerms(false);
       }
@@ -317,18 +372,22 @@ export default function RegisterForm() {
       return;
     }
 
-    console.log('[Register] Starting payment polling...', { transactionId: paymentPending.transactionId });
+    console.log("[Register] Starting payment polling...", {
+      transactionId: paymentPending.transactionId,
+    });
 
     const maxAttempts = 120;
 
     const poll = async () => {
       pollAttemptsRef.current++;
       const attempts = pollAttemptsRef.current;
-      
+
       const elapsedTime = Date.now() - (pollStartTimeRef.current || Date.now());
       if (elapsedTime > PAYMENT_TOTAL_TIMEOUT) {
-        console.log('[Register] Payment timeout reached');
-        toast.error('⏱️ Payment confirmation timeout. Please contact support if payment was deducted.');
+        console.log("[Register] Payment timeout reached");
+        toast.error(
+          "⏱️ Payment confirmation timeout. Please contact support if payment was deducted.",
+        );
         stopPolling();
         setPaymentPending(null);
         setLoading(false);
@@ -336,8 +395,10 @@ export default function RegisterForm() {
       }
 
       if (attempts >= maxAttempts) {
-        console.log('[Register] Max polling attempts reached');
-        toast.error('⏱️ Maximum attempts reached. Please check the transaction status.');
+        console.log("[Register] Max polling attempts reached");
+        toast.error(
+          "⏱️ Maximum attempts reached. Please check the transaction status.",
+        );
         stopPolling();
         setPaymentPending(null);
         setLoading(false);
@@ -346,41 +407,47 @@ export default function RegisterForm() {
 
       try {
         console.log(`[Register] Polling attempt ${attempts}/${maxAttempts}...`);
-        
+
         const res = await apiCallWithTimeout(
           authApi.getRegisterStatus(paymentPending.transactionId as string),
-          API_TIMEOUT
+          API_TIMEOUT,
         );
-        
-        console.log('[Register] Poll response:', { success: res.success, status: (res as any).status });
+
+        console.log("[Register] Poll response:", {
+          success: res.success,
+          status: (res as any).status,
+        });
 
         if (res.success) {
           const { status, token, user, account } = res as any;
-          
-          if (status === 'registration_completed' && token) {
-            console.log('[Register] Payment confirmed! Registration complete.', { account });
+
+          if (status === "registration_completed" && token) {
+            console.log(
+              "[Register] Payment confirmed! Registration complete.",
+              { account },
+            );
             handleRegistrationSuccess(token, user, account);
             return;
           }
 
-          if (status === 'payment_failed') {
-            console.log('[Register] Payment failed');
-            toast.error('❌ Payment failed. Please try again.');
+          if (status === "payment_failed") {
+            console.log("[Register] Payment failed");
+            toast.error("❌ Payment failed. Please try again.");
             stopPolling();
             setPaymentPending(null);
             setLoading(false);
             return;
           }
 
-          if (status === 'payment_pending' && attempts === 1) {
-            toast('⏳ Waiting for payment confirmation...', { duration: 3000 });
+          if (status === "payment_pending" && attempts === 1) {
+            toast("⏳ Waiting for payment confirmation...", { duration: 3000 });
           }
         } else {
           const status = (res as any).status;
-          
-          if (status === 'payment_failed') {
-            console.log('[Register] Payment failed (from error response)');
-            toast.error('❌ Payment failed. Please try again.');
+
+          if (status === "payment_failed") {
+            console.log("[Register] Payment failed (from error response)");
+            toast.error("❌ Payment failed. Please try again.");
             stopPolling();
             setPaymentPending(null);
             setLoading(false);
@@ -388,14 +455,14 @@ export default function RegisterForm() {
           }
         }
       } catch (err: any) {
-        if (err.message !== 'Request timeout') {
-          console.error('[Register] Poll error:', err);
+        if (err.message !== "Request timeout") {
+          console.error("[Register] Poll error:", err);
         }
       }
     };
 
     poll();
-    
+
     pollRef.current = setInterval(poll, POLL_INTERVAL);
 
     return () => {
@@ -417,11 +484,13 @@ export default function RegisterForm() {
       <PaymentPendingModal
         transactionId={paymentPending.transactionId}
         onCancel={() => {
-          console.log('[Register] User cancelled payment');
+          console.log("[Register] User cancelled payment");
           stopPolling();
           setPaymentPending(null);
           setLoading(false);
-          toast.info('ℹ️ Payment confirmation cancelled. You can try registering again.');
+          toast.info(
+            "ℹ️ Payment confirmation cancelled. You can try registering again.",
+          );
         }}
       />
     );
@@ -434,8 +503,11 @@ export default function RegisterForm() {
         <div className="lg:w-1/2 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-8 lg:p-16 flex flex-col justify-center relative overflow-hidden min-h-screen">
           {/* Animated background elements */}
           <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-orange-600/10 rounded-full blur-3xl animate-pulse"></div>
-          <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-orange-500/5 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
-          
+          <div
+            className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-orange-500/5 rounded-full blur-3xl animate-pulse"
+            style={{ animationDelay: "1s" }}
+          ></div>
+
           {/* Geometric patterns */}
           <div className="absolute top-20 right-20 w-64 h-64 border border-orange-500/10 rounded-full"></div>
           <div className="absolute bottom-32 left-16 w-80 h-80 border border-orange-500/5 rounded-full"></div>
@@ -460,7 +532,7 @@ export default function RegisterForm() {
                 Future Today
               </span>
             </h1>
-            
+
             {/* Subheading */}
             <p className="text-xl lg:text-2xl text-slate-300 mb-12 font-light leading-relaxed">
               Join thousands building their retirement with AutoNest Pension
@@ -476,28 +548,40 @@ export default function RegisterForm() {
                   <Sparkles className="w-7 h-7 text-white" />
                 </div>
                 <div>
-                  <h3 className="text-white font-bold text-lg mb-1">Quick Setup</h3>
-                  <p className="text-slate-400 text-sm leading-relaxed">Complete registration in just 5 simple steps</p>
+                  <h3 className="text-white font-bold text-lg mb-1">
+                    Quick Setup
+                  </h3>
+                  <p className="text-slate-400 text-sm leading-relaxed">
+                    Complete registration in just 5 simple steps
+                  </p>
                 </div>
               </div>
-              
+
               <div className="flex items-start gap-4 group cursor-pointer">
                 <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center flex-shrink-0 shadow-lg shadow-blue-500/20 group-hover:shadow-blue-500/40 group-hover:scale-105 transition-all duration-300">
                   <Zap className="w-7 h-7 text-white" />
                 </div>
                 <div>
-                  <h3 className="text-white font-bold text-lg mb-1">Fast Activation</h3>
-                  <p className="text-slate-400 text-sm leading-relaxed">Only 1 KES via M-Pesa to activate your account</p>
+                  <h3 className="text-white font-bold text-lg mb-1">
+                    Fast Activation
+                  </h3>
+                  <p className="text-slate-400 text-sm leading-relaxed">
+                    Only 1 KES via M-Pesa to activate your account
+                  </p>
                 </div>
               </div>
-              
+
               <div className="flex items-start gap-4 group cursor-pointer">
                 <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center flex-shrink-0 shadow-lg shadow-emerald-500/20 group-hover:shadow-emerald-500/40 group-hover:scale-105 transition-all duration-300">
                   <Lock className="w-7 h-7 text-white" />
                 </div>
                 <div>
-                  <h3 className="text-white font-bold text-lg mb-1">Bank-level Security</h3>
-                  <p className="text-slate-400 text-sm leading-relaxed">Your data protected with enterprise encryption</p>
+                  <h3 className="text-white font-bold text-lg mb-1">
+                    Bank-level Security
+                  </h3>
+                  <p className="text-slate-400 text-sm leading-relaxed">
+                    Your data protected with enterprise encryption
+                  </p>
                 </div>
               </div>
             </div>
@@ -511,7 +595,8 @@ export default function RegisterForm() {
                   <div className="w-12 h-12 rounded-full bg-gradient-to-br from-emerald-400 to-emerald-600 border-3 border-slate-900"></div>
                 </div>
                 <p className="text-slate-400 text-sm leading-relaxed">
-                  Join <span className="font-bold text-white">10,000+</span> planning their retirement
+                  Join <span className="font-bold text-white">10,000+</span>{" "}
+                  planning their retirement
                 </p>
               </div>
             </div>
@@ -527,11 +612,17 @@ export default function RegisterForm() {
           {/* Header */}
           <div className="border-b border-slate-200/80 bg-white/60 backdrop-blur-md px-8 py-5 flex items-center justify-between sticky top-0 z-20 shadow-sm">
             <div className="flex items-center gap-3">
-              <img src="/pensions.jpeg" alt="AutoNest Pension" className="w-10 h-10 rounded-xl object-cover shadow-sm" />
-              <span className="text-lg font-bold text-slate-900">AutoNest Pension</span>
+              <img
+                src="/pensions.jpeg"
+                alt="AutoNest Pension"
+                className="w-10 h-10 rounded-xl object-cover shadow-sm"
+              />
+              <span className="text-lg font-bold text-slate-900">
+                AutoNest Pension
+              </span>
             </div>
-            <Link 
-              href="/login" 
+            <Link
+              href="/login"
               className="text-sm font-bold bg-gradient-to-r from-orange-600 to-orange-500 hover:from-orange-700 hover:to-orange-600 px-4 py-2 rounded-lg text-white transition shadow-lg hover:shadow-orange-500/30"
             >
               Sign in
@@ -547,25 +638,29 @@ export default function RegisterForm() {
                     <button
                       onClick={() => setStep(i)}
                       className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm transition-all ${
-                        i === step 
-                          ? 'bg-gradient-to-br from-orange-500 to-orange-600 text-white shadow-lg scale-110' 
-                          : i < step 
-                          ? 'bg-green-500 text-white'
-                          : 'bg-slate-200 text-slate-500'
+                        i === step
+                          ? "bg-gradient-to-br from-orange-500 to-orange-600 text-white shadow-lg scale-110"
+                          : i < step
+                            ? "bg-green-500 text-white"
+                            : "bg-slate-200 text-slate-500"
                       }`}
                     >
                       {i < step ? <CheckCircle2 className="w-5 h-5" /> : i + 1}
                     </button>
                     {i < steps.length - 1 && (
-                      <div className={`w-12 lg:w-20 h-1 mx-1 rounded-full transition-all ${
-                        i < step ? 'bg-green-500' : 'bg-slate-200'
-                      }`} />
+                      <div
+                        className={`w-12 lg:w-20 h-1 mx-1 rounded-full transition-all ${
+                          i < step ? "bg-green-500" : "bg-slate-200"
+                        }`}
+                      />
                     )}
                   </div>
                 ))}
               </div>
               <div className="text-center">
-                <p className="text-sm font-bold text-slate-900">{steps[step].title}</p>
+                <p className="text-sm font-bold text-slate-900">
+                  {steps[step].title}
+                </p>
                 <p className="text-xs text-slate-600">{steps[step].desc}</p>
               </div>
             </div>
@@ -575,7 +670,10 @@ export default function RegisterForm() {
           <div className="flex-1 overflow-auto p-8">
             <div className="max-w-2xl mx-auto">
               <div className="bg-white/90 backdrop-blur-xl rounded-3xl shadow-2xl p-8 lg:p-10 border border-white/50">
-                <form onSubmit={handleSubmit} className="space-y-6 min-h-[400px]">
+                <form
+                  onSubmit={handleSubmit}
+                  className="space-y-6 min-h-[400px]"
+                >
                   {step === 0 && (
                     <AccountCredentialsSection
                       formData={{
@@ -637,9 +735,9 @@ export default function RegisterForm() {
                     onClick={handleBack}
                     disabled={step === 0}
                     className={`px-6 py-3.5 rounded-xl font-bold text-sm transition-all flex items-center gap-2 ${
-                      step === 0 
-                        ? 'text-slate-400 bg-slate-100 cursor-not-allowed' 
-                        : 'text-slate-700 bg-slate-100 hover:bg-slate-200 border border-slate-200'
+                      step === 0
+                        ? "text-slate-400 bg-slate-100 cursor-not-allowed"
+                        : "text-slate-700 bg-slate-100 hover:bg-slate-200 border border-slate-200"
                     }`}
                   >
                     <ArrowLeft className="w-4 h-4" />
