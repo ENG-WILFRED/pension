@@ -118,7 +118,7 @@ export default function VerifyOtpClient() {
         // Ensure user object has an id before saving
         if (userToStore && userToStore.id) {
           localStorage.setItem('user', JSON.stringify(userToStore));
-          console.log('[OTP VERIFY] Saved user to localStorage:', userToStore);
+          // console.log('[OTP VERIFY] Saved user to localStorage:', userToStore);
         } else {
           console.error('[OTP VERIFY] User object missing id, not saving:', userToStore);
         }

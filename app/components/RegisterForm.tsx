@@ -239,7 +239,7 @@ export default function RegisterForm() {
       if (userToStore && userToStore.id) {
         try {
           localStorage.setItem("user", JSON.stringify(userToStore));
-          console.log("[Register] Saved user to localStorage:", userToStore);
+          // console.log("[Register] Saved user to localStorage:", userToStore);
         } catch (e) {
           toast.error("Failed to save user to localStorage");
           console.error("[Register] Error saving user:", e);
@@ -252,7 +252,7 @@ export default function RegisterForm() {
       if (account) {
         try {
           localStorage.setItem("account", JSON.stringify(account));
-          console.log("[Register] Storing account data:", account);
+          // console.log("[Register] Storing account data:", account);
         } catch (e) {
           toast.error("Failed to save account to localStorage");
           console.error("[Register] Error saving account:", e);
