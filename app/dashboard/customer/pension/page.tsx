@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { accountsApi } from "@/app/lib/api-client";
 import { Wallet, TrendingUp, DollarSign, ArrowUpCircle, ArrowDownCircle } from "lucide-react";
 import { PageLoader } from "@/app/components/loaders";
+import PensionDetails from '@/app/components/dashboard/EmploymentDetails';
 
 interface Account {
   id: string;
@@ -70,6 +71,16 @@ export default function CustomerPensionPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950 px-4 sm:px-6 lg:px-8 py-8">
+      {/* Pension Details Card */}
+      {accounts.length > 0 && (
+        <div className="mb-8">
+          <PensionDetails
+            accountNumber={accounts[0].id}
+            contributionRate={accounts[0].accountType.interestRate}
+            retirementAge={60}
+          />
+        </div>
+      )}
       {/* Header */}
       <div className="mb-8">
         <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white">Pension Plans</h1>
@@ -133,11 +144,11 @@ export default function CustomerPensionPage() {
                       <ArrowDownCircle size={18} />
                     </div>
                   </div>
-                  <p className="text-xs font-semibold opacity-90 mb-1">Monthly Contribution</p>
-                  <p className="text-2xl font-bold">
-                    {Number(account.employeeBalance ?? 0).toLocaleString()}
-                  </p>
-                  <p className="text-xs opacity-80 mt-1">Total allocated</p>
+                  <p className="text-xs font-semibold opacity-90 mb-1">Contributions</p>
+                    <p className="text-2xl font-bold">
+                      {Number((account.employeeBalance ?? 0) + (account.employerBalance ?? 0)).toLocaleString()}
+                    </p>
+                    <p className="text-xs opacity-80 mt-1">Total contributions</p>
                 </div>
 
                 <div className="bg-gradient-to-r from-orange-500 via-purple-500 to-indigo-600 rounded-xl p-4 text-white shadow-lg">
@@ -146,11 +157,11 @@ export default function CustomerPensionPage() {
                       <TrendingUp size={18} />
                     </div>
                   </div>
-                  <p className="text-xs font-semibold opacity-90 mb-1">Projected @ 70</p>
-                  <p className="text-2xl font-bold">
-                    {Number(account.employerBalance ?? 0).toLocaleString()}
-                  </p>
-                  <p className="text-xs opacity-80 mt-1">8% annual growth</p>
+                  <p className="text-xs font-semibold opacity-90 mb-1">Investment Earnings</p>
+                    <p className="text-2xl font-bold">
+                      {Number(account.earningsBalance ?? 0).toLocaleString()}
+                    </p>
+                    <p className="text-xs opacity-80 mt-1">Realised returns</p>
                 </div>
 
                 <div className="bg-gradient-to-r from-orange-500 via-red-500 to-pink-600 rounded-xl p-4 text-white shadow-lg">
@@ -161,9 +172,9 @@ export default function CustomerPensionPage() {
                   </div>
                   <p className="text-xs font-semibold opacity-90 mb-1">Years to Retirement</p>
                   <p className="text-2xl font-bold">
-                    {Number(account.earningsBalance ?? 0).toLocaleString()}
-                  </p>
-                  <p className="text-xs opacity-80 mt-1">Target age: 70</p>
+                      {Number(account.totalBalance ?? 0).toLocaleString()}
+                    </p>
+                    <p className="text-xs opacity-80 mt-1">Total balance</p>
                 </div>
               </div>
 

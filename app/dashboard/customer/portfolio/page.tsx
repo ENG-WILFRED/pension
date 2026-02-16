@@ -56,8 +56,10 @@ export default function CustomerPortfolioPage() {
   const totalEmployer = accounts.reduce((sum, acc) => sum + Number(acc.employerBalance ?? 0), 0);
   const totalEarnings = accounts.reduce((sum, acc) => sum + Number(acc.earningsBalance ?? 0), 0);
 
-  const employeePercent = totalBalance > 0 ? ((totalEmployee / totalBalance) * 100).toFixed(1) : 0;
-  const employerPercent = totalBalance > 0 ? ((totalEmployer / totalBalance) * 100).toFixed(1) : 0;
+  // Show combined contributions (employee + employer) and earnings. We intentionally avoid "employer" labels.
+  const totalContributions = totalEmployee + totalEmployer;
+
+  const contributionsPercent = totalBalance > 0 ? ((totalContributions / totalBalance) * 100).toFixed(1) : 0;
   const earningsPercent = totalBalance > 0 ? ((totalEarnings / totalBalance) * 100).toFixed(1) : 0;
 
   return (
@@ -106,34 +108,19 @@ export default function CustomerPortfolioPage() {
             </div>
           ) : (
             <div className="space-y-4">
-              {/* Employee Contributions */}
+              {/* Contributions (combined) */}
               <div>
                 <div className="flex justify-between items-center mb-2">
-                  <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">Employee Contributions</span>
-                  <span className="text-sm font-bold text-gray-900 dark:text-gray-100">{employeePercent}%</span>
+                  <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">Contributions</span>
+                  <span className="text-sm font-bold text-gray-900 dark:text-gray-100">{contributionsPercent}%</span>
                 </div>
                 <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3">
                   <div 
                     className="bg-gradient-to-r from-orange-500 to-orange-600 dark:from-orange-600 dark:to-orange-700 h-3 rounded-full transition-all"
-                    style={{width: `${employeePercent}%`}}
+                    style={{width: `${contributionsPercent}%`}}
                   />
                 </div>
-                <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">KES {Number(totalEmployee ?? 0).toLocaleString()}</p>
-              </div>
-
-              {/* Employer Contributions */}
-              <div>
-                <div className="flex justify-between items-center mb-2">
-                  <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">Employer Contributions</span>
-                  <span className="text-sm font-bold text-gray-900 dark:text-gray-100">{employerPercent}%</span>
-                </div>
-                <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3">
-                  <div 
-                    className="bg-gradient-to-r from-pink-500 to-pink-600 dark:from-pink-600 dark:to-pink-700 h-3 rounded-full transition-all"
-                    style={{width: `${employerPercent}%`}}
-                  />
-                </div>
-                <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">KES {Number(totalEmployer ?? 0).toLocaleString()}</p>
+                <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">KES {Number(totalContributions ?? 0).toLocaleString()}</p>
               </div>
 
               {/* Earnings */}

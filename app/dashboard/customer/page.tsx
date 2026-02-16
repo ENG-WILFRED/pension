@@ -297,46 +297,48 @@ export default function CustomerDashboard() {
         setYtdInterest(ytdInt);
         setLoadingTransactions(false);
 
-        const mockPensionPlans: PensionPlan[] = [
-          {
-            id: "plan1",
-            name: "Growth Pension Fund",
-            provider: "Kenya Pension Fund Limited",
-            contribution: 15000,
-            expectedReturn: 12.5,
-            riskLevel: "High",
-            balance: 285000,
-            status: "Active",
-          },
-          {
-            id: "plan2",
-            name: "Balanced Pension Fund",
-            provider: "Heritage Insurance Pension",
-            contribution: 10000,
-            expectedReturn: 8.75,
-            riskLevel: "Medium",
-            balance: 165000,
-            status: "Active",
-          },
-          {
-            id: "plan3",
-            name: "Conservative Pension Fund",
-            provider: "Equity Bank Pension Scheme",
-            contribution: 8000,
-            expectedReturn: 5.5,
-            riskLevel: "Low",
-            balance: 98000,
-            status: "Active",
-          },
-        ];
+        // Use backend accounts to compute totals. Fall back to mock plans if accounts aren't available.
+        try {
+          const accountsRes = await accountsApi.getAll();
+          if (accountsRes.success && Array.isArray(accountsRes.accounts) && accountsRes.accounts.length > 0) {
+            // compute totals from normalized accounts
+            const totalBal = accountsRes.accounts.reduce((sum: number, a: any) => sum + Number(a.totalBalance ?? 0), 0);
+            const totalEmp = accountsRes.accounts.reduce((sum: number, a: any) => sum + Number(a.employeeBalance ?? 0), 0);
+            const totalEr = accountsRes.accounts.reduce((sum: number, a: any) => sum + Number(a.employerBalance ?? 0), 0);
+            const totalEarn = accountsRes.accounts.reduce((sum: number, a: any) => sum + Number(a.earningsBalance ?? 0), 0);
 
-        const totalContrib = mockPensionPlans.reduce((sum, plan) => sum + plan.contribution, 0);
-        const totalBalance = mockPensionPlans.reduce((sum, plan) => sum + plan.balance, 0);
+            const totalContribs = totalEmp + totalEr;
 
-        setPensionPlans(mockPensionPlans);
-        setTotalContributions(totalContrib);
-        setBalance(totalBalance);
-        setProjectedRetirement(Math.round(totalBalance * Math.pow(1.08, 30)));
+            // Map accounts into simple pension plan view if desired (lightweight)
+            const mappedPlans: PensionPlan[] = accountsRes.accounts.map((a: any, idx: number) => ({
+              id: String(a.id || idx),
+              name: a.accountType?.name || a.accountNumber || `Account ${a.id}`,
+              provider: 'AutoNest',
+              contribution: Number(a.employeeBalance ?? 0) + Number(a.employerBalance ?? 0),
+              expectedReturn: 8.0,
+              riskLevel: 'Medium',
+              balance: Number(a.totalBalance ?? 0),
+              status: a.accountStatus || 'ACTIVE',
+            }));
+
+            setPensionPlans(mappedPlans);
+            setTotalContributions(totalContribs);
+            setBalance(totalBal);
+            setProjectedRetirement(Math.round(totalBal * Math.pow(1.08, 30)));
+          } else {
+            // keep previous mock behaviour if no accounts
+            setPensionPlans([]);
+            setTotalContributions(0);
+            setBalance(0);
+            setProjectedRetirement(0);
+          }
+        } catch (e) {
+          console.error('[Dashboard] Failed to compute totals from accounts:', e);
+          setPensionPlans([]);
+          setTotalContributions(0);
+          setBalance(0);
+          setProjectedRetirement(0);
+        }
 
       } catch (err) {
         console.error(err);
