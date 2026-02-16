@@ -107,7 +107,6 @@ export default function VerifyOtpClient() {
 
       if (token && typeof window !== 'undefined') {
         localStorage.setItem('auth_token', token);
-        
         let userToStore = user;
         if (user && !user.role) {
           userToStore = {
@@ -115,10 +114,16 @@ export default function VerifyOtpClient() {
             role: 'customer',
           };
         }
-        
-        if (userToStore) {
+
+        // Ensure user object has an id before saving
+        if (userToStore && userToStore.id) {
           localStorage.setItem('user', JSON.stringify(userToStore));
+          console.log('[OTP VERIFY] Saved user to localStorage:', userToStore);
+        } else {
+          console.error('[OTP VERIFY] User object missing id, not saving:', userToStore);
         }
+      } else {
+        console.error('[OTP VERIFY] No token or window context, cannot save user. Token:', token);
       }
 
       try {
@@ -128,7 +133,7 @@ export default function VerifyOtpClient() {
       }
 
       toast.success('✅ Login successful! Redirecting to dashboard...');
-      
+
       try {
         localStorage.removeItem('auth_identifier');
       } catch {}

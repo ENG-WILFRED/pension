@@ -219,8 +219,14 @@ export default function RegisterForm() {
     setPaymentPending(null);
     setLoading(false);
 
+
     if (token && typeof window !== "undefined") {
-      localStorage.setItem("auth_token", token);
+      try {
+        localStorage.setItem("auth_token", token);
+      } catch (e) {
+        toast.error("Failed to save auth token to localStorage");
+        console.error("[Register] Error saving auth_token:", e);
+      }
 
       let userToStore = user;
       if (user && !user.role) {
@@ -230,14 +236,31 @@ export default function RegisterForm() {
         };
       }
 
-      if (userToStore) {
-        localStorage.setItem("user", JSON.stringify(userToStore));
+      if (userToStore && userToStore.id) {
+        try {
+          localStorage.setItem("user", JSON.stringify(userToStore));
+          console.log("[Register] Saved user to localStorage:", userToStore);
+        } catch (e) {
+          toast.error("Failed to save user to localStorage");
+          console.error("[Register] Error saving user:", e);
+        }
+      } else {
+        toast.error("Registration failed: user object missing or missing id");
+        console.error("[Register] User object missing or missing id, not saving:", userToStore);
       }
 
       if (account) {
-        console.log("[Register] Storing account data:", account);
-        localStorage.setItem("account", JSON.stringify(account));
+        try {
+          localStorage.setItem("account", JSON.stringify(account));
+          console.log("[Register] Storing account data:", account);
+        } catch (e) {
+          toast.error("Failed to save account to localStorage");
+          console.error("[Register] Error saving account:", e);
+        }
       }
+    } else {
+      toast.error("Registration failed: no token or window context");
+      console.error("[Register] No token or window context, cannot save user. Token:", token);
     }
 
     toast.success("🎉 Registration completed! Redirecting to dashboard...");
