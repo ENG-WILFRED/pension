@@ -33,35 +33,7 @@ export default function PensionSection({
 
         {/* 2 Rows x 2 Columns Layout */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Row 1, Column 1 - Account Type */}
-          <div>
-            <label
-              htmlFor="accountType"
-              className="block text-sm font-medium text-gray-700 mb-2.5"
-            >
-              Account Type
-            </label>
-            <div className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-50 text-base text-gray-900 flex items-center justify-between">
-                <span className="text-sm">Account type</span>
-              <span className="font-semibold">MANDATORY</span>
-            </div>
-          </div>
-
-          {/* Row 1, Column 2 - Risk Profile */}
-          <div>
-            <label
-              htmlFor="riskProfile"
-              className="block text-sm font-medium text-gray-700 mb-2.5"
-            >
-              Risk Profile
-            </label>
-            <div className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-50 text-base text-gray-900 flex items-center justify-between">
-              <span className="text-sm">Risk profile</span>
-              <span className="font-semibold">MEDIUM</span>
-            </div>
-          </div>
-
-          {/* Row 2, Column 1 - Contribution Rate */}
+          {/* Row 1, Column 1 - Contribution Rate */}
           <div>
             <label
               htmlFor="contributionRate"

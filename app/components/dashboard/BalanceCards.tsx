@@ -15,18 +15,15 @@ interface BalanceCardsProps {
 }
 
 export default function BalanceCards({ balance, totalContributions, projectedRetirement, user }: BalanceCardsProps) {
-  // Calculate values from user data if available
-  const calculateMonthlyContribution = (): number => {
-    if (user?.salary && user?.contributionRate) {
-      const salary = typeof user.salary === 'string' ? parseInt(user.salary) : user.salary;
-      const rate = typeof user.contributionRate === 'string' ? parseFloat(user.contributionRate) : user.contributionRate;
-      return Math.round((rate / 100) * salary);
-    }
-    return totalContributions || 0;
-  };
+  // Use actual backend data for balance and contributions
+  const totalBalance = balance || 0;
+  const monthlyContrib = totalContributions || 0;
+  const projectedAt65 = projectedRetirement || 0;
+  const defaultRetirementAge = user?.retirementAge || 60;
+  const earlyRetirementAge = 55;
 
+  // Calculate years to retirement
   const calculateYearsToRetirement = (): number => {
-    const defaultRetirementAge = user?.retirementAge || 60;
     if (user?.dateOfBirth) {
       const birthDate = new Date(user.dateOfBirth);
       const today = new Date();
@@ -40,23 +37,7 @@ export default function BalanceCards({ balance, totalContributions, projectedRet
     return Math.max(0, defaultRetirementAge - 30);
   };
 
-  const calculateTotalBalance = (): number => {
-    if (user?.createdAt && user?.salary && user?.contributionRate) {
-      const joinDate = new Date(user.createdAt);
-      const today = new Date();
-      const monthsElapsed = (today.getFullYear() - joinDate.getFullYear()) * 12 + (today.getMonth() - joinDate.getMonth());
-      const monthlyContrib = calculateMonthlyContribution();
-      return Math.round(monthlyContrib * Math.max(1, monthsElapsed));
-    }
-    return balance || 0;
-  };
-
-  const monthlyContrib = calculateMonthlyContribution();
   const yearsToRetirement = calculateYearsToRetirement();
-  const totalBalance = calculateTotalBalance();
-  const projectedAt65 = Math.round(totalBalance * Math.pow(1.08, yearsToRetirement));
-  const defaultRetirementAge = user?.retirementAge || 60;
-  const earlyRetirementAge = 55;
   
   return (
     <div className="grid grid-cols-1 md:grid-cols-4 gap-6">

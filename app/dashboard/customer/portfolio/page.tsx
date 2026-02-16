@@ -8,6 +8,7 @@ import { PageLoader } from "@/app/components/loaders";
 
 interface Account {
   id: string;
+  accountNumber?: string;
   accountType: { name: string };
   totalBalance: number;
   employeeBalance: number;
@@ -19,6 +20,7 @@ export default function CustomerPortfolioPage() {
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [loading, setLoading] = useState(true);
   const [totalBalance, setTotalBalance] = useState(0);
+  const [showRaw, setShowRaw] = useState(false);
 
   useEffect(() => {
     const loadData = async () => {
@@ -26,6 +28,8 @@ export default function CustomerPortfolioPage() {
         const response = await accountsApi.getAll();
         
         if (response.success && response.accounts) {
+          // Log normalized accounts for debugging API shape
+          console.debug('[Portfolio] Loaded accounts:', response.accounts);
           setAccounts(response.accounts);
           
           const total = response.accounts.reduce((sum: number, acc: Account) => 
@@ -62,6 +66,17 @@ export default function CustomerPortfolioPage() {
       <div className="mb-8">
         <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white">Portfolio Overview</h1>
         <p className="text-gray-600 dark:text-gray-400 mt-2">Complete view of your pension portfolio</p>
+        {/* Debug toggle (only visible in non-production) */}
+        {process.env.NODE_ENV !== 'production' && (
+          <div className="mt-3">
+            <button
+              onClick={() => setShowRaw((s) => !s)}
+              className="text-xs text-orange-600 hover:underline"
+            >
+              {showRaw ? 'Hide' : 'Show'} raw accounts response
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Total Portfolio Value */}
@@ -173,6 +188,12 @@ export default function CustomerPortfolioPage() {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {showRaw && (
+              <div className="col-span-full bg-white p-4 rounded-md shadow-inner overflow-auto">
+                <h4 className="text-sm font-semibold mb-2">Raw accounts JSON</h4>
+                <pre className="text-xs whitespace-pre-wrap">{JSON.stringify(accounts, null, 2)}</pre>
+              </div>
+            )}
             {accounts.map((account) => {
               const accountPercent = totalBalance > 0 
                 ? ((account.totalBalance / totalBalance) * 100).toFixed(1)
@@ -183,7 +204,7 @@ export default function CustomerPortfolioPage() {
                   key={account.id}
                   className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl border border-gray-200 dark:border-gray-700 rounded-xl shadow-lg p-6 hover:shadow-xl hover:border-orange-300 dark:hover:border-orange-600 transition-all duration-300"
                 >
-                  <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-4">{account.accountType.name}</h3>
+                  <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-4">{account.accountType?.name ?? account.accountNumber ?? `Account ${account.id}`}</h3>
                   
                   <div className="mb-4">
                     <p className="text-3xl font-bold text-gray-900 dark:text-gray-100">
@@ -194,15 +215,9 @@ export default function CustomerPortfolioPage() {
 
                   <div className="space-y-2 text-sm">
                     <div className="flex justify-between">
-                      <span className="text-gray-600 dark:text-gray-400">Employee:</span>
+                      <span className="text-gray-600 dark:text-gray-400">Contribution:</span>
                       <span className="font-semibold text-gray-900 dark:text-gray-100">
                         {Number(account.employeeBalance ?? 0).toLocaleString()}
-                      </span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-600 dark:text-gray-400">Employer:</span>
-                      <span className="font-semibold text-gray-900 dark:text-gray-100">
-                        {Number(account.employerBalance ?? 0).toLocaleString()}
                       </span>
                     </div>
                     <div className="flex justify-between">

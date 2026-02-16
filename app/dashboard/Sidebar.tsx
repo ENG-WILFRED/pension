@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
+import { toast } from "sonner";
 import {
   LayoutDashboard,
   Users,
@@ -33,12 +34,32 @@ export default function Sidebar({ userType, firstName, lastName }: SidebarProps)
   const pathname = usePathname();
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
   const { theme, toggleTheme } = useTheme();
 
-  const handleLogout = () => {
-    localStorage.clear();
-    document.cookie = "auth=; path=/; max-age=0";
-    router.push("/login");
+  const handleLogout = async () => {
+    setIsLoggingOut(true);
+    try {
+      // Clear all localStorage items
+      localStorage.removeItem('auth_token');
+      localStorage.removeItem('user');
+      localStorage.removeItem('account');
+      localStorage.removeItem('auth_identifier');
+      
+      // Clear cookies
+      document.cookie = "auth=; path=/; max-age=0";
+      
+      toast.success('✅ Logged out successfully');
+      
+      // Small delay to ensure toast is shown, then redirect
+      setTimeout(() => {
+        router.push("/login");
+      }, 500);
+    } catch (err) {
+      console.error('Logout error:', err);
+      toast.error('Failed to logout');
+      setIsLoggingOut(false);
+    }
   };
 
   const adminNavItems = [
@@ -159,10 +180,11 @@ export default function Sidebar({ userType, firstName, lastName }: SidebarProps)
           {/* Logout */}
           <button
             onClick={handleLogout}
-            className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 transition"
+            disabled={isLoggingOut}
+            className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 transition disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <LogOut size={20} />
-            <span>Logout</span>
+            <span>{isLoggingOut ? 'Logging out...' : 'Logout'}</span>
           </button>
         </div>
       </aside>

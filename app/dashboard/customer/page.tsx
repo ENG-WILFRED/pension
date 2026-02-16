@@ -7,7 +7,6 @@ import { PageLoader } from "@/app/components/loaders";
 import UserProfile from "@/app/components/dashboard/UserProfile";
 import BalanceCards from "@/app/components/dashboard/BalanceCards";
 import OverviewCard from "@/app/components/dashboard/OverviewCard";
-import EmploymentDetails from "@/app/components/dashboard/EmploymentDetails";
 import BankDetailsComponent from "@/app/components/dashboard/BankDetails";
 import UpdateBankDetailsForm from '@/app/components/settings/UpdateBankDetailsForm';
 import PensionPlans from "@/app/components/dashboard/PensionPlans";
@@ -405,20 +404,11 @@ export default function CustomerDashboard() {
         } : undefined}
       />
       
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
-        <EmploymentDetails 
-          employer={user?.employer} 
-          occupation={user?.occupation}
-          salary={user?.salary} 
-          contributionRate={user?.contributionRate}
-          retirementAge={user?.retirementAge}
-        />
-        <BankDetailsComponent 
-          bankAccount={bankDetails}
-          loading={loadingBankDetails}
-          onEdit={handleOpenBankModal}
-        />
-      </div>
+      <BankDetailsComponent 
+        bankAccount={bankDetails}
+        loading={loadingBankDetails}
+        onEdit={handleOpenBankModal}
+      />
 
       <PensionPlans plans={pensionPlans} />
       

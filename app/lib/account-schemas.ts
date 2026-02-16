@@ -24,6 +24,10 @@ export const accountSchema = z.object({
   accountNumber: z.string().optional(),
   accountType: accountTypeSchema,
   totalBalance: z.number().default(0).catch(0), // ✅ Always defaults to 0, even on error
+  // Balances broken down for display in the portfolio
+  employeeBalance: z.number().default(0).catch(0),
+  employerBalance: z.number().default(0).catch(0),
+  earningsBalance: z.number().default(0).catch(0),
   accountStatus: z.enum(['ACTIVE', 'INACTIVE', 'SUSPENDED']).optional(),
   userId: z.string().optional(),
   createdAt: z.string().optional(),
@@ -105,10 +109,35 @@ export function parseAccount(data: any): Account {
       // normalize accountType: sometimes the API returns an id string/number instead of an object
       accountType: (() => {
         const at = data.accountType ?? data.account_type ?? data.accountTypeId;
-        if (!at) return { name: 'Unknown' };
-        if (typeof at === 'object') return at;
-        // primitive -> convert to object with id
-        return { id: String(at), name: (data.accountTypeName || data.account_type_name) ?? 'Unknown' };
+        // Prefer a friendly name: accountType object -> use it; otherwise try name fields; fall back to accountNumber or generic label
+        if (!at) {
+          const fallbackName = data.accountNumber ? `Account ${data.accountNumber}` : 'Pension Account';
+          return { name: fallbackName };
+        }
+        if (typeof at === 'object') {
+          // ensure object has a name; if not, fallback to accountNumber or generic
+          const name = at.name || data.accountTypeName || data.account_type_name || data.accountNumber || 'Pension Account';
+          return { ...at, name };
+        }
+        // primitive -> convert to object with id and attempt to find a name
+        const name = (data.accountTypeName || data.account_type_name || data.accountNumber) ?? 'Pension Account';
+        return { id: String(at), name };
+      })(),
+      // normalize contribution/balance breakdowns which may come with different keys
+      employeeBalance: (() => {
+        const v = data.employeeBalance ?? data.employee_balance ?? data.employee_amount ?? data.employee_contribution ?? 0;
+        const n = typeof v === 'string' ? Number(v) : v;
+        return Number.isFinite(n) ? n : 0;
+      })(),
+      employerBalance: (() => {
+        const v = data.employerBalance ?? data.employer_balance ?? data.employer_amount ?? data.employer_contribution ?? 0;
+        const n = typeof v === 'string' ? Number(v) : v;
+        return Number.isFinite(n) ? n : 0;
+      })(),
+      earningsBalance: (() => {
+        const v = data.earningsBalance ?? data.earnings_balance ?? data.earnings ?? data.interest ?? 0;
+        const n = typeof v === 'string' ? Number(v) : v;
+        return Number.isFinite(n) ? n : 0;
       })(),
     };
 
@@ -117,9 +146,17 @@ export function parseAccount(data: any): Account {
     console.error('Error parsing account:', error);
     // Return a safe default account
     return {
-      id: data.id || 'unknown',
-      accountType: { name: data.accountType?.name || 'Unknown' },
+      id: data.id !== undefined && data.id !== null ? String(data.id) : 'unknown',
+      accountNumber: data.accountNumber != null ? String(data.accountNumber) : undefined,
+      accountType: { name: (data?.accountType?.name) || data?.accountTypeName || data?.account_type_name || 'Unknown' },
       totalBalance: 0,
+      employeeBalance: 0,
+      employerBalance: 0,
+      earningsBalance: 0,
+      accountStatus: undefined,
+      userId: undefined,
+      createdAt: undefined,
+      updatedAt: undefined,
     };
   }
 }

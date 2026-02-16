@@ -32,10 +32,6 @@ export default function EmploymentDetails({
         </h3>
         <div className="space-y-3 text-sm">
           <div className="flex justify-between items-center p-2.5 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors duration-200">
-            <span className="text-gray-600 dark:text-gray-400 font-medium transition-colors duration-300">Employer:</span>
-            <span className="font-bold text-gray-900 dark:text-gray-100 transition-colors duration-300">{employer || 'N/A'}</span>
-          </div>
-          <div className="flex justify-between items-center p-2.5 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors duration-200">
             <span className="text-gray-600 dark:text-gray-400 font-medium transition-colors duration-300">Occupation:</span>
             <span className="font-bold text-gray-900 dark:text-gray-100 transition-colors duration-300">{occupation || 'N/A'}</span>
           </div>
