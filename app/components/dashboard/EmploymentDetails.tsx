@@ -53,12 +53,14 @@ export default function EmploymentDetails({
             <span className="text-gray-600 dark:text-gray-400 font-medium transition-colors duration-300">Contribution Rate:</span>
             <span className="font-bold text-orange-600 dark:text-orange-400 transition-colors duration-300">{formatRate}</span>
           </div>
-          {retirementAge && (
-            <div className="flex justify-between items-center p-2.5 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors duration-200">
-              <span className="text-gray-600 dark:text-gray-400 font-medium transition-colors duration-300">Retirement Age:</span>
-              <span className="font-bold text-gray-900 dark:text-gray-100 transition-colors duration-300">{retirementAge}</span>
-            </div>
-          )}
+          <div className="flex justify-between items-center p-2.5 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors duration-200">
+            <span className="text-gray-600 dark:text-gray-400 font-medium transition-colors duration-300">Retirement Age</span>
+            <span className="font-bold text-gray-900 dark:text-gray-100 transition-colors duration-300">{retirementAge || 60}</span>
+          </div>
+          <div className="flex justify-between items-center p-2.5 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors duration-200">
+            <span className="text-gray-600 dark:text-gray-400 font-medium transition-colors duration-300">Early Retirement Age</span>
+            <span className="font-bold text-gray-900 dark:text-gray-100 transition-colors duration-300">55</span>
+          </div>
         </div>
       </div>
     </div>

@@ -1,3 +1,4 @@
+///home/hp/JERE/AutoNest/app/dashboard/customer/settings/page.tsx
 "use client";
 
 import { useState, useEffect } from 'react';

@@ -1,4 +1,3 @@
-///home/hp/JERE/AutoNest/app/dashboard/customer/page.tsx
 "use client";
 
 import { useEffect, useState } from "react";
@@ -7,6 +6,7 @@ import { toast } from "sonner";
 import { PageLoader } from "@/app/components/loaders";
 import UserProfile from "@/app/components/dashboard/UserProfile";
 import BalanceCards from "@/app/components/dashboard/BalanceCards";
+import OverviewCard from "@/app/components/dashboard/OverviewCard";
 import EmploymentDetails from "@/app/components/dashboard/EmploymentDetails";
 import BankDetailsComponent from "@/app/components/dashboard/BankDetails";
 import UpdateBankDetailsForm from '@/app/components/settings/UpdateBankDetailsForm';
@@ -77,6 +77,11 @@ export default function CustomerDashboard() {
   const [pensionPlans, setPensionPlans] = useState<PensionPlan[]>([]);
   const [totalContributions, setTotalContributions] = useState(0);
   const [projectedRetirement, setProjectedRetirement] = useState(0);
+  // Overview metrics
+  const [weekContribution, setWeekContribution] = useState(0);
+  const [weekInterest, setWeekInterest] = useState(0);
+  const [ytdContribution, setYtdContribution] = useState(0);
+  const [ytdInterest, setYtdInterest] = useState(0);
   const [loading, setLoading] = useState(true);
   const [loadingTransactions, setLoadingTransactions] = useState(true);
   const [loadingBankDetails, setLoadingBankDetails] = useState(true);
@@ -225,7 +230,6 @@ export default function CustomerDashboard() {
                 }
               } else if (!bankDetailsResponse.success) {
                 console.error('[Dashboard] Error fetching bank details:', bankDetailsResponse.error || bankDetailsResponse);
-                toast.info('💳 Could not load bank details');
               } else {
                 console.log('[Dashboard] Bank details response was empty or unexpected:', bankDetailsResponse);
                 toast.info('💳 Please update your bank details in settings');
@@ -236,7 +240,6 @@ export default function CustomerDashboard() {
             }
           } catch (err) {
             console.error('[Dashboard] Error fetching accounts or bank details:', err);
-            toast.info('💳 Could not load bank details');
           }
         } else {
           // Fallback to cached data
@@ -268,6 +271,31 @@ export default function CustomerDashboard() {
             },
           ]);
         }
+
+        // Calculate overview metrics
+        // Week: last 7 days, YTD: since Jan 1
+        const now = new Date();
+        const startOfWeek = new Date(now);
+        startOfWeek.setDate(now.getDate() - 7);
+        const startOfYear = new Date(now.getFullYear(), 0, 1);
+
+        let weekContrib = 0, weekInt = 0, ytdContrib = 0, ytdInt = 0;
+        transactionsResponse.transactions?.forEach((tx: Transaction) => {
+          const txDate = new Date(tx.createdAt);
+          if (tx.type === 'debit' && tx.status === 'completed') {
+            if (txDate >= startOfWeek) weekContrib += tx.amount;
+            if (txDate >= startOfYear) ytdContrib += tx.amount;
+          }
+          // For demo: treat 'interest' in description as interest
+          if (tx.description?.toLowerCase().includes('interest')) {
+            if (txDate >= startOfWeek) weekInt += tx.amount;
+            if (txDate >= startOfYear) ytdInt += tx.amount;
+          }
+        });
+        setWeekContribution(weekContrib);
+        setWeekInterest(weekInt);
+        setYtdContribution(ytdContrib);
+        setYtdInterest(ytdInt);
         setLoadingTransactions(false);
 
         const mockPensionPlans: PensionPlan[] = [
@@ -359,6 +387,12 @@ export default function CustomerDashboard() {
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950 px-4 sm:px-6 lg:px-8 py-8 space-y-8">
       <UserProfile user={user} onOpenSettings={handleOpenSettings} />
       
+      <OverviewCard
+        weekContribution={weekContribution}
+        weekInterest={weekInterest}
+        ytdContribution={ytdContribution}
+        ytdInterest={ytdInterest}
+      />
       <BalanceCards 
         balance={balance} 
         totalContributions={totalContributions} 
@@ -406,7 +440,13 @@ export default function CustomerDashboard() {
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-lg w-full p-6 transition-colors duration-300">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-lg font-bold text-gray-900 dark:text-white">Edit Bank Details</h3>
-            <button onClick={handleCloseBankModal} className="text-gray-500 hover:text-gray-700">✕</button>
+            <button 
+              onClick={handleCloseBankModal} 
+              className="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 text-2xl font-bold w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+              aria-label="Close modal"
+            >
+              ✕
+            </button>
           </div>
           <UpdateBankDetailsForm
             userId={user.id}
@@ -417,16 +457,36 @@ export default function CustomerDashboard() {
       </div>
     )}
 
-    {/* Settings modal */}
+    {/* Settings modal - with improved close functionality */}
     {settingsModalOpen && (
-      <div className="fixed inset-0 bg-black/50 dark:bg-black/70 flex items-center justify-center z-50 p-4">
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-4xl w-full p-6 transition-colors duration-300">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-bold text-gray-900 dark:text-white">Account Settings</h3>
-            <button onClick={handleCloseSettings} className="text-gray-500 hover:text-gray-700">✕</button>
+      <div className="fixed inset-0 bg-black/50 dark:bg-black/70 flex items-center justify-center z-50 p-4 overflow-y-auto">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-4xl w-full my-8 transition-colors duration-300">
+          {/* Sticky header with close button */}
+          <div className="sticky top-0 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-4 rounded-t-2xl z-10 flex items-center justify-between">
+            <h3 className="text-xl font-bold text-gray-900 dark:text-white">Account Settings</h3>
+            <button 
+              onClick={handleCloseSettings} 
+              className="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 text-2xl font-bold w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+              aria-label="Close settings"
+            >
+              ✕
+            </button>
           </div>
-          {/* render the existing settings page component inside the modal */}
-          <CustomerSettings />
+          
+          {/* Settings content - scrollable */}
+          <div className="max-h-[calc(100vh-12rem)] overflow-y-auto">
+            <CustomerSettings />
+          </div>
+          
+          {/* Optional: Footer with close button for easier access */}
+          <div className="sticky bottom-0 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 px-6 py-4 rounded-b-2xl z-10">
+            <button
+              onClick={handleCloseSettings}
+              className="w-full px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-lg font-medium hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+            >
+              Close Settings
+            </button>
+          </div>
         </div>
       </div>
     )}

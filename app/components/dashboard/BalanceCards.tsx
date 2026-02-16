@@ -26,7 +26,8 @@ export default function BalanceCards({ balance, totalContributions, projectedRet
   };
 
   const calculateYearsToRetirement = (): number => {
-    if (user?.dateOfBirth && user?.retirementAge) {
+    const defaultRetirementAge = user?.retirementAge || 60;
+    if (user?.dateOfBirth) {
       const birthDate = new Date(user.dateOfBirth);
       const today = new Date();
       let age = today.getFullYear() - birthDate.getFullYear();
@@ -34,9 +35,9 @@ export default function BalanceCards({ balance, totalContributions, projectedRet
       if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
         age--;
       }
-      return Math.max(0, user.retirementAge - age);
+      return Math.max(0, defaultRetirementAge - age);
     }
-    return 35;
+    return Math.max(0, defaultRetirementAge - 30);
   };
 
   const calculateTotalBalance = (): number => {
@@ -54,6 +55,8 @@ export default function BalanceCards({ balance, totalContributions, projectedRet
   const yearsToRetirement = calculateYearsToRetirement();
   const totalBalance = calculateTotalBalance();
   const projectedAt65 = Math.round(totalBalance * Math.pow(1.08, yearsToRetirement));
+  const defaultRetirementAge = user?.retirementAge || 60;
+  const earlyRetirementAge = 55;
   
   return (
     <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
@@ -98,7 +101,7 @@ export default function BalanceCards({ balance, totalContributions, projectedRet
         <div className="absolute -bottom-10 -left-10 w-32 h-32 bg-indigo-500/20 rounded-full blur-xl"></div>
         <div className="relative z-10">
           <div className="flex items-center justify-between mb-5">
-            <h4 className="text-sm font-bold tracking-wide opacity-95">Projected @ {user?.retirementAge || 70}</h4>
+              <h4 className="text-sm font-bold tracking-wide opacity-95">Projected @ {defaultRetirementAge}</h4>
             <div className="p-2.5 bg-white/25 rounded-xl backdrop-blur-md shadow-lg group-hover:bg-white/30 transition-all duration-300 group-hover:scale-110">
               <TrendingUp size={22} className="drop-shadow-lg" />
             </div>
@@ -121,7 +124,8 @@ export default function BalanceCards({ balance, totalContributions, projectedRet
             </div>
           </div>
           <p className="text-4xl font-black mb-2 drop-shadow-md tracking-tight">{yearsToRetirement}</p>
-          <p className="text-orange-50/90 text-xs font-medium tracking-wide">Target age: {user?.retirementAge || 70}</p>
+          <p className="text-orange-50/90 text-xs font-medium tracking-wide">Target age: {defaultRetirementAge}</p>
+          <p className="text-orange-50/90 text-xs font-medium tracking-wide">Early retirement age: {earlyRetirementAge}</p>
         </div>
       </div>
     </div>

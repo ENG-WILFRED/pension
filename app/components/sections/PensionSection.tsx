@@ -1,7 +1,6 @@
 interface PensionSectionProps {
   formData: {
     contributionRate?: number;
-    retirementAge?: number;
     accountType?: string;
     riskProfile?: string;
   };
@@ -42,17 +41,10 @@ export default function PensionSection({
             >
               Account Type
             </label>
-            <select
-              id="accountType"
-              name="accountType"
-              value={formData.accountType || "MANDATORY"}
-              onChange={onChange}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg text-base focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent text-gray-900"
-            >
-              <option value="MANDATORY">Mandatory</option>
-              <option value="VOLUNTARY">Voluntary</option>
-              <option value="INDIVIDUAL">Individual</option>
-            </select>
+            <div className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-50 text-base text-gray-900 flex items-center justify-between">
+                <span className="text-sm">Account type</span>
+              <span className="font-semibold">MANDATORY</span>
+            </div>
           </div>
 
           {/* Row 1, Column 2 - Risk Profile */}
@@ -63,17 +55,10 @@ export default function PensionSection({
             >
               Risk Profile
             </label>
-            <select
-              id="riskProfile"
-              name="riskProfile"
-              value={formData.riskProfile || "MEDIUM"}
-              onChange={onChange}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg text-base focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent text-gray-900"
-            >
-              <option value="LOW">Low Risk</option>
-              <option value="MEDIUM">Medium Risk</option>
-              <option value="HIGH">High Risk</option>
-            </select>
+            <div className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-50 text-base text-gray-900 flex items-center justify-between">
+              <span className="text-sm">Risk profile</span>
+              <span className="font-semibold">MEDIUM</span>
+            </div>
           </div>
 
           {/* Row 2, Column 1 - Contribution Rate */}
@@ -107,26 +92,21 @@ export default function PensionSection({
             )}
           </div>
 
-          {/* Row 2, Column 2 - Retirement Age */}
+          {/* Row 2, Column 2 - Retirement Ages (display-only) */}
           <div>
-            <label
-              htmlFor="retirementAge"
-              className="block text-sm font-medium text-gray-700 mb-2.5"
-            >
-              Retirement Age
+            <label className="block text-sm font-medium text-gray-700 mb-2.5">
+              Retirement Ages
             </label>
-            <input
-              id="retirementAge"
-              name="retirementAge"
-              type="number"
-              min="50"
-              max="80"
-              step="1"
-              value={formData.retirementAge || ""}
-              onChange={onChange}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg text-base focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent text-gray-900 placeholder-gray-500"
-              placeholder="65"
-            />
+            <div className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-50 text-base text-gray-900">
+              <div className="flex items-center justify-between">
+                <span className="text-sm">Retirement age</span>
+                <span className="font-semibold">60</span>
+              </div>
+              <div className="flex items-center justify-between mt-2">
+                <span className="text-sm">Early retirement age</span>
+                <span className="font-semibold">55</span>
+              </div>
+            </div>
           </div>
         </div>
       </div>

@@ -60,7 +60,6 @@ export default function RegisterForm() {
     city: "",
     country: "",
     contributionRate: undefined,
-    retirementAge: undefined,
     accountType: "MANDATORY",
     riskProfile: "MEDIUM",
     currency: "KES",
@@ -81,7 +80,7 @@ export default function RegisterForm() {
     >,
   ) => {
     const { name, value, type } = e.target as any;
-    const numericFields = ["salary", "contributionRate", "retirementAge"];
+    const numericFields = ["salary", "contributionRate"];
     setFormData({
       ...formData,
       [name]: numericFields.includes(name)
@@ -714,7 +713,6 @@ export default function RegisterForm() {
                     <PensionSection
                       formData={{
                         contributionRate: formData.contributionRate,
-                        retirementAge: formData.retirementAge,
                         accountType: formData.accountType,
                         riskProfile: formData.riskProfile,
                       }}

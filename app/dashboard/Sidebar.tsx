@@ -55,7 +55,6 @@ export default function Sidebar({ userType, firstName, lastName }: SidebarProps)
   const customerNavItems = [
     { name: "Dashboard", icon: LayoutDashboard, href: "/dashboard/customer" },
     { name: "My Pension", icon: Wallet, href: "/dashboard/customer/pension" },
-    { name: "Contributions", icon: CreditCard, href: "/dashboard/customer/contributions" },
     { name: "Investments", icon: TrendingUp, href: "/dashboard/customer/investments" },
     { name: "Portfolio", icon: PieChart, href: "/dashboard/customer/portfolio" },
     { name: "Reports", icon: FileText, href: "/dashboard/customer/reports" },

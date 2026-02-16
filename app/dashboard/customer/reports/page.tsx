@@ -34,7 +34,9 @@ export default function CustomerReportsPage() {
       const response = await reportsApi.getAll();
       if (response.success && response.data) {
         setReports(response.data);
-        toast.success(`📊 Loaded ${response.data.length} reports`);
+        if (response.data.length > 0) {
+          toast.success(`📊 Loaded ${response.data.length} reports`);
+        }
       } else {
         console.warn('Failed to load reports:', response.error);
         toast.warning('⚠️ Could not load reports');

@@ -12,14 +12,14 @@ export default function QuickActions({ userType = 'customer' }: QuickActionsProp
   const router = useRouter();
 
   const customerActions = [
-    {
-      action: 'contribute',
-      icon: CreditCard,
-      title: 'Make Contribution',
-      description: 'Add funds to your pension account.',
-      color: 'from-green-500 to-emerald-600',
-      onClick: () => router.push('/dashboard/customer/contributions')
-    },
+    // {
+    //   action: 'contribute',
+    //   icon: CreditCard,
+    //   title: 'Make Contribution',
+    //   description: 'Add funds to your pension account.',
+    //   color: 'from-green-500 to-emerald-600',
+    //   onClick: () => router.push('/dashboard/customer/contributions')
+    // },
     {
       action: 'reports',
       icon: FileText,
