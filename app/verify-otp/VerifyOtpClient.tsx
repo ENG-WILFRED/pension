@@ -68,10 +68,13 @@ export default function VerifyOtpClient() {
         (typeof window !== 'undefined' ? localStorage.getItem('auth_identifier') : null) || 
         '';
 
-      const res = await authApi.loginOtp({
-        identifier: id,
-        otp: otpValue,
-      });
+      // Debug: log payload being sent
+      const payload = requireNewPassword
+        ? { identifier: id, otp: otpValue, newPassword }
+        : { identifier: id, otp: otpValue };
+      console.log('[OTP VERIFY] Sending payload to backend:', payload);
+
+      const res = await authApi.loginOtp(payload);
 
       if (!res.success) {
         const errorMsg = res.error || 'OTP verification failed';
