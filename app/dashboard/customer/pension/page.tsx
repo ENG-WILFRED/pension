@@ -117,6 +117,7 @@ export default function CustomerPensionPage() {
                 <div>
                   <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100">{account.accountType.name}</h3>
                   <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">{account.accountType.description}</p>
+                  <p className="text-xs text-orange-600 dark:text-orange-400 font-semibold mt-2">AutoNest ID:{String(account.id).padStart(8, '0')}</p>
                 </div>
                 <span className={`px-3 py-1 rounded-full text-xs font-semibold ${getStatusColor(account.accountStatus)}`}>
                   {account.accountStatus}
@@ -191,9 +192,9 @@ export default function CustomerPensionPage() {
                   <span>Opened: <strong className="text-gray-900 dark:text-gray-100">{new Date(account.createdAt).toLocaleDateString()}</strong></span>
                 </div>
               </div>
-
               {/* Actions */}
-              <div className="flex gap-3">
+              {/* COMMENTED OUT: Make Contribution and Withdraw buttons - to be uncommented later */}
+              {/* <div className="flex gap-3">
                 <button
                   onClick={() => router.push(`/dashboard/customer/contributions?account=${account.id}`)}
                   className="flex-1 flex items-center justify-center gap-2 bg-gradient-to-r from-orange-500 to-orange-600 text-white py-3 px-4 rounded-xl hover:from-orange-600 hover:to-orange-700 transition font-semibold shadow-lg"
@@ -208,7 +209,7 @@ export default function CustomerPensionPage() {
                   <ArrowDownCircle size={20} />
                   Withdraw
                 </button>
-              </div>
+              </div> */}
             </div>
           ))}
         </div>

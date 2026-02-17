@@ -7,7 +7,6 @@ import { PageLoader } from "@/app/components/loaders";
 import UserProfile from "@/app/components/dashboard/UserProfile";
 import BalanceCards from "@/app/components/dashboard/BalanceCards";
 import OverviewCard from "@/app/components/dashboard/OverviewCard";
-import BankDetailsComponent from "@/app/components/dashboard/BankDetails";
 import UpdateBankDetailsForm from '@/app/components/settings/UpdateBankDetailsForm';
 import PensionPlans from "@/app/components/dashboard/PensionPlans";
 import TransactionHistory from "@/app/components/dashboard/TransactionHistory";
@@ -83,7 +82,6 @@ export default function CustomerDashboard() {
   const [ytdInterest, setYtdInterest] = useState(0);
   const [loading, setLoading] = useState(true);
   const [loadingTransactions, setLoadingTransactions] = useState(true);
-  const [loadingBankDetails, setLoadingBankDetails] = useState(true);
   const [bankModalOpen, setBankModalOpen] = useState(false);
   const [settingsModalOpen, setSettingsModalOpen] = useState(false);
 
@@ -134,9 +132,7 @@ export default function CustomerDashboard() {
           return;
         }
 
-        setLoadingBankDetails(true);
-        
-        // Fetch fresh user data from backend
+            // Fetch fresh user data from backend
         const userResponse = await userApi.getById(storedUser.id);
         console.log('[Dashboard] User API response:', userResponse);
         
@@ -246,7 +242,6 @@ export default function CustomerDashboard() {
           setUser(storedUser);
           toast.warning('Using cached profile data');
         }
-        setLoadingBankDetails(false);
 
         // Pre-fill phone if available in user profile for deposit/other forms
         // (no-op here, kept for future enhancements)
@@ -324,7 +319,24 @@ export default function CustomerDashboard() {
             setPensionPlans(mappedPlans);
             setTotalContributions(totalContribs);
             setBalance(totalBal);
-            setProjectedRetirement(Math.round(totalBal * Math.pow(1.08, 30)));
+            
+            // Calculate years to retirement (assuming retirement at 60)
+            const userDateOfBirth = userResponse.user?.dateOfBirth;
+            const retirementAge = userResponse.user?.retirementAge || 60;
+            let yearsToRetirement = 30; 
+            if (userDateOfBirth) {
+              const birthDate = new Date(userDateOfBirth);
+              const today = new Date();
+              let age = today.getFullYear() - birthDate.getFullYear();
+              const monthDiff = today.getMonth() - birthDate.getMonth();
+              if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+                age--;
+              }
+              yearsToRetirement = Math.max(0, retirementAge - age);
+            }
+            
+            // Projected = Years to retirement * 10 KES daily savings
+            setProjectedRetirement(yearsToRetirement * 10);
           } else {
             // keep previous mock behaviour if no accounts
             setPensionPlans([]);
@@ -406,12 +418,6 @@ export default function CustomerDashboard() {
         } : undefined}
       />
       
-      <BankDetailsComponent 
-        bankAccount={bankDetails}
-        loading={loadingBankDetails}
-        onEdit={handleOpenBankModal}
-      />
-
       <PensionPlans plans={pensionPlans} />
       
       {loadingTransactions ? (

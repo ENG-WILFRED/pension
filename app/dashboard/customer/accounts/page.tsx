@@ -115,6 +115,7 @@ export default function CustomerAccountsPage() {
                             {account.accountType?.description && (
                               <p className="text-xs text-gray-500 dark:text-gray-400">{account.accountType.description}</p>
                             )}
+                            <p className="text-xs text-orange-600 dark:text-orange-400 font-semibold mt-1">AutoNest ID:{String(account.id).padStart(8, '0')}</p>
                           </div>
                           <span className="text-xs px-2 py-1 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-700">{account.accountStatus || 'UNKNOWN'}</span>
                         </div>
@@ -141,7 +142,8 @@ export default function CustomerAccountsPage() {
                           </div>
                         </div>
 
-                        <div className="flex gap-3">
+                        {/* COMMENTED OUT: Contribute and Withdraw buttons - to be uncommented later */}
+                        {/* <div className="flex gap-3">
                           <button className="flex-1 inline-flex items-center gap-2 justify-center bg-gradient-to-r from-orange-500 to-orange-600 text-white py-2 rounded-lg">
                             <ArrowUpCircle />
                             Contribute
@@ -150,7 +152,7 @@ export default function CustomerAccountsPage() {
                             <ArrowDownCircle />
                             Withdraw
                           </button>
-                        </div>
+                        </div> */}
                       </div>
                     ))}
                   </div>

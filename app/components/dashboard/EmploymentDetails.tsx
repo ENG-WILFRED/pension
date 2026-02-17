@@ -11,11 +11,19 @@ export default function PensionDetails({
   contributionRate,
   retirementAge,
 }: PensionDetailsProps) {
+
   const formatRate = typeof contributionRate === 'string' && !contributionRate.includes('%')
     ? `${contributionRate}%`
     : (contributionRate || '2%');
 
-  const displayAccount = accountNumber || '—';
+  // Format account number with leading zeros (e.g., 9 -> 00000009)
+  const formatAccountNumber = (id: string | undefined): string => {
+    if (!id) return '—';
+    const numId = parseInt(id, 10);
+    return numId.toString().padStart(8, '0');
+  };
+
+  const displayAccount = accountNumber ? `AutoNest ID:${formatAccountNumber(accountNumber)}` : 'AutoNest ID:—';
 
   return (
     <div className="relative group bg-white/90 dark:bg-gray-800/90 backdrop-blur-xl border border-gray-200 dark:border-gray-700 rounded-2xl shadow-xl hover:shadow-2xl p-6 transition-all duration-300 overflow-hidden">
@@ -29,8 +37,9 @@ export default function PensionDetails({
         </h3>
 
         <div className="space-y-3 text-sm">
+
           <div className="flex justify-between items-center p-2.5 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors duration-200">
-            <span className="text-gray-600 dark:text-gray-400 font-medium transition-colors duration-300">AutoNest ID</span>
+            <span className="text-gray-600 dark:text-gray-400 font-medium transition-colors duration-300">&nbsp;</span>
             <span className="font-bold text-gray-900 dark:text-gray-100 transition-colors duration-300">{displayAccount}</span>
           </div>
 

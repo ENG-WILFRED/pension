@@ -105,9 +105,14 @@ export default function CustomerInvestmentsPage() {
                   key={account.id}
                   className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl border border-gray-200 dark:border-gray-700 rounded-2xl shadow-lg p-6 hover:shadow-xl hover:border-orange-300 dark:hover:border-orange-600 transition-all duration-300 group"
                 >
-                  <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6 transition-colors duration-300">
-                    {account.accountType.name}
-                  </h3>
+                  <div className="flex items-start justify-between mb-6">
+                    <div>
+                      <h3 className="text-xl font-bold text-gray-900 dark:text-white transition-colors duration-300">
+                        {account.accountType.name}
+                      </h3>
+                      <p className="text-xs text-orange-600 dark:text-orange-400 font-semibold mt-1">AutoNest ID:{String(account.id).padStart(8, '0')}</p>
+                    </div>
+                  </div>
                   
                   <div className="space-y-5">
                     <div>

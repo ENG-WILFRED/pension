@@ -68,7 +68,7 @@ export default function TransactionHistory({ transactions }: TransactionHistoryP
                     ) : (
                       <ArrowDownRight size={14} />
                     )}
-                    {tx.type === "credit" ? "Incoming" : "Contribution"}
+                    {tx.type === "credit" ? "Incoming" : (!tx.description || tx.description === "-" ? "Subscription Fee" : "Contribution")}
                   </span>
                 </td>
 
