@@ -144,21 +144,24 @@ export default function CustomerDashboard() {
           }
           
           // Update state with fresh data
-          setUser(userResponse.user);
+          const enrichedUser = { ...userResponse.user };
+          setUser(enrichedUser);
           
           // Update localStorage with fresh data
-          localStorage.setItem('user', JSON.stringify(userResponse.user));
-          console.log('[Dashboard] User data:', userResponse.user);
+          localStorage.setItem('user', JSON.stringify(enrichedUser));
+          console.log('[Dashboard] User data:', enrichedUser);
           
           // Fetch user's accounts to get account ID for bank details
           try {
             // First check if we have a stored account ID from registration
             let accountId: string | null = null;
+            let accountNumber: string | null = null;
             const storedAccount = typeof window !== 'undefined' ? localStorage.getItem('account') : null;
             
             if (storedAccount) {
               const parsedAccount = JSON.parse(storedAccount);
               accountId = parsedAccount.id || parsedAccount.accountNumber;
+              accountNumber = parsedAccount.accountNumber || parsedAccount.id;
               console.log('[Dashboard] Using stored account from registration:', accountId);
             }
             
@@ -170,6 +173,7 @@ export default function CustomerDashboard() {
               if (accountsResponse.success && accountsResponse.accounts && accountsResponse.accounts.length > 0) {
                 const firstAccount = accountsResponse.accounts[0];
                 accountId = firstAccount.id || firstAccount.accountNumber;
+                accountNumber = firstAccount.accountNumber || firstAccount.id;
                 console.log('[Dashboard] First account from API:', firstAccount);
                 console.log('[Dashboard] Account ID being used:', accountId);
               } else {
@@ -177,6 +181,13 @@ export default function CustomerDashboard() {
                 toast.info('💳 No accounts found. Please complete your account setup.');
                 accountId = null;
               }
+            }
+            
+            // Add accountNumber to user object for UserProfile display
+            if (accountNumber) {
+              enrichedUser.accountNumber = accountNumber;
+              setUser(enrichedUser);
+              localStorage.setItem('user', JSON.stringify(enrichedUser));
             }
             
             // Fetch bank details if we have an account ID.
@@ -426,7 +437,7 @@ export default function CustomerDashboard() {
           <p className="mt-4 text-gray-600 dark:text-gray-400 font-medium">Loading transactions...</p>
         </div>
       ) : (
-        <TransactionHistory transactions={transactions} />
+        <TransactionHistory transactions={transactions} contributionRate={user?.contributionRate ? Number(user.contributionRate) : undefined} />
       )}
       
       <QuickActions userType="customer" />

@@ -39,7 +39,7 @@ export default function PensionSection({
               htmlFor="contributionRate"
               className="block text-sm font-medium text-gray-700 mb-2.5"
             >
-              Contribution Rate (%)
+              Contribution Rate (%) <span className="text-xs text-gray-500">1-10% of each transaction</span>
             </label>
             <select
               id="contributionRate"
@@ -51,11 +51,16 @@ export default function PensionSection({
               }`}
             >
               <option value="">Select rate</option>
+              <option value="1">1%</option>
               <option value="2">2%</option>
+              <option value="3">3%</option>
+              <option value="4">4%</option>
               <option value="5">5%</option>
+              <option value="6">6%</option>
+              <option value="7">7%</option>
+              <option value="8">8%</option>
+              <option value="9">9%</option>
               <option value="10">10%</option>
-              <option value="15">15%</option>
-              <option value="20">20%</option>
             </select>
             {errors.contributionRate && (
               <p className="text-red-600 text-xs mt-1.5">

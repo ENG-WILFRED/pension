@@ -3,10 +3,10 @@ interface User {
   email: string;
   firstName?: string;
   lastName?: string;
-  nssfNumber?: string;
-  kra?: string;
+  phone?: string;
   nationalId?: string;
   createdAt?: string;
+  accountNumber?: string;
 }
 
 interface UserProfileProps {
@@ -61,12 +61,14 @@ export default function UserProfile({ user, onOpenSettings }: UserProfileProps) 
               <p className="font-bold text-gray-900 dark:text-white transition-colors duration-300">{user?.nationalId}</p>
             </div>
             <div className="flex justify-between items-center p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors duration-200">
-              <span className="text-gray-500 dark:text-gray-400 transition-colors duration-300 font-medium">NSSF:</span>
-              <p className="font-bold text-gray-900 dark:text-white transition-colors duration-300">{user?.nssfNumber || 'IV/123456'}</p>
+              <span className="text-gray-500 dark:text-gray-400 transition-colors duration-300 font-medium">Mobile:</span>
+              <p className="font-bold text-gray-900 dark:text-white transition-colors duration-300">{user?.phone || 'N/A'}</p>
             </div>
             <div className="flex justify-between items-center p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors duration-200">
-              <span className="text-gray-500 dark:text-gray-400 transition-colors duration-300 font-medium">KRA PIN:</span>
-              <p className="font-bold text-gray-900 dark:text-white transition-colors duration-300">{user?.kra || 'A012345678B'}</p>
+              <span className="text-gray-500 dark:text-gray-400 transition-colors duration-300 font-medium">AutoNest ID:</span>
+              <p className="font-bold text-gray-900 dark:text-white transition-colors duration-300">
+                {user?.accountNumber ? String(user.accountNumber).padStart(8, '0') : 'N/A'}
+              </p>
             </div>
           </div>
         </div>
