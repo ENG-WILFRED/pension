@@ -27,6 +27,7 @@ export default function CustomerPensionPage() {
   const router = useRouter();
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [pensionPlans, setPensionPlans] = useState<any[]>([]);
+  const [contributionRate, setContributionRate] = useState<number>(2);
 
   useEffect(() => {
     const loadData = async () => {
@@ -56,7 +57,14 @@ export default function CustomerPensionPage() {
   }, []);
 
   return (
-    <div className="h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950 p-3 flex flex-col gap-3">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950 p-3 flex flex-col gap-3">
+      {/* Contribution Rate Info */}
+      <div className="bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-700 rounded-lg p-4">
+        <p className="text-orange-900 dark:text-orange-300 text-sm">
+          <strong>Contribution Rate:</strong> {contributionRate}% of every transaction is allocated to your pension account.
+        </p>
+      </div>
+
       {/* Pension Plans */}
       <div className="flex-1 flex flex-col min-h-0">
         <div className="h-full [&>div]:h-full">

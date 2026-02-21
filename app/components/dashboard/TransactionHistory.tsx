@@ -101,14 +101,7 @@ export default function TransactionHistory({ transactions, contributionRate }: T
         </div>
       </div>
 
-      {/* Contribution Rate Note */}
-      {contributionRate && (
-        <div className="bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-700 rounded-lg p-3 text-sm">
-          <p className="text-orange-900 dark:text-orange-300">
-            <strong>Contribution Rate:</strong> {contributionRate}% of every transaction is allocated to your pension account.
-          </p>
-        </div>
-      )}
+     
     </div>
   );
 }
