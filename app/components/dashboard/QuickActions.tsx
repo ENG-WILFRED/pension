@@ -84,26 +84,25 @@ export default function QuickActions({ userType = 'customer' }: QuickActionsProp
   const actions = userType === 'admin' ? adminActions : customerActions;
 
   return (
-    <div className="bg-white dark:bg-gray-800 backdrop-blur-xl border border-gray-200 dark:border-gray-700 rounded-2xl shadow-xl p-6 transition-colors duration-300">
-      <div className="flex items-center justify-between mb-6">
-        <h3 className="text-xl font-bold text-gray-900 dark:text-white transition-colors duration-300">Quick Actions</h3>
-        <p className="text-sm text-gray-500 dark:text-gray-400 transition-colors duration-300">Perform common tasks</p>
+    <div className="bg-white dark:bg-gray-800 backdrop-blur-xl border border-gray-200 dark:border-gray-700 rounded-2xl shadow-xl p-8 transition-colors duration-300 w-full">
+      <div className="flex items-center justify-between mb-8">
+        <h3 className="text-2xl font-bold text-gray-900 dark:text-white transition-colors duration-300">Quick Actions</h3>
+        <p className="text-base text-gray-500 dark:text-gray-400 transition-colors duration-300">Perform common tasks</p>
       </div>
-      
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-8">
         {actions.map((action, idx) => {
           const Icon = action.icon;
           return (
             <button
               key={idx}
               onClick={action.onClick}
-              className="group bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl p-5 flex flex-col items-start hover:shadow-lg hover:scale-105 transition-all text-left"
+              className="group bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-2xl p-8 flex flex-col items-start hover:shadow-2xl hover:scale-105 transition-all text-left min-h-[160px]"
             >
-              <div className={`p-3 rounded-lg bg-gradient-to-br ${action.color} text-white mb-3 shadow-md group-hover:scale-110 transition-transform`}>
-                <Icon size={20} />
+              <div className={`p-4 rounded-lg bg-gradient-to-br ${action.color} text-white mb-4 shadow-md group-hover:scale-110 transition-transform`}>
+                <Icon size={24} />
               </div>
-              <h4 className="text-sm font-bold text-gray-900 dark:text-white mb-1 transition-colors duration-300">{action.title}</h4>
-              <p className="text-xs text-gray-600 dark:text-gray-300 transition-colors duration-300">
+              <h4 className="text-base font-bold text-gray-900 dark:text-white mb-2 transition-colors duration-300">{action.title}</h4>
+              <p className="text-sm text-gray-600 dark:text-gray-300 transition-colors duration-300">
                 {action.description}
               </p>
             </button>
