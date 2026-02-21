@@ -346,8 +346,9 @@ export default function CustomerDashboard() {
               yearsToRetirement = Math.max(0, retirementAge - age);
             }
             
-            // Projected = Years to retirement * 10 KES daily savings
-            setProjectedRetirement(yearsToRetirement * 10);
+            // Projected = Years to retirement * 10 KES daily savings * 365 days
+            // (i.e. KES 10 per day over remaining years)
+            setProjectedRetirement(yearsToRetirement * 10 * 365);
           } else {
             // keep previous mock behaviour if no accounts
             setPensionPlans([]);
