@@ -8,9 +8,7 @@ import UserProfile from "@/app/components/dashboard/UserProfile";
 import BalanceCards from "@/app/components/dashboard/BalanceCards";
 import OverviewCard from "@/app/components/dashboard/OverviewCard";
 import UpdateBankDetailsForm from '@/app/components/settings/UpdateBankDetailsForm';
-import PensionPlans from "@/app/components/dashboard/PensionPlans";
 import TransactionHistory from "@/app/components/dashboard/TransactionHistory";
-import QuickActions from "@/app/components/dashboard/QuickActions";
 import CustomerSettings from '@/app/dashboard/customer/settings/page';
 import { userApi, dashboardApi, accountsApi } from "@/app/lib/api-client";
 
@@ -430,7 +428,7 @@ export default function CustomerDashboard() {
         } : undefined}
       />
       
-      <PensionPlans plans={pensionPlans} />
+      {/* PensionPlans moved to My Pension page */}
       
       {loadingTransactions ? (
         <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl border border-gray-200 dark:border-gray-700 rounded-2xl shadow-xl p-12 flex flex-col items-center justify-center transition-colors duration-300">
@@ -441,7 +439,7 @@ export default function CustomerDashboard() {
         <TransactionHistory transactions={transactions} contributionRate={user?.contributionRate ? Number(user.contributionRate) : undefined} />
       )}
       
-      <QuickActions userType="customer" />
+      {/* QuickActions moved to My Pension page */}
     </div>
 
     {/* Bank details edit modal */}

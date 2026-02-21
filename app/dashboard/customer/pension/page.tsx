@@ -7,6 +7,8 @@ import { accountsApi } from "@/app/lib/api-client";
 import { Wallet, TrendingUp, DollarSign, ArrowUpCircle, ArrowDownCircle } from "lucide-react";
 import { PageLoader } from "@/app/components/loaders";
 import PensionDetails from '@/app/components/dashboard/EmploymentDetails';
+import PensionPlans from '@/app/components/dashboard/PensionPlans';
+import QuickActions from '@/app/components/dashboard/QuickActions';
 
 interface Account {
   id: string;
@@ -29,6 +31,7 @@ export default function CustomerPensionPage() {
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [loading, setLoading] = useState(true);
   const [totalBalance, setTotalBalance] = useState(0);
+  const [pensionPlans, setPensionPlans] = useState<any[]>([]);
 
   useEffect(() => {
     const loadData = async () => {
@@ -37,6 +40,18 @@ export default function CustomerPensionPage() {
         
         if (response.success && response.accounts) {
           setAccounts(response.accounts);
+          // Map accounts to PensionPlans format for compatibility
+          const mappedPlans = response.accounts.map((a: any, idx: number) => ({
+            id: String(a.id || idx),
+            name: a.accountType?.name || a.accountNumber || `Account ${a.id}`,
+            provider: 'AutoNest',
+            contribution: Number(a.employeeBalance ?? 0) + Number(a.employerBalance ?? 0),
+            expectedReturn: a.accountType?.interestRate ?? 8.0,
+            riskLevel: 'Medium',
+            balance: Number(a.totalBalance ?? 0),
+            status: a.accountStatus || 'ACTIVE',
+          }));
+          setPensionPlans(mappedPlans);
           const total = response.accounts.reduce((sum: number, acc: Account) => sum + Number(acc.totalBalance ?? 0), 0);
           setTotalBalance(total);
           toast.success(`Loaded ${response.accounts.length} pension account(s)`);
@@ -98,6 +113,9 @@ export default function CustomerPensionPage() {
         <p className="text-4xl sm:text-5xl font-bold mb-2">KES {Number(totalBalance ?? 0).toLocaleString()}</p>
         <p className="text-white/90 mt-2">Across all plans</p>
       </div>
+
+      {/* Pension Plans (moved from Dashboard) */}
+      <PensionPlans plans={pensionPlans} />
 
       {/* Accounts List */}
       {accounts.length === 0 ? (
@@ -214,6 +232,9 @@ export default function CustomerPensionPage() {
           ))}
         </div>
       )}
+
+      {/* Quick Actions (moved from Dashboard) */}
+      <QuickActions userType="customer" />
     </div>
   );
 }
