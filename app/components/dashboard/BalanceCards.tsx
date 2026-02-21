@@ -72,7 +72,7 @@ export default function BalanceCards({ balance, totalContributions, projectedRet
             </div>
           </div>
           <p className="text-4xl font-black mb-2 drop-shadow-md tracking-tight">KES {projectedAt65.toLocaleString()}</p>
-          <p className="text-orange-50/90 text-xs font-medium tracking-wide">for KES 10 daily savings</p>
+          <p className="text-orange-50/90 text-xs font-medium tracking-wide">for KES 100 daily savings</p>
         </div>
       </div>
 
