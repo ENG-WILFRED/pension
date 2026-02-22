@@ -52,17 +52,16 @@ export default function PensionPlans({ plans }: PensionPlansProps) {
                 <div className="relative z-10 w-full">
                   {/* Column Headers */}
                   <div className="grid px-6 pt-4 pb-2 border-b border-gray-100 dark:border-gray-700/50"
-                    style={{ gridTemplateColumns: '2fr 1.5fr 1.8fr 1.5fr 100px' }}>
+                    style={{ gridTemplateColumns: '2fr 1.5fr 1.5fr 100px' }}>
                     <p className="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest">Plan Name</p>
                     <p className="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest">Balance</p>
-                    <p className="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest">Monthly Contribution</p>
                     <p className="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest">Expected Return</p>
                     <p className="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest"></p>
                   </div>
 
                   {/* Values */}
                   <div className="grid items-center px-6 py-4"
-                    style={{ gridTemplateColumns: '2fr 1.5fr 1.8fr 1.5fr 100px' }}>
+                    style={{ gridTemplateColumns: '2fr 1.5fr 1.5fr 100px' }}>
 
                     {/* Plan Name */}
                     <div>
@@ -76,14 +75,6 @@ export default function PensionPlans({ plans }: PensionPlansProps) {
                         KES {plan.balance.toLocaleString()}
                       </p>
                       <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Current value</p>
-                    </div>
-
-                    {/* Monthly Contribution */}
-                    <div>
-                      <p className="text-sm font-bold text-gray-900 dark:text-white">
-                        KES {plan.contribution.toLocaleString()}
-                      </p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Regular payment</p>
                     </div>
 
                     {/* Expected Return */}
