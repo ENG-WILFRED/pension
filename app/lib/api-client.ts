@@ -18,7 +18,7 @@ import type {
 } from './schemas';
 import { parseAccount, parseAccounts } from './account-schemas';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000';
+const API_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'https://autonest-backend.onrender.com';
 const DEFAULT_TIMEOUT = 120000;  
 const PAYMENT_TIMEOUT = 180000; 
 
