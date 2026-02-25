@@ -240,6 +240,11 @@ export default function LoginForm() {
                     className="w-full pl-12 pr-4 py-4 rounded-xl bg-slate-50 border-2 border-slate-200 text-slate-900 placeholder-slate-400 transition-all duration-300 focus:border-orange-500 focus:bg-white focus:outline-none focus:ring-4 focus:ring-orange-500/10 hover:border-slate-300 disabled:opacity-50 disabled:cursor-not-allowed"
                   />
                 </div>
+                <div className="flex justify-end mt-3">
+                  <Link href="/forgot-password" className="text-sm font-semibold text-orange-600 hover:text-orange-700 hover:underline">
+                    Forgot password?
+                  </Link>
+                </div>
               </div>
 
               <button

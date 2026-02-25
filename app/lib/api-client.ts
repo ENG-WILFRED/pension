@@ -205,16 +205,26 @@ export const authApi = {
       method: 'POST',
       body: JSON.stringify(data),
     }, timeout),
-  forgotPassword: (data: { identifier: string }, timeout?: number) =>
-    apiCall('/api/auth/forgot-password', {
+
+  forgotPassword: (data: { identifier?: string; email?: string } | any, timeout?: number) => {
+    const payload = typeof data === 'object' && data !== null
+      ? { email: (data.email ?? data.identifier ?? data) }
+      : { email: data };
+    return apiCall('/api/auth/forgot-password', {
       method: 'POST',
-      body: JSON.stringify(data),
-    }, timeout),
-  verifyForgotPassword: (data: { identifier: string; otp: string; newPassword: string }, timeout?: number) =>
-    apiCall('/api/auth/forgot-password/verify', {
+      body: JSON.stringify(payload),
+    }, timeout);
+  },
+  // Verify OTP and reset password. 
+  verifyForgotPassword: (data: { identifier?: string; email?: string; otp: string; newPassword: string } | any, timeout?: number) => {
+    const payload = typeof data === 'object' && data !== null
+      ? { email: (data.email ?? data.identifier ?? data), otp: data.otp, newPassword: data.newPassword }
+      : { email: data.email ?? data.identifier ?? data };
+    return apiCall('/api/auth/forgot-password/verify', {
       method: 'POST',
-      body: JSON.stringify(data),
-    }, timeout),
+      body: JSON.stringify(payload),
+    }, timeout);
+  },
   setPassword: (data: { password: string }, timeout?: number) =>
     apiCall('/api/auth/set-password', {
       method: 'POST',
