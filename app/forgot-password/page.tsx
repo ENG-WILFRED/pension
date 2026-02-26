@@ -140,25 +140,30 @@ export default function ForgotPasswordPage() {
 
                 <div className="mb-4">
                   <label className="block text-xs font-bold text-slate-700 mb-2">New password</label>
-                  <div className="relative">
+                  <div className="relative mb-2">
                     <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                     <input
                       type={showPassword ? 'text' : 'password'}
                       value={newPassword}
                       onChange={(e) => setNewPassword(e.target.value)}
                       placeholder="New password"
-                      className="w-full pl-10 pr-10 py-3 bg-white border rounded-xl text-sm mb-2"
+                      className="w-full pl-10 pr-10 py-3 bg-white border rounded-xl text-sm"
                       disabled={loading}
                     />
                   </div>
-                  <input
-                    type="password"
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                    placeholder="Confirm new password"
-                    className="w-full py-3 px-4 border rounded-xl text-sm"
-                    disabled={loading}
-                  />
+
+                  <label className="block text-xs font-bold text-slate-700 mb-2">Confirm new password</label>
+                  <div className="relative">
+                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                    <input
+                      type="password"
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      placeholder="Confirm new password"
+                      className="w-full pl-10 py-3 px-4 border rounded-xl text-sm"
+                      disabled={loading}
+                    />
+                  </div>
                 </div>
 
                 <button onClick={verifyOtpAndReset} className="w-full bg-orange-600 text-white py-3 rounded-xl font-semibold hover:opacity-95" disabled={loading}>
