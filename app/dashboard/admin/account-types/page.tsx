@@ -400,7 +400,7 @@ export default function AccountTypesPage() {
   return (
     <div className="px-4 sm:px-6 lg:px-8 py-8">
       {/* Header */}
-      <div className="bg-gradient-to-r from-orange-600 to-blue-600 text-white rounded-2xl shadow-lg p-6 sm:p-8 mb-8">
+      <div className="bg-gradient-to-r from-orange-600 to-orange-500 text-white rounded-2xl shadow-lg p-6 sm:p-8 mb-8">
         <div className="flex items-center justify-between flex-wrap gap-4">
           <div>
             <h1 className="text-2xl sm:text-3xl font-bold flex items-center gap-3">

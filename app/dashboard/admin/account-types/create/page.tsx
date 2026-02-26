@@ -85,7 +85,7 @@ export default function CreateAccountTypePage() {
               <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Create Account Type</h1>
               <p className="text-sm text-gray-600 mt-1">Define a new pension account type configuration.</p>
             </div>
-            <Link href="/dashboard/admin/account-types" className="text-sm text-blue-600 hover:underline">
+            <Link href="/dashboard/admin/account-types" className="text-sm text-orange-600 hover:underline">
               ← Back to Account Types
             </Link>
           </div>
@@ -105,7 +105,7 @@ export default function CreateAccountTypePage() {
                   onChange={handleChange}
                   placeholder="e.g., Standard Mandatory Pension"
                   required
-                  className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                  className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                 />
               </div>
 
@@ -121,7 +121,7 @@ export default function CreateAccountTypePage() {
                   placeholder="Describe the account type..."
                   required
                   rows={3}
-                  className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                  className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                 />
               </div>
 

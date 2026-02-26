@@ -206,7 +206,7 @@ export default function AdminAccountsPage() {
 
         <div className="bg-white dark:bg-gray-800 backdrop-blur-xl border border-gray-200 dark:border-gray-700 rounded-xl shadow-lg p-6 transition-colors duration-300">
           <div className="flex items-center gap-3 mb-2">
-            <Wallet size={24} className="text-purple-600 dark:text-purple-400" />
+            <Wallet size={24} className="text-orange-600 dark:text-orange-400" />
             <span className="text-sm font-semibold text-gray-600 dark:text-gray-400 transition-colors duration-300">Total Balance</span>
           </div>
           <p className="text-2xl font-bold text-gray-900 dark:text-white transition-colors duration-300">KES {totalBalance.toLocaleString()}</p>
@@ -217,12 +217,12 @@ export default function AdminAccountsPage() {
       {/* Search & Filters */}
       <div className="bg-white dark:bg-gray-800 backdrop-blur-xl border border-gray-200 dark:border-gray-700 rounded-xl shadow-lg p-4 mb-6 transition-colors duration-300">
         <div className="flex items-center gap-2 mb-4">
-          <Filter size={20} className="text-indigo-600 dark:text-indigo-400" />
+          <Filter size={20} className="text-orange-600 dark:text-orange-400" />
           <h3 className="font-semibold text-gray-900 dark:text-white transition-colors duration-300">Filters</h3>
           {hasActiveFilters && (
             <button
               onClick={clearFilters}
-              className="ml-auto text-sm text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 font-medium transition-colors duration-300"
+              className="ml-auto text-sm text-orange-600 dark:text-orange-400 hover:text-orange-800 dark:hover:text-orange-300 font-medium transition-colors duration-300"
             >
               Clear All
             </button>

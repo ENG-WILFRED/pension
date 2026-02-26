@@ -257,9 +257,9 @@ export default function AdminCreateAccountPage() {
 
           {/* Info Sidebar */}
           <div className="space-y-6">
-            <div className="bg-blue-50 border border-blue-200 rounded-xl p-6">
-              <h3 className="text-lg font-bold text-blue-900 mb-3">ℹ️ How It Works</h3>
-              <ol className="list-decimal list-inside space-y-2 text-sm text-blue-800">
+            <div className="bg-orange-50 border border-orange-200 rounded-xl p-6">
+              <h3 className="text-lg font-bold text-orange-900 mb-3">ℹ️ How It Works</h3>
+              <ol className="list-decimal list-inside space-y-2 text-sm text-orange-800">
                 <li>Select a customer from the list</li>
                 <li>Choose an account type</li>
                 <li>Set initial balance (optional)</li>

@@ -144,7 +144,7 @@ export default function EditAccountTypePage() {
       <div className="min-h-screen bg-gradient-to-br from-slate-100 via-blue-50 to-indigo-100 flex items-center justify-center">
         <div className="text-center">
           <p className="text-gray-600 mb-4">Account type not found</p>
-          <Link href="/dashboard/admin/account-types" className="text-blue-600 hover:underline">
+          <Link href="/dashboard/admin/account-types" className="text-orange-600 hover:underline">
             ← Back to Account Types
           </Link>
         </div>
@@ -162,7 +162,7 @@ export default function EditAccountTypePage() {
               <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Edit Account Type</h1>
               <p className="text-sm text-gray-600 mt-1">Update pension account type configuration.</p>
             </div>
-            <Link href="/dashboard/admin/account-types" className="text-sm text-blue-600 hover:underline">
+            <Link href="/dashboard/admin/account-types" className="text-sm text-orange-600 hover:underline">
               ← Back to Account Types
             </Link>
           </div>
@@ -182,7 +182,7 @@ export default function EditAccountTypePage() {
                   onChange={handleChange}
                   placeholder="e.g., Standard Mandatory Pension"
                   required
-                  className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                  className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                 />
               </div>
 
@@ -198,7 +198,7 @@ export default function EditAccountTypePage() {
                   placeholder="Describe the account type..."
                   required
                   rows={3}
-                  className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                  className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                 />
               </div>
 
@@ -212,7 +212,7 @@ export default function EditAccountTypePage() {
                   value={formData.category}
                   onChange={handleChange}
                   required
-                  className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                  className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                 >
                   <option value="MANDATORY">Mandatory</option>
                   <option value="VOLUNTARY">Voluntary</option>

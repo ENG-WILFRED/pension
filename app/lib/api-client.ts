@@ -392,6 +392,23 @@ export const adminApi = {
       method: 'POST',
       body: JSON.stringify(data),
     }, timeout),
+  // Create a regular user (admin-only). Backend should accept POST /api/users for admin-created users.
+  createUser: (data: {
+    email: string;
+    phone?: string;
+    firstName?: string;
+    lastName?: string;
+    dateOfBirth?: string;
+    gender?: string;
+    address?: string;
+    city?: string;
+    country?: string;
+    role?: string;
+  }, timeout?: number) =>
+    apiCall('/api/users', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }, timeout),
   listAdmins: (timeout?: number) => apiCall('/api/admin/list', { method: 'GET' }, timeout),
 };
 

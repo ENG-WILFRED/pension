@@ -124,7 +124,7 @@ export default function CustomersPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950 px-4 sm:px-6 lg:px-8 py-8 space-y-6">
       {/* Header */}
-      <div className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-2xl shadow-lg p-6 sm:p-8">
+      <div className="bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-2xl shadow-lg p-6 sm:p-8">
         <div className="flex items-center justify-between flex-wrap gap-4">
           <div>
             <h1 className="text-3xl sm:text-4xl font-bold flex items-center gap-3">
@@ -135,10 +135,10 @@ export default function CustomersPage() {
               View and manage all system users
             </p>
           </div>
-          <button
+            <button
             onClick={loadCustomers}
             disabled={loading}
-            className="flex items-center gap-2 bg-white text-indigo-600 px-6 py-3 rounded-xl hover:bg-indigo-50 transition font-semibold shadow-lg disabled:opacity-50"
+            className="flex items-center gap-2 bg-white text-orange-600 px-6 py-3 rounded-xl hover:bg-orange-50 transition font-semibold shadow-lg disabled:opacity-50"
           >
             <RefreshCw size={20} className={loading ? "animate-spin" : ""} />
             Refresh
@@ -156,8 +156,8 @@ export default function CustomersPage() {
                 {customers.length}
               </p>
             </div>
-            <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-              <Users className="text-blue-600" size={24} />
+            <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
+              <Users className="text-orange-600" size={24} />
             </div>
           </div>
         </div>
@@ -170,8 +170,8 @@ export default function CustomersPage() {
                 {customers.filter((c) => c.role === "customer").length}
               </p>
             </div>
-            <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-              <Users className="text-green-600" size={24} />
+            <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
+              <Users className="text-orange-600" size={24} />
             </div>
           </div>
         </div>
@@ -184,8 +184,8 @@ export default function CustomersPage() {
                 {customers.filter((c) => c.role === "admin").length}
               </p>
             </div>
-            <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
-              <Shield className="text-purple-600" size={24} />
+            <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
+              <Shield className="text-orange-600" size={24} />
             </div>
           </div>
         </div>
@@ -199,12 +199,12 @@ export default function CustomersPage() {
               size={20}
               className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
             />
-            <input
+              <input
               type="text"
               placeholder="Search by name, email, or phone..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+              className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
             />
           </div>
 
@@ -213,10 +213,10 @@ export default function CustomersPage() {
               size={20}
               className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
             />
-            <select
+              <select
               value={filterRole}
               onChange={(e) => setFilterRole(e.target.value)}
-              className="pl-10 pr-8 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent appearance-none bg-white"
+              className="pl-10 pr-8 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent appearance-none bg-white"
             >
               <option value="all">All Roles</option>
               <option value="customer">Customers</option>
@@ -230,7 +230,7 @@ export default function CustomersPage() {
       <div className="bg-white/80 backdrop-blur-xl border border-gray-200 rounded-2xl shadow-xl overflow-hidden">
         <div className="px-6 py-4 border-b border-gray-100 bg-white/60">
           <h3 className="text-xl font-bold text-gray-900 flex items-center gap-2">
-            <Users size={24} className="text-indigo-600" />
+            <Users size={24} className="text-orange-600" />
             Users List ({filteredCustomers.length})
           </h3>
         </div>
@@ -268,7 +268,7 @@ export default function CustomersPage() {
                   <tr key={customer.id} className="hover:bg-gray-50">
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-indigo-100 rounded-full flex items-center justify-center text-indigo-600 font-bold">
+                        <div className="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center text-orange-600 font-bold">
                           {customer.firstName?.[0]?.toUpperCase() ||
                             customer.email[0].toUpperCase()}
                         </div>
@@ -299,11 +299,11 @@ export default function CustomersPage() {
                     </td>
 
                     <td className="px-6 py-4">
-                      <span
+                        <span
                         className={`px-3 py-1 rounded-full text-xs font-semibold ${
                           customer.role === "admin"
-                            ? "bg-purple-100 text-purple-800"
-                            : "bg-blue-100 text-blue-800"
+                            ? "bg-orange-100 text-orange-800"
+                            : "bg-orange-100 text-orange-800"
                         }`}
                       >
                         {customer.role || "customer"}
@@ -323,7 +323,7 @@ export default function CustomersPage() {
                           onClick={() =>
                             router.push(`/dashboard/admin/manage/${customer.id}`)
                           }
-                          className="flex items-center gap-1 px-3 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition text-xs"
+                          className="flex items-center gap-1 px-3 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition text-xs"
                         >
                           <Eye size={14} />
                           View

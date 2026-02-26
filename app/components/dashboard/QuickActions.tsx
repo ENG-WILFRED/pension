@@ -52,7 +52,8 @@ export default function QuickActions({ userType = 'customer' }: QuickActionsProp
       icon: Users,
       title: 'Manage Users',
       description: 'Review and manage members.',
-      color: 'from-green-500 to-emerald-600',
+      // using the same orange accent as customer actions for consistency
+      color: 'from-orange-500 to-orange-600',
       onClick: () => router.push('/dashboard/admin/manage')
     },
     {
@@ -60,7 +61,7 @@ export default function QuickActions({ userType = 'customer' }: QuickActionsProp
       icon: FileText,
       title: 'Reports',
       description: 'Generate system reports.',
-      color: 'from-blue-500 to-indigo-600',
+      color: 'from-orange-500 to-orange-600',
       onClick: () => router.push('/dashboard/admin/reports')
     },
     {
@@ -68,7 +69,7 @@ export default function QuickActions({ userType = 'customer' }: QuickActionsProp
       icon: Settings,
       title: 'System Settings',
       description: 'Configure system parameters.',
-      color: 'from-purple-500 to-pink-600',
+      color: 'from-orange-500 to-orange-600',
       onClick: () => router.push('/dashboard/admin/settings')
     },
     {
@@ -76,7 +77,7 @@ export default function QuickActions({ userType = 'customer' }: QuickActionsProp
       icon: AlertCircle,
       title: 'Account Types',
       description: 'Manage account types.',
-      color: 'from-orange-500 to-red-600',
+      color: 'from-orange-500 to-orange-600',
       onClick: () => router.push('/dashboard/admin/account-types')
     }
   ];

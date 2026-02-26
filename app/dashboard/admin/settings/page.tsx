@@ -55,7 +55,7 @@ export default function AdminSettings() {
           {/* Header */}
           <div className="mb-8">
             <div className="flex items-center gap-3 mb-2">
-              <div className="w-12 h-12 bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-500 dark:to-purple-500 rounded-xl flex items-center justify-center">
+              <div className="w-12 h-12 bg-gradient-to-r from-orange-500 to-red-600 dark:from-orange-600 dark:to-red-700 rounded-xl flex items-center justify-center">
                 <Shield className="w-6 h-6 text-white" />
               </div>
               <div>
@@ -175,8 +175,8 @@ export default function AdminSettings() {
                 <ChangePinForm />
               </div>
 
-              <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
-                <p className="text-sm text-blue-900">
+              <div className="bg-orange-50 border border-orange-200 rounded-xl p-4">
+                <p className="text-sm text-orange-900">
                   <strong>Security Tips:</strong> Use a strong, unique password and change it regularly. Never share your password or PIN with anyone.
                 </p>
               </div>
@@ -254,7 +254,7 @@ export default function AdminSettings() {
                 </div>
 
                 {/* Email Notifications */}
-                <div className="flex items-center justify-between p-4 border border-blue-200 bg-blue-50 rounded-lg">
+                <div className="flex items-center justify-between p-4 border border-orange-200 bg-orange-50 rounded-lg">
                   <div>
                     <p className="font-semibold text-gray-900">Email Notifications</p>
                     <p className="text-xs text-gray-600 mt-1">Send alerts and reports to administrators</p>

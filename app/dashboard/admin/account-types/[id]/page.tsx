@@ -181,7 +181,7 @@ export default function AccountTypeDetailPage() {
             Edit
           </button>
         </div>
-        <div className="bg-gradient-to-r from-orange-600 to-blue-600 rounded-2xl shadow-xl p-6 sm:p-8 mb-8 text-white">
+        <div className="bg-gradient-to-r from-orange-600 to-orange-500 rounded-2xl shadow-xl p-6 sm:p-8 mb-8 text-white">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
               <CreditCard size={32} />
@@ -231,7 +231,7 @@ export default function AccountTypeDetailPage() {
           {accountType.category && (
             <div className="bg-white/80 backdrop-blur-xl border border-gray-200 rounded-xl shadow-lg p-6">
               <div className="flex items-center gap-3 mb-2">
-                <Info size={24} className="text-blue-600" />
+                <Info size={24} className="text-orange-600" />
                 <span className="text-sm font-semibold text-gray-600">Category</span>
               </div>
               <p className="text-2xl font-bold text-gray-900">{accountType.category}</p>
@@ -257,7 +257,7 @@ export default function AccountTypeDetailPage() {
           {accountType.maxBalance !== undefined && (
             <div className="bg-white/80 backdrop-blur-xl border border-gray-200 rounded-xl shadow-lg p-6">
               <div className="flex items-center gap-3 mb-2">
-                <Wallet size={24} className="text-purple-600" />
+                <Wallet size={24} className="text-orange-600" />
                 <span className="text-sm font-semibold text-gray-600">Maximum Balance</span>
               </div>
               <p className="text-2xl font-bold text-gray-900">

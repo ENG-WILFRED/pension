@@ -65,6 +65,7 @@ export default function Sidebar({ userType, firstName, lastName }: SidebarProps)
   const adminNavItems = [
     { name: "Dashboard", icon: LayoutDashboard, href: "/dashboard/admin" },
     { name: "Manage Users", icon: Users, href: "/dashboard/admin/manage" },
+    { name: "Create User", icon: User, href: "/dashboard/admin/create-user" },
     { name: "Manage Accounts", icon: Wallet, href: "/dashboard/admin/accounts" },
     { name: "Create Admin", icon: UserPlus, href: "/dashboard/admin/create-admin" },
     { name: "Reports", icon: FileText, href: "/dashboard/admin/reports" },

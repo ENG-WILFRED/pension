@@ -292,7 +292,7 @@ export default function AdminAccountDetailPage() {
 
           <div className="bg-white/80 backdrop-blur-xl border border-gray-200 rounded-xl shadow-lg p-6">
             <div className="flex items-center gap-2 mb-2">
-              <DollarSign size={20} className="text-blue-600" />
+              <DollarSign size={20} className="text-orange-600" />
               <span className="text-sm font-semibold text-gray-600">Employer</span>
             </div>
             <p className="text-3xl font-bold text-gray-900">
@@ -302,7 +302,7 @@ export default function AdminAccountDetailPage() {
 
           <div className="bg-white/80 backdrop-blur-xl border border-gray-200 rounded-xl shadow-lg p-6">
             <div className="flex items-center gap-2 mb-2">
-              <TrendingUp size={20} className="text-purple-600" />
+              <TrendingUp size={20} className="text-orange-600" />
               <span className="text-sm font-semibold text-gray-600">Earnings</span>
             </div>
             <p className="text-3xl font-bold text-gray-900">

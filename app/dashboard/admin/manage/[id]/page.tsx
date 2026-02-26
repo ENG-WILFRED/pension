@@ -171,7 +171,7 @@ export default function MemberDetail({
           </p>
           <Link
             href="/dashboard/admin/customers"
-            className="text-indigo-600 hover:underline flex items-center justify-center gap-2"
+            className="text-orange-600 hover:underline flex items-center justify-center gap-2"
           >
             <ArrowLeft size={16} />
             Back to Users
@@ -188,13 +188,13 @@ export default function MemberDetail({
         <div>
           <Link
             href="/dashboard/admin/customers"
-            className="inline-flex items-center gap-2 text-indigo-600 hover:text-indigo-700 font-medium mb-4"
+            className="inline-flex items-center gap-2 text-orange-600 hover:text-orange-700 font-medium mb-4"
           >
             <ArrowLeft size={20} />
             Back to Users
           </Link>
 
-          <div className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-2xl shadow-lg p-6 sm:p-8">
+          <div className="bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-2xl shadow-lg p-6 sm:p-8">
             <div className="flex items-center justify-between flex-wrap gap-4">
               <div className="flex items-center gap-4">
                 <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center text-2xl font-bold">
@@ -209,12 +209,12 @@ export default function MemberDetail({
                         }`.trim()
                       : "User Details"}
                   </h1>
-                  <p className="text-indigo-100 mt-1">{member.email}</p>
+                  <p className="text-orange-100 mt-1">{member.email}</p>
                 </div>
               </div>
               <div
                 className={`px-4 py-2 rounded-lg font-semibold ${
-                  member.role === "admin" ? "bg-purple-500" : "bg-blue-500"
+                  'bg-orange-500'
                 }`}
               >
                 {member.role || "customer"}
@@ -227,8 +227,8 @@ export default function MemberDetail({
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Personal Information */}
           <div className="bg-white/80 backdrop-blur-xl border border-gray-200 rounded-2xl shadow-lg p-6">
-            <h2 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
-              <User size={20} className="text-indigo-600" />
+              <h2 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+              <User size={20} className="text-orange-600" />
               Personal Information
             </h2>
 

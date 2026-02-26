@@ -135,7 +135,7 @@ export default function CreateAdminPage() {
             Back to Admin Dashboard
           </Link>
 
-          <div className="bg-gradient-to-r from-orange-600 to-blue-600 dark:from-orange-700 dark:to-blue-700 text-white rounded-2xl shadow-lg p-6 sm:p-8 transition-colors duration-300">
+          <div className="bg-gradient-to-r from-orange-600 to-orange-500 dark:from-orange-700 dark:to-orange-600 text-white rounded-2xl shadow-lg p-6 sm:p-8 transition-colors duration-300">
             <div className="flex items-center gap-4">
               <div className="p-3 bg-white/20 dark:bg-white/10 rounded-xl">
                 <UserPlus size={32} />
@@ -149,17 +149,17 @@ export default function CreateAdminPage() {
         </div>
 
         {/* Info Banner */}
-        <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-4 mb-6 transition-colors duration-300">
+        <div className="bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800 rounded-xl p-4 mb-6 transition-colors duration-300">
           <div className="flex items-start gap-3">
-            <div className="p-2 bg-blue-100 dark:bg-blue-900 rounded-lg">
-              <UserPlus size={20} className="text-blue-600 dark:text-blue-400" />
+            <div className="p-2 bg-orange-100 dark:bg-orange-900 rounded-lg">
+              <UserPlus size={20} className="text-orange-600 dark:text-orange-400" />
             </div>
             <div className="flex-1">
-              <h3 className="font-semibold text-blue-900 dark:text-blue-200 transition-colors duration-300">Admin Account Creation</h3>
-              <p className="text-sm text-blue-700 dark:text-blue-300 mt-1 transition-colors duration-300">
+              <h3 className="font-semibold text-orange-900 dark:text-orange-200 transition-colors duration-300">Admin Account Creation</h3>
+              <p className="text-sm text-orange-700 dark:text-orange-300 mt-1 transition-colors duration-300">
                 This will create a new admin account with full system access. The system will automatically generate a temporary password and send it to the admin's email and phone.
               </p>
-              <ul className="text-xs text-blue-600 dark:text-blue-400 mt-2 space-y-1 list-disc list-inside transition-colors duration-300">
+              <ul className="text-xs text-orange-600 dark:text-orange-400 mt-2 space-y-1 list-disc list-inside transition-colors duration-300">
                 <li>No payment required for admin accounts</li>
                 <li>Automatically assigned 'admin' role</li>
                 <li>Account activated immediately</li>
@@ -382,7 +382,7 @@ export default function CreateAdminPage() {
             <button
               type="submit"
               disabled={loading}
-              className="flex-1 px-6 py-3 bg-gradient-to-r from-orange-600 to-blue-600 dark:from-orange-700 dark:to-blue-700 text-white rounded-xl font-semibold hover:shadow-lg disabled:from-slate-400 disabled:to-slate-500 disabled:cursor-not-allowed transition flex items-center justify-center gap-2"
+              className="flex-1 px-6 py-3 bg-gradient-to-r from-orange-600 to-orange-500 dark:from-orange-700 dark:to-orange-600 text-white rounded-xl font-semibold hover:shadow-lg disabled:from-slate-400 disabled:to-slate-500 disabled:cursor-not-allowed transition flex items-center justify-center gap-2"
             >
               {loading ? (
                 <>
