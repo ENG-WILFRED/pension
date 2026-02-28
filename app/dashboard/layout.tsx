@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import Sidebar from "./Sidebar";
 import DashboardHeader from "../components/dashboard/DashboardHeader";
 import AnimatedFooter from "../components/AnimatedFooter";
+import TokenRefreshProvider from "../components/TokenRefreshProvider";
 
 export default function DashboardLayout({
   children,
@@ -49,31 +50,33 @@ export default function DashboardLayout({
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-gray-950 dark:via-gray-900 dark:to-slate-950 transition-colors duration-300">
-      {/* Sidebar - Fixed on desktop, slides in/out on mobile */}
-      <Sidebar
-        userType={userType}
-        firstName={user?.firstName}
-        lastName={user?.lastName}
-      />
-
-      {/* Main Content Area - Add left margin to account for fixed sidebar on desktop */}
-      <div className="lg:ml-64 min-h-screen flex flex-col">
-        {/* Header */}
-        <DashboardHeader
+    <TokenRefreshProvider>
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-gray-950 dark:via-gray-900 dark:to-slate-950 transition-colors duration-300">
+        {/* Sidebar - Fixed on desktop, slides in/out on mobile */}
+        <Sidebar
+          userType={userType}
           firstName={user?.firstName}
           lastName={user?.lastName}
-          userType={userType}
         />
 
-        {/* Scrollable Content */}
-        <main className="flex-1">
-          <div className="pb-20">{children}</div>
-        </main>
+        {/* Main Content Area - Add left margin to account for fixed sidebar on desktop */}
+        <div className="lg:ml-64 min-h-screen flex flex-col">
+          {/* Header */}
+          <DashboardHeader
+            firstName={user?.firstName}
+            lastName={user?.lastName}
+            userType={userType}
+          />
 
-        {/* Footer */}
-        <AnimatedFooter />
+          {/* Scrollable Content */}
+          <main className="flex-1">
+            <div className="pb-20">{children}</div>
+          </main>
+
+          {/* Footer */}
+          <AnimatedFooter />
+        </div>
       </div>
-    </div>
+    </TokenRefreshProvider>
   );
 }

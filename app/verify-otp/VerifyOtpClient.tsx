@@ -107,6 +107,11 @@ export default function VerifyOtpClient() {
 
       if (token && typeof window !== 'undefined') {
         localStorage.setItem('auth_token', token);
+        
+        // Set token expiry time (24 hours from now)
+        const tokenExpiryTime = Date.now() + 24 * 60 * 60 * 1000;
+        localStorage.setItem('token_expiry', tokenExpiryTime.toString());
+        
         let userToStore = user;
         if (user && !user.role) {
           userToStore = {

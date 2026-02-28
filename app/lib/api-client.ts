@@ -167,6 +167,8 @@ export const authApi = {
       body: JSON.stringify(data),
     }, timeout),
   verify: (timeout?: number) => apiCall('/api/auth/verify', { method: 'GET' }, timeout),
+  // Refresh token before expiry
+  refresh: (timeout?: number) => apiCall('/api/auth/refresh', { method: 'POST' }, timeout),
   // Resend OTP to user
   resendOtp: (data: { identifier: string }, timeout?: number) =>
     apiCall('/api/auth/resend-otp', {
