@@ -28,9 +28,14 @@ interface Account {
   };
   accountStatus: string;
   totalBalance: number;
+  currentBalance?: number;
+  availableBalance?: number;
+  lockedBalance?: number;
   employeeBalance: number;
   employerBalance: number;
   earningsBalance: number;
+  employeeContributions?: number;
+  employerContributions?: number;
   createdAt: string;
   updatedAt: string;
 }
@@ -79,8 +84,16 @@ export default function AdminAccountDetailPage() {
           router.push('/dashboard/admin/accounts');
           return;
         }
+        // params.id comes from the URL and is a string; our API helper now
+        // expects a numeric id so convert before calling.
+        const numericId = Number(accountId);
+        if (Number.isNaN(numericId)) {
+          toast.error('Invalid account ID');
+          router.push('/dashboard/admin/accounts');
+          return;
+        }
 
-        const response = await accountsApi.getById(accountId);
+        const response = await accountsApi.getById(numericId);
         
         if (response.success && response.account) {
           setAccount(response.account);
@@ -123,7 +136,7 @@ export default function AdminAccountDetailPage() {
         setContributionForm({ employeeAmount: "", employerAmount: "", description: "" });
         
         // Refresh account
-        const refreshResponse = await accountsApi.getById(account.id);
+        const refreshResponse = await accountsApi.getById(Number(account.id));
         if (refreshResponse.success) {
           setAccount(refreshResponse.account);
         }
@@ -161,7 +174,7 @@ export default function AdminAccountDetailPage() {
         setEarningsForm({ type: "interest", amount: "", description: "" });
         
         // Refresh account
-        const refreshResponse = await accountsApi.getById(account.id);
+        const refreshResponse = await accountsApi.getById(Number(account.id));
         if (refreshResponse.success) {
           setAccount(refreshResponse.account);
         }
@@ -195,7 +208,7 @@ export default function AdminAccountDetailPage() {
         toast.success('Account status updated!');
         
         // Refresh account
-        const refreshResponse = await accountsApi.getById(account.id);
+        const refreshResponse = await accountsApi.getById(Number(account.id));
         if (refreshResponse.success) {
           setAccount(refreshResponse.account);
         }
@@ -268,13 +281,14 @@ export default function AdminAccountDetailPage() {
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
               <Wallet size={32} />
-              <h2 className="text-xl font-bold">Total Balance</h2>
+              <h2 className="text-xl font-bold">Available Balance</h2>
             </div>
             <span className={`px-4 py-2 rounded-full text-sm font-semibold ${getStatusColor(account.accountStatus)} text-gray-900`}>
               {account.accountStatus}
             </span>
           </div>
-          <p className="text-4xl sm:text-5xl font-bold">KES {account.totalBalance.toLocaleString()}</p>
+          <p className="text-4xl sm:text-5xl font-bold">KES {account.availableBalance?.toLocaleString()}</p>
+          <p className="text-sm text-red-100 mt-1">Current: KES {account.currentBalance?.toLocaleString()}</p>
           <p className="text-red-100 mt-2">{account.user?.email}</p>
         </div>
 
@@ -283,30 +297,30 @@ export default function AdminAccountDetailPage() {
           <div className="bg-white/80 backdrop-blur-xl border border-gray-200 rounded-xl shadow-lg p-6">
             <div className="flex items-center gap-2 mb-2">
               <CreditCard size={20} className="text-green-600" />
-              <span className="text-sm font-semibold text-gray-600">Employee</span>
+              <span className="text-sm font-semibold text-gray-600">Locked</span>
             </div>
             <p className="text-3xl font-bold text-gray-900">
-              {account.employeeBalance.toLocaleString()}
+              KES {account.lockedBalance?.toLocaleString()}
             </p>
           </div>
 
           <div className="bg-white/80 backdrop-blur-xl border border-gray-200 rounded-xl shadow-lg p-6">
             <div className="flex items-center gap-2 mb-2">
               <DollarSign size={20} className="text-orange-600" />
-              <span className="text-sm font-semibold text-gray-600">Employer</span>
+              <span className="text-sm font-semibold text-gray-600">Employee Contributions</span>
             </div>
             <p className="text-3xl font-bold text-gray-900">
-              {account.employerBalance.toLocaleString()}
+              KES {account.employeeContributions?.toLocaleString()}
             </p>
           </div>
 
           <div className="bg-white/80 backdrop-blur-xl border border-gray-200 rounded-xl shadow-lg p-6">
             <div className="flex items-center gap-2 mb-2">
               <TrendingUp size={20} className="text-orange-600" />
-              <span className="text-sm font-semibold text-gray-600">Earnings</span>
+              <span className="text-sm font-semibold text-gray-600">Employer Contributions</span>
             </div>
             <p className="text-3xl font-bold text-gray-900">
-              {account.earningsBalance.toLocaleString()}
+              KES {account.employerContributions?.toLocaleString()}
             </p>
           </div>
         </div>

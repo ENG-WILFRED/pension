@@ -8,6 +8,8 @@ interface Transaction {
   status: string;
   description?: string | null;
   createdAt: any;
+  userId?: string;
+  accountId?: number;
 }
 
 interface TransactionHistoryProps {
@@ -58,17 +60,17 @@ export default function TransactionHistory({ transactions, contributionRate }: T
                   <td className="px-6 py-4">
                     <span
                       className={`px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-1 w-fit transition-colors duration-300 ${
-                        tx.type === "credit"
+                        (tx.type === "credit" || tx.type === "deposit")
                           ? "bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200"
                           : "bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200"
                       }`}
                     >
-                      {tx.type === "credit" ? (
+                      {(tx.type === "credit" || tx.type === "deposit") ? (
                         <ArrowUpRight size={14} />
                       ) : (
                         <ArrowDownRight size={14} />
                       )}
-                      {tx.type === "credit"
+                      {(tx.type === "credit" || tx.type === "deposit")
                         ? "Incoming"
                         : !tx.description || tx.description === "-"
                         ? "Subscription Fee"
@@ -77,7 +79,7 @@ export default function TransactionHistory({ transactions, contributionRate }: T
                   </td>
 
                   <td className="px-6 py-4 text-sm font-bold text-gray-900 dark:text-white transition-colors duration-300">
-                    {tx.type === "credit" ? "+" : "-"}KES{" "}
+                    {(tx.type === "credit" || tx.type === "deposit") ? "+" : "-"}KES{" "}
                     {tx.amount.toLocaleString()}
                   </td>
 

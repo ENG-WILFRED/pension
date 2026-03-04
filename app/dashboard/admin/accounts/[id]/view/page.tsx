@@ -53,9 +53,14 @@ interface Account {
   };
   accountStatus: string;
   totalBalance: number;
+  currentBalance?: number;
+  availableBalance?: number;
+  lockedBalance?: number;
   employeeBalance: number;
   employerBalance: number;
   earningsBalance: number;
+  employeeContributions?: number;
+  employerContributions?: number;
   createdAt: string;
   updatedAt: string;
 }
@@ -67,6 +72,8 @@ interface Transaction {
   description?: string;
   status: string;
   createdAt: string;
+  userId?: string;
+  accountId?: number;
 }
 
 export default function AccountViewPage() {
@@ -79,6 +86,7 @@ export default function AccountViewPage() {
   const [summary, setSummary] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<"overview" | "transactions" | "user">("overview");
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
 
   useEffect(() => {
     const loadData = async () => {
@@ -101,16 +109,43 @@ export default function AccountViewPage() {
           return;
         }
 
-        // Load account details
-        const accountResponse = await accountsApi.getById(accountId);
+        // Load account details - convert id string to number for API helper
+        const numericId = Number(accountId);
+        if (Number.isNaN(numericId)) {
+          toast.error('Invalid account ID');
+          router.push('/dashboard/admin/accounts');
+          return;
+        }
+
+        const accountResponse = await accountsApi.getById(numericId);
 
         if (accountResponse.success && accountResponse.account) {
           setAccount(accountResponse.account);
 
           // Load account summary
-          const summaryResponse = await accountsApi.getSummary(accountId);
+          const summaryResponse = await accountsApi.getSummary(numericId);
           if (summaryResponse.success) {
             setSummary(summaryResponse);
+          }
+
+          // if the account payload already includes transactions (parsed by schema), use them
+          if (accountResponse.account.transactions && Array.isArray(accountResponse.account.transactions)) {
+            setTransactions(accountResponse.account.transactions as Transaction[]);
+          } else {
+            // otherwise fetch separately
+            try {
+              const txRes = await accountsApi.getTransactions(numericId, { sort: 'desc', limit: 100 });
+              if (txRes.success && Array.isArray(txRes.transactions)) {
+                setTransactions(txRes.transactions as Transaction[]);
+              } else if (txRes.success && txRes.account && Array.isArray(txRes.account.transactions)) {
+                // fallback: some endpoints nest transactions inside account
+                setTransactions(txRes.account.transactions as Transaction[]);
+              } else {
+                console.log('[Admin Account] no transactions returned', txRes);
+              }
+            } catch (err) {
+              console.warn('[Admin Account] error fetching transactions', err);
+            }
           }
         } else {
           toast.error("Account not found");
@@ -207,7 +242,7 @@ export default function AccountViewPage() {
             <div className="flex items-center gap-3">
               <Wallet size={32} />
               <div>
-                <h2 className="text-xl font-bold">Total Balance</h2>
+                <h2 className="text-xl font-bold">Available Balance</h2>
                 {account.accountNumber && (
                   <p className="text-indigo-100 text-sm">Account #{account.accountNumber}</p>
                 )}
@@ -224,21 +259,24 @@ export default function AccountViewPage() {
               </span>
             </div>
           </div>
-          <p className="text-4xl sm:text-5xl font-bold mb-4">
-            KES {account.totalBalance.toLocaleString()}
+          <p className="text-4xl sm:text-5xl font-bold mb-1">
+            KES {account.availableBalance?.toLocaleString()}
+          </p>
+          <p className="text-sm text-indigo-100">
+            Current: KES {account.currentBalance?.toLocaleString()}
           </p>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6 pt-6 border-t border-indigo-400">
             <div>
-              <p className="text-indigo-100 text-sm">Employee Contribution</p>
-              <p className="text-2xl font-bold">KES {account.employeeBalance.toLocaleString()}</p>
+              <p className="text-indigo-100 text-sm">Locked Balance</p>
+              <p className="text-2xl font-bold">KES {account.lockedBalance?.toLocaleString()}</p>
             </div>
             <div>
-              <p className="text-indigo-100 text-sm">Employer Contribution</p>
-              <p className="text-2xl font-bold">KES {account.employerBalance.toLocaleString()}</p>
+              <p className="text-indigo-100 text-sm">Employee Contributions</p>
+              <p className="text-2xl font-bold">KES {account.employeeContributions?.toLocaleString()}</p>
             </div>
             <div>
-              <p className="text-indigo-100 text-sm">Earnings</p>
-              <p className="text-2xl font-bold">KES {account.earningsBalance.toLocaleString()}</p>
+              <p className="text-indigo-100 text-sm">Employer Contributions</p>
+              <p className="text-2xl font-bold">KES {account.employerContributions?.toLocaleString()}</p>
             </div>
           </div>
         </div>
@@ -394,7 +432,7 @@ export default function AccountViewPage() {
               <Activity size={20} className="text-indigo-600" />
               Recent Transactions
             </h3>
-            {summary?.transactions && summary.transactions.length > 0 ? (
+            {transactions && transactions.length > 0 ? (
               <div className="overflow-x-auto">
                 <table className="w-full">
                   <thead className="bg-gray-50">
@@ -410,7 +448,7 @@ export default function AccountViewPage() {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-200">
-                    {summary.transactions.map((txn: Transaction) => (
+                    {transactions.map((txn: Transaction) => (
                       <tr key={txn.id} className="hover:bg-gray-50">
                         <td className="px-4 py-4 text-sm font-semibold text-gray-900">
                           {txn.type}

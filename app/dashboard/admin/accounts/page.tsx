@@ -29,6 +29,9 @@ interface Account {
   accountType: AccountType;
   accountStatus: string;
   totalBalance: number;
+  currentBalance?: number;
+  availableBalance?: number;
+  lockedBalance?: number;
   employeeBalance?: number;
   employerBalance?: number;
   earningsBalance?: number;
@@ -132,7 +135,11 @@ export default function AdminAccountsPage() {
     return colors[status] || 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200';
   };
 
-  const totalBalance = filteredAccounts.reduce((sum, acc) => sum + acc.totalBalance, 0);
+  // use availableBalance for total since that's the amount users actually can access
+  const totalBalance = filteredAccounts.reduce(
+    (sum, acc) => sum + (acc.availableBalance ?? 0),
+    0
+  );
   const activeAccounts = filteredAccounts.filter(acc => acc.accountStatus === 'ACTIVE').length;
   const suspendedAccounts = filteredAccounts.filter(acc => acc.accountStatus === 'SUSPENDED').length;
 
@@ -207,7 +214,7 @@ export default function AdminAccountsPage() {
         <div className="bg-white dark:bg-gray-800 backdrop-blur-xl border border-gray-200 dark:border-gray-700 rounded-xl shadow-lg p-6 transition-colors duration-300">
           <div className="flex items-center gap-3 mb-2">
             <Wallet size={24} className="text-orange-600 dark:text-orange-400" />
-            <span className="text-sm font-semibold text-gray-600 dark:text-gray-400 transition-colors duration-300">Total Balance</span>
+            <span className="text-sm font-semibold text-gray-600 dark:text-gray-400 transition-colors duration-300">Total Available</span>
           </div>
           <p className="text-2xl font-bold text-gray-900 dark:text-white transition-colors duration-300">KES {totalBalance.toLocaleString()}</p>
           <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 transition-colors duration-300">Combined value</p>
@@ -317,7 +324,7 @@ export default function AdminAccountsPage() {
                     "User", 
                     "Account Type", 
                     "Status", 
-                    "Balance", 
+                    "Available", 
                     "Created", 
                     "Actions"
                   ].map((h) => (
@@ -367,8 +374,13 @@ export default function AdminAccountsPage() {
                     <td className="px-4 sm:px-6 py-4 whitespace-nowrap">
                       <div>
                         <p className="text-sm font-bold text-gray-900 dark:text-white transition-colors duration-300">
-                          KES {account.totalBalance.toLocaleString()}
+                          KES {account.availableBalance?.toLocaleString()}
                         </p>
+                        {account.currentBalance !== undefined && (
+                          <p className="text-xs text-gray-500 dark:text-gray-400 transition-colors duration-300">
+                            Curr: KES {account.currentBalance?.toLocaleString()}
+                          </p>
+                        )}
                         {(account.employeeBalance !== undefined || 
                           account.employerBalance !== undefined || 
                           account.earningsBalance !== undefined) && (

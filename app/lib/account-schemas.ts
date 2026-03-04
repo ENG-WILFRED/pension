@@ -28,10 +28,25 @@ export const accountSchema = z.object({
   employeeBalance: z.number().default(0).catch(0),
   employerBalance: z.number().default(0).catch(0),
   earningsBalance: z.number().default(0).catch(0),
+  // newer backend fields
+  currentBalance: z.number().optional(),
+  availableBalance: z.number().optional(),
+  lockedBalance: z.number().optional(),
+  employeeContributions: z.number().optional(),
+  employerContributions: z.number().optional(),
+  voluntaryContributions: z.number().optional(),
+  interestEarned: z.number().optional(),
+  investmentReturns: z.number().optional(),
+  dividendsEarned: z.number().optional(),
+  totalWithdrawn: z.number().optional(),
+  penaltiesApplied: z.string().optional(),
+  taxWithheld: z.string().optional(),
   accountStatus: z.enum(['ACTIVE', 'INACTIVE', 'SUSPENDED']).optional(),
   userId: z.string().optional(),
   createdAt: z.string().optional(),
   updatedAt: z.string().optional(),
+  // transactions may be included when fetching a single account
+  transactions: z.array(z.any()).optional(),
 });
 
 export type Account = z.infer<typeof accountSchema>;
@@ -139,7 +154,64 @@ export function parseAccount(data: any): Account {
         const n = typeof v === 'string' ? Number(v) : v;
         return Number.isFinite(n) ? n : 0;
       })(),
+      // new numeric fields
+      currentBalance: (() => {
+        const v = data.currentBalance ?? data.current_balance ?? data.balance ?? 0;
+        const n = typeof v === 'string' ? Number(v) : v;
+        return Number.isFinite(n) ? n : 0;
+      })(),
+      availableBalance: (() => {
+        const v = data.availableBalance ?? data.available_balance ?? data.available ?? 0;
+        const n = typeof v === 'string' ? Number(v) : v;
+        return Number.isFinite(n) ? n : 0;
+      })(),
+      lockedBalance: (() => {
+        const v = data.lockedBalance ?? data.locked_balance ?? 0;
+        const n = typeof v === 'string' ? Number(v) : v;
+        return Number.isFinite(n) ? n : 0;
+      })(),
+      employeeContributions: (() => {
+        const v = data.employeeContributions ?? data.employee_contributions ?? 0;
+        const n = typeof v === 'string' ? Number(v) : v;
+        return Number.isFinite(n) ? n : 0;
+      })(),
+      employerContributions: (() => {
+        const v = data.employerContributions ?? data.employer_contributions ?? 0;
+        const n = typeof v === 'string' ? Number(v) : v;
+        return Number.isFinite(n) ? n : 0;
+      })(),
+      voluntaryContributions: (() => {
+        const v = data.voluntaryContributions ?? data.voluntary_contributions ?? 0;
+        const n = typeof v === 'string' ? Number(v) : v;
+        return Number.isFinite(n) ? n : 0;
+      })(),
+      interestEarned: (() => {
+        const v = data.interestEarned ?? data.interest_earned ?? 0;
+        const n = typeof v === 'string' ? Number(v) : v;
+        return Number.isFinite(n) ? n : 0;
+      })(),
+      investmentReturns: (() => {
+        const v = data.investmentReturns ?? data.investment_returns ?? 0;
+        const n = typeof v === 'string' ? Number(v) : v;
+        return Number.isFinite(n) ? n : 0;
+      })(),
+      dividendsEarned: (() => {
+        const v = data.dividendsEarned ?? data.dividends_earned ?? 0;
+        const n = typeof v === 'string' ? Number(v) : v;
+        return Number.isFinite(n) ? n : 0;
+      })(),
+      totalWithdrawn: (() => {
+        const v = data.totalWithdrawn ?? data.total_withdrawn ?? 0;
+        const n = typeof v === 'string' ? Number(v) : v;
+        return Number.isFinite(n) ? n : 0;
+      })(),
+      penaltiesApplied: data.penaltiesApplied ?? data.penalties_applied ?? data.penalties ?? '0',
+      taxWithheld: data.taxWithheld ?? data.tax_withheld ?? data.taxes ?? '0',
     };
+    // normalize transactions array if present
+    if (normalized.transactions && Array.isArray(normalized.transactions)) {
+      normalized.transactions = normalized.transactions.map((tx: any) => parseTransaction(tx));
+    }
 
     return accountSchema.parse(normalized);
   } catch (error) {
@@ -153,6 +225,19 @@ export function parseAccount(data: any): Account {
       employeeBalance: 0,
       employerBalance: 0,
       earningsBalance: 0,
+      currentBalance: 0,
+      availableBalance: 0,
+      lockedBalance: 0,
+      employeeContributions: 0,
+      employerContributions: 0,
+      voluntaryContributions: 0,
+      interestEarned: 0,
+      investmentReturns: 0,
+      dividendsEarned: 0,
+      totalWithdrawn: 0,
+      penaltiesApplied: '0',
+      taxWithheld: '0',
+      transactions: [],
       accountStatus: undefined,
       userId: undefined,
       createdAt: undefined,
@@ -164,4 +249,38 @@ export function parseAccount(data: any): Account {
 // Helper function to safely parse multiple accounts
 export function parseAccounts(data: any[]): Account[] {
   return data.map(parseAccount);
+}
+
+// --- transactions schema/helpers -------------------------------------------
+export const transactionSchema = z.object({
+  id: z.string(),
+  userId: z.string().nullable().optional(),
+  accountId: z.number().optional(),
+  amount: z.number().optional(),
+  type: z.string().optional(),
+  status: z.string().optional(),
+  description: z.string().nullable().optional(),
+  createdAt: z.string().optional(),
+}).passthrough();
+
+export type Transaction = z.infer<typeof transactionSchema>;
+
+export function parseTransaction(data: any): Transaction {
+  try {
+    const norm: any = {
+      ...data,
+      id: data.id != null ? String(data.id) : "",
+      userId: data.userId != null ? String(data.userId) : undefined,
+      accountId: data.accountId != null ? Number(data.accountId) : undefined,
+      amount: data.amount != null ? Number(data.amount) : undefined,
+      type: data.type,
+      status: data.status,
+      description: data.description,
+      createdAt: data.createdAt,
+    };
+    return transactionSchema.parse(norm);
+  } catch (e) {
+    console.warn("Failed to parse transaction", e, data);
+    return transactionSchema.parse({ id: data?.id ? String(data.id) : "" });
+  }
 }

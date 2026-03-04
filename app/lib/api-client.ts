@@ -429,7 +429,16 @@ export const accountsApi = {
     return response;
   },
   
-  getById: async (id: string, timeout?: number) => {
+  getById: async (id: number, timeout?: number) => {
+    // Ensure token is available before calling API
+    const token = getToken();
+    if (!token) {
+      return {
+        success: false,
+        error: 'No authentication token available',
+      };
+    }
+
     const response = await apiCall(`/api/accounts/${id}`, { method: 'GET' }, timeout);
     
     // ✅ Validate and normalize account data
@@ -440,12 +449,39 @@ export const accountsApi = {
     return response;
   },
   
-  getSummary: (id: string, timeout?: number) => 
+  // Summary endpoint takes a numeric account id
+  getSummary: (id: number, timeout?: number) => 
     apiCall(`/api/accounts/${id}/summary`, { method: 'GET' }, timeout),
 
-  // Get transactions for an account (full list)
-  getTransactions: (id: string, timeout?: number) =>
-    apiCall(`/api/accounts/${id}/transactions`, { method: 'GET' }, timeout),
+  // Get transactions for an account (full list) with pagination/sort support
+  // `opts` mirrors the backend query params: limit, page, sort
+  getTransactions: async (
+    id: number,
+    opts?: { limit?: number; page?: number; sort?: 'asc' | 'desc' },
+    timeout?: number
+  ) => {
+    // Ensure token is available before calling API
+    const token = getToken();
+    if (!token) {
+      return {
+        success: false,
+        error: 'No authentication token available',
+      };
+    }
+
+    // build query string if options provided
+    let qs = '';
+    if (opts) {
+      const params: string[] = [];
+      if (opts.limit != null) params.push(`limit=${encodeURIComponent(opts.limit)}`);
+      if (opts.page != null) params.push(`page=${encodeURIComponent(opts.page)}`);
+      if (opts.sort) params.push(`sort=${encodeURIComponent(opts.sort)}`);
+      if (params.length) qs = '?' + params.join('&');
+    }
+
+    const url = `/api/accounts/${id}/transactions${qs}`;
+    return apiCall(url, { method: 'GET' }, timeout);
+  },
   
   create: (data: {
     userId: string;

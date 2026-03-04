@@ -37,6 +37,8 @@ interface Transaction {
   status: string;
   description?: string | null;
   createdAt: any;
+  userId?: string;
+  accountId?: number;
 }
 
 export default function AdminDashboard() {

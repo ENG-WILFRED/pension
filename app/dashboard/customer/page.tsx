@@ -53,6 +53,8 @@ interface Transaction {
   status: string;
   description?: string | null;
   createdAt: any;
+  userId?: string;
+  accountId?: number;
 }
 
 interface PensionPlan {
@@ -190,58 +192,25 @@ export default function CustomerDashboard() {
             }
             
             // Fetch bank details if we have an account ID.
-            // Try the likely `id` first; if backend returns 404, retry using `accountNumber`.
+            // Silently skip if not found (404)
             if (accountId) {
-              let bankDetailsResponse = await accountsApi.getBankDetails(String(accountId));
-              console.log('[Dashboard] Bank details response (first attempt):', bankDetailsResponse);
+              try {
+                let bankDetailsResponse = await accountsApi.getBankDetails(String(accountId));
+                console.log('[Dashboard] Bank details response:', bankDetailsResponse);
 
-              // If not found and we have a different accountNumber, try that as a fallback
-              const maybeAccountNumber = (() => {
-                try {
-                  // If we fetched accountsResponse earlier, get the first account object
-                  if (typeof window !== 'undefined') {
-                    const sa = localStorage.getItem('account');
-                    if (sa) {
-                      const parsed = JSON.parse(sa);
-                      return parsed.accountNumber || parsed.account_number || null;
-                    }
-                  }
-                } catch (e) {
-                  // ignore
+                if (bankDetailsResponse.success && bankDetailsResponse.bankDetails) {
+                  console.log('[Dashboard] Bank details found:', bankDetailsResponse.bankDetails);
+                  toast.success(`Welcome back, ${userResponse.user.firstName || storedUser.firstName}!`);
+                } else if (!bankDetailsResponse.success && bankDetailsResponse.error && bankDetailsResponse.error.toString().includes('404')) {
+                  // Silently skip 404 - user just needs to add bank details
+                  console.log('[Dashboard] No bank details found (404) - user can add them later');
+                  toast.info('💳 Please update your bank details in settings');
+                } else if (!bankDetailsResponse.success) {
+                  console.warn('[Dashboard] Error fetching bank details:', bankDetailsResponse.error);
                 }
-                return null;
-              })();
-
-              if (!bankDetailsResponse.success && bankDetailsResponse.error && bankDetailsResponse.error.toString().includes('404')) {
-                // attempt fallback with account number if different
-                if (maybeAccountNumber && String(maybeAccountNumber) !== String(accountId)) {
-                  console.log('[Dashboard] Primary bank-details lookup returned 404; retrying with accountNumber:', maybeAccountNumber);
-                  bankDetailsResponse = await accountsApi.getBankDetails(String(maybeAccountNumber));
-                  console.log('[Dashboard] Bank details response (fallback):', bankDetailsResponse);
-                }
+              } catch (err) {
+                console.warn('[Dashboard] Exception while fetching bank details:', err);
               }
-
-              if (bankDetailsResponse.success && bankDetailsResponse.bankDetails) {
-                console.log('[Dashboard] Bank details found:', bankDetailsResponse.bankDetails);
-                toast.success(`Welcome back, ${userResponse.user.firstName || storedUser.firstName}!`);
-              } else if (!bankDetailsResponse.success && bankDetailsResponse.error && bankDetailsResponse.error.toString().includes('404')) {
-                console.log('[Dashboard] No bank details found (404) - user needs to add them');
-                toast.info('💳 Please update your bank details in settings');
-                // Open the bank details modal so user can add details immediately
-                try {
-                  setBankModalOpen(true);
-                } catch (e) {
-                  console.warn('[Dashboard] Failed to open bank modal automatically', e);
-                }
-              } else if (!bankDetailsResponse.success) {
-                console.error('[Dashboard] Error fetching bank details:', bankDetailsResponse.error || bankDetailsResponse);
-              } else {
-                console.log('[Dashboard] Bank details response was empty or unexpected:', bankDetailsResponse);
-                toast.info('💳 Please update your bank details in settings');
-              }
-            } else {
-              console.warn('[Dashboard] Could not determine account ID');
-              toast.warning('⚠️ Could not load account details');
             }
           } catch (err) {
             console.error('[Dashboard] Error fetching accounts or bank details:', err);
@@ -257,24 +226,50 @@ export default function CustomerDashboard() {
         // (no-op here, kept for future enhancements)
 
         setLoadingTransactions(true);
-        const transactionsResponse = await dashboardApi.getTransactions();
         
-        if (transactionsResponse.success && transactionsResponse.transactions) {
-          setTransactions(transactionsResponse.transactions);
-        } else {
-          console.warn('Failed to load transactions:', transactionsResponse.error);
-          toast.warning('⚠️ Could not load transactions. Using sample data.');
-          setTransactions([
-            {
-              id: "1",
-              amount: 15000,
-              type: "debit",
-              status: "completed",
-              description: "Monthly Contribution",
-              createdAt: new Date(),
-            },
-          ]);
+        // Fetch account-specific transactions if we have an account ID
+        let allTransactions: Transaction[] = [];
+        
+        // Try to get the account ID from stored data or accounts
+        let accountId: number | null = null;
+        
+        try {
+          const storedAccount = typeof window !== 'undefined' ? localStorage.getItem('account') : null;
+          if (storedAccount) {
+            const parsedAccount = JSON.parse(storedAccount);
+            accountId = parsedAccount.id ? Number(parsedAccount.id) : null;
+          }
+          
+          // If no stored account, fetch from API
+          if (!accountId) {
+            const accountsResponse = await accountsApi.getAll();
+            if (accountsResponse.success && accountsResponse.accounts && accountsResponse.accounts.length > 0) {
+              accountId = Number(accountsResponse.accounts[0].id);
+            }
+          }
+        } catch (err) {
+          console.error('[Dashboard] Error getting account ID for transactions:', err);
         }
+        
+        // Fetch account details (includes transactions if available) for the specific account
+        if (accountId) {
+          try {
+            const accountResponse = await accountsApi.getById(accountId);
+            if (accountResponse.success && accountResponse.account) {
+              // extract transactions from the account object if present
+              if (accountResponse.account.transactions && Array.isArray(accountResponse.account.transactions)) {
+                allTransactions = accountResponse.account.transactions;
+                console.log('[Dashboard] Transactions from account details:', allTransactions);
+              }
+            }
+          } catch (err) {
+            console.error('[Dashboard] Error fetching account details for transactions:', err);
+          }
+        } else {
+          console.warn('[Dashboard] No account ID available for fetching transactions');
+        }
+        
+        setTransactions(allTransactions);
 
         // Calculate overview metrics
         // Week: last 7 days, YTD: since Jan 1
@@ -284,7 +279,7 @@ export default function CustomerDashboard() {
         const startOfYear = new Date(now.getFullYear(), 0, 1);
 
         let weekContrib = 0, weekInt = 0, ytdContrib = 0, ytdInt = 0;
-        transactionsResponse.transactions?.forEach((tx: Transaction) => {
+        allTransactions?.forEach((tx: Transaction) => {
           const txDate = new Date(tx.createdAt);
           if (tx.type === 'debit' && tx.status === 'completed') {
             if (txDate >= startOfWeek) weekContrib += tx.amount;
@@ -307,7 +302,8 @@ export default function CustomerDashboard() {
           const accountsRes = await accountsApi.getAll();
           if (accountsRes.success && Array.isArray(accountsRes.accounts) && accountsRes.accounts.length > 0) {
             // compute totals from normalized accounts
-            const totalBal = accountsRes.accounts.reduce((sum: number, a: any) => sum + Number(a.totalBalance ?? 0), 0);
+            // use availableBalance for user-facing totals since that represents funds they can access
+            const totalBal = accountsRes.accounts.reduce((sum: number, a: any) => sum + Number(a.availableBalance ?? 0), 0);
             const totalEmp = accountsRes.accounts.reduce((sum: number, a: any) => sum + Number(a.employeeBalance ?? 0), 0);
             const totalEr = accountsRes.accounts.reduce((sum: number, a: any) => sum + Number(a.employerBalance ?? 0), 0);
             const totalEarn = accountsRes.accounts.reduce((sum: number, a: any) => sum + Number(a.earningsBalance ?? 0), 0);
@@ -322,13 +318,19 @@ export default function CustomerDashboard() {
               contribution: Number(a.employeeBalance ?? 0) + Number(a.employerBalance ?? 0),
               expectedReturn: 8.0,
               riskLevel: 'Medium',
-              balance: Number(a.totalBalance ?? 0),
+              // reflect available balance for each plan
+              balance: Number(a.availableBalance ?? 0),
               status: a.accountStatus || 'ACTIVE',
             }));
 
             setPensionPlans(mappedPlans);
             setTotalContributions(totalContribs);
             setBalance(totalBal);
+            // if we didn't already load any transactions, try using the ones included on the account object
+            if (allTransactions.length === 0 && accountsRes.accounts[0]?.transactions) {
+              allTransactions = accountsRes.accounts[0].transactions;
+              setTransactions(allTransactions);
+            }
             
             // Calculate years to retirement (assuming retirement at 60)
             const userDateOfBirth = userResponse.user?.dateOfBirth;
