@@ -23,6 +23,8 @@ export default function AuthForm({ isLogin = false }: AuthFormProps) {
     phone: '',
     firstName: '',
     lastName: '',
+    spouseName: '',
+    numberOfChildren: 0,
   });
 
   const [paymentPending, setPaymentPending] = useState<{
@@ -57,6 +59,8 @@ export default function AuthForm({ isLogin = false }: AuthFormProps) {
           phone: formData.phone,
           firstName: formData.firstName || undefined,
           lastName: formData.lastName || undefined,
+          spouseName: formData.spouseName || undefined,
+          numberOfChildren: formData.numberOfChildren || undefined,
         });
 
         if (!result.success) {
@@ -180,9 +184,10 @@ export default function AuthForm({ isLogin = false }: AuthFormProps) {
   }, [paymentPending?.transactionId, polling, router]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value,
+      [name]: name === 'numberOfChildren' ? Number(value) : value,
     });
   };
 
@@ -288,6 +293,38 @@ export default function AuthForm({ isLogin = false }: AuthFormProps) {
                       onChange={handleChange}
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
                       placeholder="Doe"
+                    />
+                  </div>
+                </div>
+
+                {/* Spouse and Children */}
+                <div className="grid grid-cols-2 gap-3 mt-4">
+                  <div>
+                    <label htmlFor="spouseName" className="block text-sm font-medium text-gray-700 mb-1">
+                      Spouse Name
+                    </label>
+                    <input
+                      id="spouseName"
+                      name="spouseName"
+                      type="text"
+                      value={formData.spouseName}
+                      onChange={handleChange}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
+                      placeholder="Jane Doe"
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="numberOfChildren" className="block text-sm font-medium text-gray-700 mb-1">
+                      Number of Children
+                    </label>
+                    <input
+                      id="numberOfChildren"
+                      name="numberOfChildren"
+                      type="number"
+                      min={0}
+                      value={formData.numberOfChildren}
+                      onChange={handleChange}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
                     />
                   </div>
                 </div>

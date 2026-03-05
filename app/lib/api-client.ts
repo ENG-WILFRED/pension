@@ -312,6 +312,8 @@ export const userApi = {
     accountName?: string;
     branchCode?: string;
     branchName?: string;
+    spouseName?: string;
+    numberOfChildren?: number;
   }, timeout?: number) =>
     apiCall(`/api/users/${userId}`, {
       method: 'PUT',

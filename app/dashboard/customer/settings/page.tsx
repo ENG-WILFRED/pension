@@ -4,12 +4,16 @@
 import { useState, useEffect } from 'react';
 import ChangePinForm from '@/app/components/ChangePinForm';
 import ChangePasswordForm from '@/app/components/ChangePasswordForm';
-import { Settings, Bell, User, Save, Key, Lock } from 'lucide-react';
+import UpdateBankDetailsForm from '@/app/components/settings/UpdateBankDetailsForm';
+import { userApi } from '@/app/lib/api-client';
+import { Settings, Bell, User, Save, Key, Lock, CreditCard } from 'lucide-react';
 import { toast } from 'sonner';
 
 export default function CustomerSettings() {
-  const [user, setUser] = useState<{firstName?: string; lastName?: string} | null>(null);
-  const [activeTab, setActiveTab] = useState<'general' | 'security' | 'notifications'>('security');
+  const [user, setUser] = useState<{id?: string; firstName?: string; lastName?: string; spouseName?: string; numberOfChildren?: number} | null>(null);
+  const [spouseName, setSpouseName] = useState<string>('');
+  const [childrenCount, setChildrenCount] = useState<number>(0);
+  const [activeTab, setActiveTab] = useState<'general' | 'security' | 'bank' | 'notifications'>('security');
   const [settings, setSettings] = useState({
     emailNotifications: true,
     smsNotifications: false,
@@ -23,7 +27,10 @@ export default function CustomerSettings() {
     if (typeof window !== 'undefined') {
       const userStr = localStorage.getItem('user');
       if (userStr) {
-        setUser(JSON.parse(userStr));
+        const u = JSON.parse(userStr);
+        setUser(u);
+        setSpouseName(u.spouseName || '');
+        setChildrenCount(u.numberOfChildren ?? 0);
       }
     }
   }, []);
@@ -77,6 +84,19 @@ export default function CustomerSettings() {
             </div>
           </button>
           <button
+            onClick={() => setActiveTab('bank')}
+            className={`px-4 py-2 rounded-lg font-semibold text-sm whitespace-nowrap transition ${
+              activeTab === 'bank' 
+                ? 'bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-lg' 
+                : 'bg-white/80 dark:bg-gray-800/80 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700'
+            }`}
+          >
+            <div className="flex items-center gap-2">
+              <CreditCard size={18} />
+              Bank Details
+            </div>
+          </button>
+          <button
             onClick={() => setActiveTab('notifications')}
             className={`px-4 py-2 rounded-lg font-semibold text-sm whitespace-nowrap transition ${
               activeTab === 'notifications' 
@@ -120,10 +140,59 @@ export default function CustomerSettings() {
                   />
                 </div>
               </div>
+              {/* editable spouse and children count */}
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Spouse Name</label>
+                  <input
+                    type="text"
+                    value={spouseName}
+                    onChange={(e) => setSpouseName(e.target.value)}
+                    className="w-full border border-gray-300 dark:border-gray-600 rounded-lg p-3 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Number of Children</label>
+                  <input
+                    type="number"
+                    min={0}
+                    value={childrenCount}
+                    onChange={(e) => setChildrenCount(Number(e.target.value))}
+                    className="w-full border border-gray-300 dark:border-gray-600 rounded-lg p-3 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                  />
+                </div>
+              </div>
 
-              <p className="text-sm text-gray-600 dark:text-gray-400 bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-700 rounded-lg p-3">
-                <strong>Note:</strong> To update your personal information, please contact customer support.
-              </p>
+              <button
+                onClick={async () => {
+                  if (!user || !user.id) return;
+                  setSaving(true);
+                  try {
+                    const res = await userApi.update(user.id, {
+                      spouseName: spouseName || undefined,
+                      numberOfChildren: childrenCount,
+                    });
+                    if (res.success && res.user) {
+                      toast.success('✅ Personal info updated');
+                      const updated = { ...user, ...res.user };
+                      setUser(updated);
+                      localStorage.setItem('user', JSON.stringify(updated));
+                    } else {
+                      toast.error(res.error || 'Failed to update info');
+                    }
+                  } catch (e) {
+                    console.error('Error updating personal info', e);
+                    toast.error('Failed to update info');
+                  } finally {
+                    setSaving(false);
+                  }
+                }}
+                disabled={saving}
+                className="mt-4 px-6 py-3 bg-indigo-600 text-white rounded-lg font-semibold hover:bg-indigo-700 transition disabled:opacity-50 flex items-center gap-2"
+              >
+                <Save size={18} />
+                {saving ? 'Saving...' : 'Save Personal Info'}
+              </button>
             </div>
           </div>
         )}
@@ -171,6 +240,18 @@ export default function CustomerSettings() {
                 <strong>Forgot your PIN or Password?</strong> Visit the <a href="/reset-pin" className="underline font-semibold hover:text-orange-700 dark:hover:text-orange-400">PIN Reset page</a> or use the forgot password option on the login page.
               </p>
             </div>
+          </div>
+        )}
+
+        {activeTab === 'bank' && (
+          <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl border border-gray-200 dark:border-gray-700 rounded-2xl shadow-lg p-6 sm:p-8 transition-colors duration-300">
+            <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-6 flex items-center gap-2">
+              <CreditCard size={24} />
+              Bank Account Details
+            </h2>
+            {user && user.id && (
+              <UpdateBankDetailsForm userId={user.id} onSuccess={() => toast.success('✅ Bank details updated')} />
+            )}
           </div>
         )}
 

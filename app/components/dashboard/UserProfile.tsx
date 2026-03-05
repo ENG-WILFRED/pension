@@ -7,6 +7,8 @@ interface User {
   nationalId?: string;
   createdAt?: string;
   accountNumber?: string;
+  spouseName?: string;
+  numberOfChildren?: number;
 }
 
 interface UserProfileProps {
@@ -70,6 +72,18 @@ export default function UserProfile({ user, onOpenSettings }: UserProfileProps) 
                 {user?.accountNumber ? String(user.accountNumber).padStart(8, '0') : 'N/A'}
               </p>
             </div>
+            {user?.spouseName && (
+              <div className="flex justify-between items-center p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors duration-200">
+                <span className="text-gray-500 dark:text-gray-400 transition-colors duration-300 font-medium">Spouse:</span>
+                <p className="font-bold text-gray-900 dark:text-white transition-colors duration-300">{user.spouseName}</p>
+              </div>
+            )}
+            {user?.numberOfChildren != null && (
+              <div className="flex justify-between items-center p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors duration-200">
+                <span className="text-gray-500 dark:text-gray-400 transition-colors duration-300 font-medium">Children:</span>
+                <p className="font-bold text-gray-900 dark:text-white transition-colors duration-300">{user.numberOfChildren}</p>
+              </div>
+            )}
           </div>
         </div>
       </div>

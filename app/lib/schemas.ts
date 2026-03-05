@@ -28,6 +28,8 @@ export const registrationSchema = z.object({
   accountStatus: z.enum(['ACTIVE', 'INACTIVE', 'SUSPENDED']).optional(),
   kycVerified: z.boolean().optional(),
   complianceStatus: z.enum(['PENDING', 'APPROVED', 'REJECTED']).optional(),
+  spouseName: z.string().optional(),
+  numberOfChildren: z.number().optional(),
 });
 
 export type RegistrationFormData = z.infer<typeof registrationSchema>;
@@ -93,6 +95,7 @@ export interface User {
   phone?: string;
   role: 'customer' | 'admin';
   numberOfChildren?: number;
+  spouseName?: string;
   dateOfBirth?: string;
 }
 

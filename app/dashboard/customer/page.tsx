@@ -34,6 +34,7 @@ interface User {
   retirementAge?: number;
   dateOfBirth?: string;
   numberOfChildren?: number;
+  spouseName?: string;
   address?: any;
   bankName?: string;
   accountNumber?: string;
