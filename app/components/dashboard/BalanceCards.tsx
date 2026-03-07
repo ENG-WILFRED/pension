@@ -5,6 +5,7 @@ interface BalanceCardsProps {
   balance?: number;
   totalContributions?: number;
   projectedRetirement?: number;
+  interest?: number;
   user?: {
     salary?: string | number;
     contributionRate?: string | number;
@@ -14,7 +15,7 @@ interface BalanceCardsProps {
   };
 }
 
-export default function BalanceCards({ balance, totalContributions, projectedRetirement, user }: BalanceCardsProps) {
+export default function BalanceCards({ balance, totalContributions, projectedRetirement, interest, user }: BalanceCardsProps) {
   // Use actual backend data for balance and contributions
   const totalBalance = balance || 0;
   const projectedAt65 = projectedRetirement || 0;
@@ -54,6 +55,9 @@ export default function BalanceCards({ balance, totalContributions, projectedRet
           </div>
           <p className="text-4xl font-black mb-2 drop-shadow-md tracking-tight">KES {totalBalance.toLocaleString()}</p>
           <p className="text-orange-50/90 text-xs font-medium tracking-wide">Across all plans</p>
+          {interest && interest > 0 && (
+            <p className="text-orange-50/90 text-xs font-medium tracking-wide">Interest Earned: KES {interest.toLocaleString()}</p>
+          )}
         </div>
       </div>
 

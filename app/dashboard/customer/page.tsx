@@ -77,6 +77,7 @@ export default function CustomerDashboard() {
   const [pensionPlans, setPensionPlans] = useState<PensionPlan[]>([]);
   const [totalContributions, setTotalContributions] = useState(0);
   const [projectedRetirement, setProjectedRetirement] = useState(0);
+  const [totalInterest, setTotalInterest] = useState(0);
   // Overview metrics
   const [weekContribution, setWeekContribution] = useState(0);
   const [weekInterest, setWeekInterest] = useState(0);
@@ -308,6 +309,7 @@ export default function CustomerDashboard() {
             const totalEmp = accountsRes.accounts.reduce((sum: number, a: any) => sum + Number(a.employeeBalance ?? 0), 0);
             const totalEr = accountsRes.accounts.reduce((sum: number, a: any) => sum + Number(a.employerBalance ?? 0), 0);
             const totalEarn = accountsRes.accounts.reduce((sum: number, a: any) => sum + Number(a.earningsBalance ?? 0), 0);
+            const totalInterest = accountsRes.accounts.reduce((sum: number, a: any) => sum + Number(a.interest ?? 0), 0);
 
             const totalContribs = totalEmp + totalEr;
 
@@ -327,6 +329,7 @@ export default function CustomerDashboard() {
             setPensionPlans(mappedPlans);
             setTotalContributions(totalContribs);
             setBalance(totalBal);
+            setTotalInterest(totalInterest);
             // if we didn't already load any transactions, try using the ones included on the account object
             if (allTransactions.length === 0 && accountsRes.accounts[0]?.transactions) {
               allTransactions = accountsRes.accounts[0].transactions;
@@ -357,6 +360,7 @@ export default function CustomerDashboard() {
             setTotalContributions(0);
             setBalance(0);
             setProjectedRetirement(0);
+            setTotalInterest(0);
           }
         } catch (e) {
           console.error('[Dashboard] Failed to compute totals from accounts:', e);
@@ -364,6 +368,7 @@ export default function CustomerDashboard() {
           setTotalContributions(0);
           setBalance(0);
           setProjectedRetirement(0);
+          setTotalInterest(0);
         }
 
       } catch (err) {
@@ -424,6 +429,7 @@ export default function CustomerDashboard() {
         balance={balance} 
         totalContributions={totalContributions} 
         projectedRetirement={projectedRetirement}
+        interest={totalInterest}
         user={user ? {
           salary: user.salary,
           contributionRate: user.contributionRate,

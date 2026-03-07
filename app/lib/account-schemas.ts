@@ -36,6 +36,7 @@ export const accountSchema = z.object({
   employerContributions: z.number().optional(),
   voluntaryContributions: z.number().optional(),
   interestEarned: z.number().optional(),
+  interest: z.number().optional(),
   investmentReturns: z.number().optional(),
   dividendsEarned: z.number().optional(),
   totalWithdrawn: z.number().optional(),
@@ -187,6 +188,11 @@ export function parseAccount(data: any): Account {
       })(),
       interestEarned: (() => {
         const v = data.interestEarned ?? data.interest_earned ?? 0;
+        const n = typeof v === 'string' ? Number(v) : v;
+        return Number.isFinite(n) ? n : 0;
+      })(),
+      interest: (() => {
+        const v = data.interest ?? 0;
         const n = typeof v === 'string' ? Number(v) : v;
         return Number.isFinite(n) ? n : 0;
       })(),
