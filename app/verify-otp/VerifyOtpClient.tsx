@@ -76,7 +76,16 @@ export default function VerifyOtpClient() {
 
       const res = await authApi.loginOtp(payload);
 
+      console.log('[OTP VERIFY] Full API response:', JSON.stringify(res, null, 2));
+      console.log('[OTP VERIFY] Response success:', res.success);
+      console.log('[OTP VERIFY] Response keys:', Object.keys(res));
+      console.log('[OTP VERIFY] res.token:', (res as any).token);
+      console.log('[OTP VERIFY] res.user:', (res as any).user);
+      console.log('[OTP VERIFY] res.data:', (res as any).data);
+
       if (!res.success) {
+        console.error('[OTP VERIFY] Response not successful:', res.success);
+        console.error('[OTP VERIFY] Error:', (res as any).error);
         const errorMsg = res.error || 'OTP verification failed';
         
         if (errorMsg.includes('expired') || errorMsg.includes('Expired')) {
@@ -102,14 +111,29 @@ export default function VerifyOtpClient() {
         return;
       }
 
-      const token = (res as any).token;
-      const user = (res as any).user;
+      // Extract token and user from response - handle both flat and nested structures
+      const data = (res as any).data;
+      const token = data?.accessToken || data?.token || (res as any).token || (res as any).accessToken;
+      const refreshToken = data?.refreshToken || (res as any).refreshToken;
+      const user = data?.user || (res as any).user;
 
-      if (token && typeof window !== 'undefined') {
+      console.log('[OTP VERIFY] Response data:', { success: res.success, hasToken: !!token, hasUser: !!user, responseKeys: Object.keys(res as any) });
+
+      if (!token) {
+        console.error('[OTP VERIFY] Token not found in response:', { res });
+        toast.error('❌ Login failed: No token received from server. Please try again.');
+        setLoading(false);
+        return;
+      }
+
+      if (typeof window !== 'undefined') {
         localStorage.setItem('auth_token', token);
+        if (refreshToken) {
+          localStorage.setItem('refresh_token', refreshToken);
+        }
         
-        // Set token expiry time (24 hours from now)
-        const tokenExpiryTime = Date.now() + 24 * 60 * 60 * 1000;
+        // Set token expiry time (15 minutes for access token as per doc)
+        const tokenExpiryTime = Date.now() + 15 * 60 * 1000;
         localStorage.setItem('token_expiry', tokenExpiryTime.toString());
         
         let userToStore = user;
@@ -120,20 +144,56 @@ export default function VerifyOtpClient() {
           };
         }
 
-        // Ensure user object has an id before saving
-        if (userToStore && userToStore.id) {
+        // Ensure user object has an id (also check for userId from backend)
+        if (userToStore) {
+          // If backend returns userId instead of id, normalize it
+          if (!userToStore.id && (userToStore as any).userId) {
+            userToStore.id = (userToStore as any).userId;
+          }
+
+          // If still no id, try to use email as fallback identifier
+          if (!userToStore.id && userToStore.email) {
+            userToStore.id = userToStore.email; // Use email as unique identifier
+            console.warn('[OTP VERIFY] Using email as user ID fallback');
+          }
+
+          // Final check - if we still don't have an ID, this is a critical error
+          if (!userToStore.id) {
+            console.error('[OTP VERIFY] CRITICAL: No user identifier available:', {
+              user: userToStore,
+              hasEmail: !!userToStore.email,
+              hasPhone: !!userToStore.phone,
+              responseKeys: Object.keys(res as any)
+            });
+            toast.error('❌ Login failed: Unable to identify user. Please contact support.');
+            setLoading(false);
+            return;
+          }
+
           localStorage.setItem('user', JSON.stringify(userToStore));
-          // console.log('[OTP VERIFY] Saved user to localStorage:', userToStore);
+          console.log('[OTP VERIFY] Token and user saved to localStorage:', {
+            id: userToStore.id,
+            email: userToStore.email,
+            role: userToStore.role,
+            hasToken: !!token
+          });
         } else {
-          console.error('[OTP VERIFY] User object missing id, not saving:', userToStore);
+          console.error('[OTP VERIFY] No user object in response');
+          toast.error('❌ Login failed: No user data received. Please try again.');
+          setLoading(false);
+          return;
         }
       } else {
-        console.error('[OTP VERIFY] No token or window context, cannot save user. Token:', token);
+        console.error('[OTP VERIFY] Window context not available');
+        toast.error('❌ Browser context error. Please try again.');
+        setLoading(false);
+        return;
       }
 
       try {
-        document.cookie = 'auth=true; path=/; max-age=86400';
+        document.cookie = 'auth=true; path=/; max-age=86400; SameSite=Lax';
       } catch (err) {
+        console.warn('[OTP VERIFY] Could not set auth cookie:', err);
         // Silently fail if auth cookie cannot be set
       }
 

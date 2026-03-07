@@ -87,6 +87,14 @@ export async function apiCall<T = any>(
     });
   }
 
+  // Debug logging for OTP endpoint
+  if (endpoint === '/api/auth/login/otp') {
+    console.log('[API] OTP Verify request:', {
+      identifier: (JSON.parse(options.body as string) || {}).identifier,
+      otpLength: (JSON.parse(options.body as string) || {}).otp?.length,
+    });
+  }
+
   try {
     const fetchPromise = fetch(url, {
       ...options,
@@ -111,6 +119,16 @@ export async function apiCall<T = any>(
       });
     }
 
+    // Debug logging for OTP endpoint response
+    if (endpoint === '/api/auth/login/otp') {
+      console.log('[API FETCH] OTP Verify raw response:', {
+        status: response.status,
+        ok: response.ok,
+        rawData: data,
+        dataKeys: Object.keys(data),
+      });
+    }
+
     if (!response.ok) {
       return {
         success: false,
@@ -119,14 +137,35 @@ export async function apiCall<T = any>(
       };
     }
 
-    return {
+    const result = {
       success: true,
       ...data,
     };
+
+    // Debug logging for OTP endpoint
+    if (endpoint === '/api/auth/login/otp') {
+      console.log('[API] OTP Verify final result:', {
+        resultKeys: Object.keys(result),
+        hasToken: !!result.token,
+        hasUser: !!result.user,
+        resultData: result,
+      });
+    }
+
+    return result;
   } catch (error: any) {
     // Don't log timeout errors to console during polling operations
     if (error.message !== 'Request timeout') {
       console.error('API call error:', error);
+    }
+
+    // Debug logging for OTP errors
+    if (endpoint === '/api/auth/login/otp') {
+      console.error('[API] OTP Verify ERROR:', {
+        errorMessage: error.message,
+        errorType: error.name,
+        fullError: error,
+      });
     }
     
     return {

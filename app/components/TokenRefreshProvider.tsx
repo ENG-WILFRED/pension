@@ -35,6 +35,7 @@ export default function TokenRefreshProvider({ children }: TokenRefreshProps) {
       // If token has already expired
       if (timeUntilExpiry <= 0) {
         localStorage.removeItem("auth_token");
+        localStorage.removeItem("refresh_token");
         localStorage.removeItem("token_expiry");
         localStorage.removeItem("user");
         toast.error("🔐 Session expired. Please login again.");
@@ -76,9 +77,9 @@ export default function TokenRefreshProvider({ children }: TokenRefreshProps) {
       setIsRefreshing(true);
 
       try {
-        const token = localStorage.getItem("auth_token");
-        if (!token) {
-          throw new Error("No token found");
+        const refreshTokenValue = localStorage.getItem("refresh_token");
+        if (!refreshTokenValue) {
+          throw new Error("No refresh token found");
         }
 
         const response = await fetch(
@@ -87,19 +88,25 @@ export default function TokenRefreshProvider({ children }: TokenRefreshProps) {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
             },
+            body: JSON.stringify({ refreshToken: refreshTokenValue }),
           }
         );
 
         const data = await response.json();
 
-        if (data.success && data.token) {
-          // Store new token and expiry time
-          localStorage.setItem("auth_token", data.token);
+        if (data.success && (data.data?.accessToken || data.accessToken)) {
+          // Store new tokens
+          const newAccessToken = data.data?.accessToken || data.accessToken;
+          const newRefreshToken = data.data?.refreshToken || data.refreshToken;
+          
+          localStorage.setItem("auth_token", newAccessToken);
+          if (newRefreshToken) {
+            localStorage.setItem("refresh_token", newRefreshToken);
+          }
 
-          // Calculate expiry time (assuming 24 hours token validity)
-          const expiryTime = Date.now() + 24 * 60 * 60 * 1000;
+          // Calculate expiry time (15 minutes for access token)
+          const expiryTime = Date.now() + 15 * 60 * 1000;
           localStorage.setItem("token_expiry", expiryTime.toString());
 
           // Reset warning flag so it can show again
@@ -114,6 +121,7 @@ export default function TokenRefreshProvider({ children }: TokenRefreshProps) {
         toast.error("❌ Failed to extend session. Please login again.");
         // Clear auth data on refresh failure
         localStorage.removeItem("auth_token");
+        localStorage.removeItem("refresh_token");
         localStorage.removeItem("token_expiry");
         localStorage.removeItem("user");
         router.push("/login");
