@@ -72,17 +72,8 @@ export default function VerifyOtpClient() {
       const payload = requireNewPassword
         ? { identifier: id, otp: otpValue, newPassword }
         : { identifier: id, otp: otpValue };
-      console.log('[OTP VERIFY] Sending payload to backend:', payload);
 
       const res = await authApi.loginOtp(payload);
-
-      console.log('[OTP VERIFY] Full API response:', JSON.stringify(res, null, 2));
-      console.log('[OTP VERIFY] Response success:', res.success);
-      console.log('[OTP VERIFY] Response keys:', Object.keys(res));
-      console.log('[OTP VERIFY] res.token:', (res as any).token);
-      console.log('[OTP VERIFY] res.user:', (res as any).user);
-      console.log('[OTP VERIFY] res.data:', (res as any).data);
-
       if (!res.success) {
         console.error('[OTP VERIFY] Response not successful:', res.success);
         console.error('[OTP VERIFY] Error:', (res as any).error);
@@ -116,8 +107,6 @@ export default function VerifyOtpClient() {
       const token = data?.accessToken || data?.token || (res as any).token || (res as any).accessToken;
       const refreshToken = data?.refreshToken || (res as any).refreshToken;
       const user = data?.user || (res as any).user;
-
-      console.log('[OTP VERIFY] Response data:', { success: res.success, hasToken: !!token, hasUser: !!user, responseKeys: Object.keys(res as any) });
 
       if (!token) {
         console.error('[OTP VERIFY] Token not found in response:', { res });
@@ -284,7 +273,7 @@ export default function VerifyOtpClient() {
       <div className="lg:w-1/2 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-8 lg:p-16 flex flex-col justify-center relative overflow-hidden min-h-screen">
         {/* Animated background elements */}
         <div className="absolute top-0 right-0 w-96 h-96 bg-orange-600/10 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute bottom-0 left-0 w-96 h-96 bg-orange-500/5 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
+        <div className="absolute bottom-0 left-0 w-96 h-96 bg-orange-500/5 rounded-full blur-3cearaxl animate-pulse" style={{ animationDelay: '1s' }}></div>
         
         {/* Geometric patterns */}
         <div className="absolute top-20 right-20 w-64 h-64 border border-orange-500/10 rounded-full"></div>

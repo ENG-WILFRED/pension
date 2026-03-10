@@ -88,6 +88,36 @@ export default function CustomerDashboard() {
   const [bankModalOpen, setBankModalOpen] = useState(false);
   const [settingsModalOpen, setSettingsModalOpen] = useState(false);
 
+  // Helper function to calculate overview from transactions
+  const calculateOverviewFromTransactions = (transactions: Transaction[]) => {
+    console.log('[Dashboard] Calculating overview from transactions:', transactions);
+    // Week: last 7 days, YTD: since Jan 1
+    const now = new Date();
+    const startOfWeek = new Date(now);
+    startOfWeek.setDate(now.getDate() - 7);
+    const startOfYear = new Date(now.getFullYear(), 0, 1);
+
+    let weekContrib = 0, weekInt = 0, ytdContrib = 0, ytdInt = 0;
+    transactions?.forEach((tx: Transaction) => {
+      console.log('[Dashboard] Processing transaction:', tx);
+      const txDate = new Date(tx.createdAt);
+      if (tx.type === 'debit' && tx.status === 'completed') {
+        if (txDate >= startOfWeek) weekContrib += tx.amount;
+        if (txDate >= startOfYear) ytdContrib += tx.amount;
+      }
+      // For demo: treat 'interest' in description as interest
+      if (tx.description?.toLowerCase().includes('interest')) {
+        if (txDate >= startOfWeek) weekInt += tx.amount;
+        if (txDate >= startOfYear) ytdInt += tx.amount;
+      }
+    });
+    console.log('[Dashboard] Calculated overview:', { weekContrib, weekInt, ytdContrib, ytdInt });
+    setWeekContribution(weekContrib);
+    setWeekInterest(weekInt);
+    setYtdContribution(ytdContrib);
+    setYtdInterest(ytdInt);
+  };
+
   // Helper function to extract bank details from user object
   const getBankDetails = (user: User | null): BankAccount | undefined => {
     if (!user) return undefined;
@@ -253,19 +283,20 @@ export default function CustomerDashboard() {
           console.error('[Dashboard] Error getting account ID for transactions:', err);
         }
         
-        // Fetch account details (includes transactions if available) for the specific account
+        // Fetch transactions using the dedicated transactions API endpoint
         if (accountId) {
           try {
-            const accountResponse = await accountsApi.getById(accountId);
-            if (accountResponse.success && accountResponse.account) {
-              // extract transactions from the account object if present
-              if (accountResponse.account.transactions && Array.isArray(accountResponse.account.transactions)) {
-                allTransactions = accountResponse.account.transactions;
-                console.log('[Dashboard] Transactions from account details:', allTransactions);
-              }
+            console.log('[Dashboard] Fetching transactions for account ID:', accountId);
+            const transactionsResponse = await accountsApi.getTransactions(accountId);
+            console.log('[Dashboard] Transactions API response:', transactionsResponse);
+            if (transactionsResponse.success && transactionsResponse.transactions && Array.isArray(transactionsResponse.transactions)) {
+              allTransactions = transactionsResponse.transactions;
+              console.log('[Dashboard] Fetched transactions:', allTransactions);
+            } else {
+              console.warn('[Dashboard] Failed to fetch transactions:', transactionsResponse.error);
             }
           } catch (err) {
-            console.error('[Dashboard] Error fetching account details for transactions:', err);
+            console.error('[Dashboard] Error fetching transactions:', err);
           }
         } else {
           console.warn('[Dashboard] No account ID available for fetching transactions');
@@ -273,30 +304,33 @@ export default function CustomerDashboard() {
         
         setTransactions(allTransactions);
 
-        // Calculate overview metrics
-        // Week: last 7 days, YTD: since Jan 1
-        const now = new Date();
-        const startOfWeek = new Date(now);
-        startOfWeek.setDate(now.getDate() - 7);
-        const startOfYear = new Date(now.getFullYear(), 0, 1);
-
-        let weekContrib = 0, weekInt = 0, ytdContrib = 0, ytdInt = 0;
-        allTransactions?.forEach((tx: Transaction) => {
-          const txDate = new Date(tx.createdAt);
-          if (tx.type === 'debit' && tx.status === 'completed') {
-            if (txDate >= startOfWeek) weekContrib += tx.amount;
-            if (txDate >= startOfYear) ytdContrib += tx.amount;
+        // Fetch overview metrics from backend API
+        try {
+          console.log('[Dashboard] Fetching overview metrics from API');
+          const overviewResponse = await dashboardApi.getOverview();
+          console.log('[Dashboard] Overview API response:', overviewResponse);
+          if (overviewResponse.success && overviewResponse.data) {
+            const overview = overviewResponse.data;
+            setWeekContribution(overview.weekContribution || 0);
+            setWeekInterest(overview.weekInterest || 0);
+            setYtdContribution(overview.ytdContribution || 0);
+            setYtdInterest(overview.ytdInterest || 0);
+            console.log('[Dashboard] Overview metrics set from API:', {
+              weekContribution: overview.weekContribution,
+              weekInterest: overview.weekInterest,
+              ytdContribution: overview.ytdContribution,
+              ytdInterest: overview.ytdInterest,
+            });
+          } else {
+            console.warn('[Dashboard] Overview API failed, falling back to transaction calculation:', overviewResponse.error);
+            // Fall back to calculating from transactions
+            calculateOverviewFromTransactions(allTransactions);
           }
-          // For demo: treat 'interest' in description as interest
-          if (tx.description?.toLowerCase().includes('interest')) {
-            if (txDate >= startOfWeek) weekInt += tx.amount;
-            if (txDate >= startOfYear) ytdInt += tx.amount;
-          }
-        });
-        setWeekContribution(weekContrib);
-        setWeekInterest(weekInt);
-        setYtdContribution(ytdContrib);
-        setYtdInterest(ytdInt);
+        } catch (err) {
+          console.error('[Dashboard] Error fetching overview from API, falling back to transaction calculation:', err);
+          // Fall back to calculating from transactions
+          calculateOverviewFromTransactions(allTransactions);
+        }
         setLoadingTransactions(false);
 
         // Use backend accounts to compute totals. Fall back to mock plans if accounts aren't available.

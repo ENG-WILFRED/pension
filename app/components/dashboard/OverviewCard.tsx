@@ -11,6 +11,7 @@ interface OverviewCardProps {
 const currency = (n: number) => n.toLocaleString("en-KE", { style: "currency", currency: "KES", maximumFractionDigits: 0 });
 
 export default function OverviewCard({ weekContribution, weekInterest, ytdContribution, ytdInterest }: OverviewCardProps) {
+  console.log('[OverviewCard] Received props:', { weekContribution, weekInterest, ytdContribution, ytdInterest });
   return (
     <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-xl p-6 flex flex-col gap-6 transition-colors duration-300">
       <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">Overview</h3>

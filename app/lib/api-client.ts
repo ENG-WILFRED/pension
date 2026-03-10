@@ -326,6 +326,7 @@ export const dashboardApi = {
   getUser: (timeout?: number) => apiCall('/api/dashboard/user', { method: 'GET' }, timeout),
   getTransactions: (timeout?: number) => apiCall('/api/dashboard/transactions', { method: 'GET' }, timeout),
   getStats: (timeout?: number) => apiCall('/api/dashboard/stats', { method: 'GET' }, timeout),
+  getOverview: (timeout?: number) => apiCall('/api/dashboard/overview', { method: 'GET' }, timeout),
 };
 
 // ========================================
