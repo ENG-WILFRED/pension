@@ -1,0 +1,11 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Update contribution and interest to use accounts API",
+			"type": "shell",
+			"command": "echo 'Planning to update page.tsx to fetch contribution and interest from accounts API instead of dashboard overview endpoint'",
+			"group": "build"
+		}
+	]
+}

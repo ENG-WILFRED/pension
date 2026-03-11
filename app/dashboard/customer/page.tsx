@@ -303,34 +303,6 @@ export default function CustomerDashboard() {
         }
         
         setTransactions(allTransactions);
-
-        // Fetch overview metrics from backend API
-        try {
-          console.log('[Dashboard] Fetching overview metrics from API');
-          const overviewResponse = await dashboardApi.getOverview();
-          console.log('[Dashboard] Overview API response:', overviewResponse);
-          if (overviewResponse.success && overviewResponse.data) {
-            const overview = overviewResponse.data;
-            setWeekContribution(overview.weekContribution || 0);
-            setWeekInterest(overview.weekInterest || 0);
-            setYtdContribution(overview.ytdContribution || 0);
-            setYtdInterest(overview.ytdInterest || 0);
-            console.log('[Dashboard] Overview metrics set from API:', {
-              weekContribution: overview.weekContribution,
-              weekInterest: overview.weekInterest,
-              ytdContribution: overview.ytdContribution,
-              ytdInterest: overview.ytdInterest,
-            });
-          } else {
-            console.warn('[Dashboard] Overview API failed, falling back to transaction calculation:', overviewResponse.error);
-            // Fall back to calculating from transactions
-            calculateOverviewFromTransactions(allTransactions);
-          }
-        } catch (err) {
-          console.error('[Dashboard] Error fetching overview from API, falling back to transaction calculation:', err);
-          // Fall back to calculating from transactions
-          calculateOverviewFromTransactions(allTransactions);
-        }
         setLoadingTransactions(false);
 
         // Use backend accounts to compute totals. Fall back to mock plans if accounts aren't available.
@@ -364,6 +336,38 @@ export default function CustomerDashboard() {
             setTotalContributions(totalContribs);
             setBalance(totalBal);
             setTotalInterest(totalInterest);
+            
+            // Calculate week and YTD contributions and interest from transactions
+            console.log('[Dashboard] Calculating week/YTD metrics from transactions:', allTransactions);
+            const now = new Date();
+            const startOfWeek = new Date(now);
+            startOfWeek.setDate(now.getDate() - 7);
+            const startOfYear = new Date(now.getFullYear(), 0, 1);
+
+            let weekContrib = 0, weekInt = 0, ytdContrib = 0, ytdInt = 0;
+            
+            allTransactions?.forEach((tx: Transaction) => {
+              console.log('[Dashboard] Processing transaction for metrics:', tx);
+              const txDate = new Date(tx.createdAt);
+              // Count debit transactions (employee contributions)
+              if (tx.type === 'debit' && tx.status === 'completed') {
+                if (txDate >= startOfWeek) weekContrib += tx.amount;
+                if (txDate >= startOfYear) ytdContrib += tx.amount;
+              }
+              // Count interest transactions
+              if (tx.description?.toLowerCase().includes('interest')) {
+                if (txDate >= startOfWeek) weekInt += tx.amount;
+                if (txDate >= startOfYear) ytdInt += tx.amount;
+              }
+            });
+            
+            setWeekContribution(weekContrib);
+            setWeekInterest(weekInt);
+            setYtdContribution(ytdContrib);
+            setYtdInterest(ytdInt);
+            
+            console.log('[Dashboard] Calculated week/YTD metrics:', { weekContrib, weekInt, ytdContrib, ytdInt });
+            
             // if we didn't already load any transactions, try using the ones included on the account object
             if (allTransactions.length === 0 && accountsRes.accounts[0]?.transactions) {
               allTransactions = accountsRes.accounts[0].transactions;
