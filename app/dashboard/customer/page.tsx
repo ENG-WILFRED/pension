@@ -257,53 +257,10 @@ export default function CustomerDashboard() {
         // Pre-fill phone if available in user profile for deposit/other forms
         // (no-op here, kept for future enhancements)
 
+        // we'll populate transactions once we have accounts
         setLoadingTransactions(true);
-        
-        // Fetch account-specific transactions if we have an account ID
         let allTransactions: Transaction[] = [];
-        
-        // Try to get the account ID from stored data or accounts
-        let accountId: number | null = null;
-        
-        try {
-          const storedAccount = typeof window !== 'undefined' ? localStorage.getItem('account') : null;
-          if (storedAccount) {
-            const parsedAccount = JSON.parse(storedAccount);
-            accountId = parsedAccount.id ? Number(parsedAccount.id) : null;
-          }
-          
-          // If no stored account, fetch from API
-          if (!accountId) {
-            const accountsResponse = await accountsApi.getAll();
-            if (accountsResponse.success && accountsResponse.accounts && accountsResponse.accounts.length > 0) {
-              accountId = Number(accountsResponse.accounts[0].id);
-            }
-          }
-        } catch (err) {
-          console.error('[Dashboard] Error getting account ID for transactions:', err);
-        }
-        
-        // Fetch transactions using the dedicated transactions API endpoint
-        if (accountId) {
-          try {
-            console.log('[Dashboard] Fetching transactions for account ID:', accountId);
-            const transactionsResponse = await accountsApi.getTransactions(accountId);
-            console.log('[Dashboard] Transactions API response:', transactionsResponse);
-            if (transactionsResponse.success && transactionsResponse.transactions && Array.isArray(transactionsResponse.transactions)) {
-              allTransactions = transactionsResponse.transactions;
-              console.log('[Dashboard] Fetched transactions:', allTransactions);
-            } else {
-              console.warn('[Dashboard] Failed to fetch transactions:', transactionsResponse.error);
-            }
-          } catch (err) {
-            console.error('[Dashboard] Error fetching transactions:', err);
-          }
-        } else {
-          console.warn('[Dashboard] No account ID available for fetching transactions');
-        }
-        
-        setTransactions(allTransactions);
-        setLoadingTransactions(false);
+        // leave initial value empty; it will be replaced further down after accounts fetch
 
         // Use backend accounts to compute totals. Fall back to mock plans if accounts aren't available.
         try {
@@ -332,12 +289,18 @@ export default function CustomerDashboard() {
               status: a.accountStatus || 'ACTIVE',
             }));
 
+            // incorporate transactions embedded in the account response before computing metrics
+            if (allTransactions.length === 0 && accountsRes.accounts[0]?.transactions) {
+              allTransactions = accountsRes.accounts[0].transactions;
+              setTransactions(allTransactions);
+            }
+
             setPensionPlans(mappedPlans);
             setTotalContributions(totalContribs);
             setBalance(totalBal);
             setTotalInterest(totalInterest);
             
-            // Calculate week and YTD contributions and interest from transactions
+            // now compute overview metrics using whatever transactions we have
             console.log('[Dashboard] Calculating week/YTD metrics from transactions:', allTransactions);
             const now = new Date();
             const startOfWeek = new Date(now);
@@ -349,13 +312,13 @@ export default function CustomerDashboard() {
             allTransactions?.forEach((tx: Transaction) => {
               console.log('[Dashboard] Processing transaction for metrics:', tx);
               const txDate = new Date(tx.createdAt);
-              // Count debit transactions (employee contributions)
-              if (tx.type === 'debit' && tx.status === 'completed') {
+              // treat deposits and debits as contributions
+              if ((tx.type === 'debit' || tx.type === 'deposit') && tx.status === 'completed') {
                 if (txDate >= startOfWeek) weekContrib += tx.amount;
                 if (txDate >= startOfYear) ytdContrib += tx.amount;
               }
-              // Count interest transactions
-              if (tx.description?.toLowerCase().includes('interest')) {
+              // Count interest transactions by type or description
+              if (tx.type === 'interest' || tx.description?.toLowerCase().includes('interest')) {
                 if (txDate >= startOfWeek) weekInt += tx.amount;
                 if (txDate >= startOfYear) ytdInt += tx.amount;
               }
@@ -368,11 +331,17 @@ export default function CustomerDashboard() {
             
             console.log('[Dashboard] Calculated week/YTD metrics:', { weekContrib, weekInt, ytdContrib, ytdInt });
             
-            // if we didn't already load any transactions, try using the ones included on the account object
-            if (allTransactions.length === 0 && accountsRes.accounts[0]?.transactions) {
-              allTransactions = accountsRes.accounts[0].transactions;
-              setTransactions(allTransactions);
+            // fallback: if still no transactions, use summary values from accounts
+            if (allTransactions.length === 0) {
+              console.log('[Dashboard] No transactions available, falling back to account totals for overview metrics');
+              // assign YTD contributions to total contributions and YTD interest to total interest
+              setYtdContribution(totalContribs);
+              setYtdInterest(totalInterest);
+              // weekly metrics remain zero unless some heuristic wanted
             }
+            
+            // mark transaction loading complete now that we've extracted them
+            setLoadingTransactions(false);
             
             // Calculate years to retirement (assuming retirement at 60)
             const userDateOfBirth = userResponse.user?.dateOfBirth;
@@ -399,6 +368,7 @@ export default function CustomerDashboard() {
             setBalance(0);
             setProjectedRetirement(0);
             setTotalInterest(0);
+            setLoadingTransactions(false);
           }
         } catch (e) {
           console.error('[Dashboard] Failed to compute totals from accounts:', e);
@@ -406,6 +376,8 @@ export default function CustomerDashboard() {
           setTotalContributions(0);
           setBalance(0);
           setProjectedRetirement(0);
+          setTotalInterest(0);
+          setLoadingTransactions(false);
           setTotalInterest(0);
         }
 
