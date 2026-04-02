@@ -35,6 +35,18 @@ export default function CustomersPage() {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterRole, setFilterRole] = useState<string>("all");
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+
+  // load current user id from storage so we can prevent admins demoting themselves
+  useEffect(() => {
+    const stored = localStorage.getItem('user');
+    if (stored) {
+      try {
+        const u = JSON.parse(stored);
+        setCurrentUserId(u.id);
+      } catch {}
+    }
+  }, []);
 
   useEffect(() => {
     loadCustomers();
@@ -338,13 +350,24 @@ export default function CustomersPage() {
                             Promote
                           </button>
                         ) : (
-                          <button
-                            onClick={() => handleDemoteToCustomer(customer.id)}
-                            className="flex items-center gap-1 px-3 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition text-xs"
-                          >
-                            <UserX size={14} />
-                            Demote
-                          </button>
+                          // don't allow an admin to demote themself
+                          customer.id === currentUserId ? (
+                            <button
+                              disabled
+                              className="flex items-center gap-1 px-3 py-2 bg-yellow-300 text-white rounded-lg text-xs cursor-not-allowed"
+                            >
+                              <UserX size={14} />
+                              Cannot demote self
+                            </button>
+                          ) : (
+                            <button
+                              onClick={() => handleDemoteToCustomer(customer.id)}
+                              className="flex items-center gap-1 px-3 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition text-xs"
+                            >
+                              <UserX size={14} />
+                              Demote
+                            </button>
+                          )
                         )}
                       </div>
                     </td>

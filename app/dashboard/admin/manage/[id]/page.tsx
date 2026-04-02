@@ -50,6 +50,17 @@ export default function MemberDetail({
   const [member, setMember] = useState<UserDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(false);
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+
+  useEffect(() => {
+    const stored = localStorage.getItem('user');
+    if (stored) {
+      try {
+        const u = JSON.parse(stored);
+        setCurrentUserId(u.id);
+      } catch {}
+    }
+  }, []);
 
   useEffect(() => {
     const loadUser = async () => {
@@ -99,6 +110,12 @@ export default function MemberDetail({
 
   const demoteToCustomer = async () => {
     if (!member) return;
+
+    // front‑end guard: cannot demote yourself
+    if (member.id === currentUserId) {
+      toast.error("Admins cannot demote themselves");
+      return;
+    }
     
     if (!confirm(`Are you sure you want to demote ${member.firstName} ${member.lastName} to customer?`)) {
       return;
@@ -419,7 +436,7 @@ export default function MemberDetail({
             ) : (
               <button
                 onClick={demoteToCustomer}
-                disabled={actionLoading}
+                disabled={actionLoading || member.id === currentUserId}
                 className="px-6 py-3 bg-yellow-600 text-white rounded-xl font-semibold hover:bg-yellow-700 transition flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {actionLoading ? (
@@ -430,7 +447,7 @@ export default function MemberDetail({
                 ) : (
                   <>
                     <UserX size={20} />
-                    Demote to Customer
+                    {member.id === currentUserId ? 'Cannot demote self' : 'Demote to Customer'}
                   </>
                 )}
               </button>

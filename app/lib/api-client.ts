@@ -287,10 +287,10 @@ export const authApi = {
       method: 'POST',
       body: JSON.stringify(data),
     }, timeout),
-  demote: (data: { userId: string }, timeout?: number) =>
-    apiCall('/api/auth/demote', {
+  // backend now expects the user id as part of the URL rather than in the body
+  demote: (userId: string, timeout?: number) =>
+    apiCall(`/api/auth/demote/${userId}`, {
       method: 'POST',
-      body: JSON.stringify(data),
     }, timeout),
 };
 
@@ -407,7 +407,7 @@ export const userApi = {
   },
   demoteToCustomer: async (userId: string, timeout?: number) => {
     try {
-      const response = await authApi.demote({ userId }, timeout);
+      const response = await authApi.demote(userId, timeout);
       return response;
     } catch (error) {
       console.error('Error demoting user:', error);
