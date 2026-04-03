@@ -310,13 +310,18 @@ export const termsApi = {
 // PAYMENT API
 // ========================================
 export const paymentApi = {
-  initiate: (data: { amount: number; planId?: string; description?: string }, timeout?: number) =>
+  initiate: (data: { amount: number; phone: string; description?: string; planId?: string }, timeout?: number) =>
     apiCall('/api/payment/initiate', {
       method: 'POST',
       body: JSON.stringify(data),
-    }, timeout || PAYMENT_TIMEOUT),  
+    }, timeout || PAYMENT_TIMEOUT),
   getStatus: (transactionId: string, timeout?: number) =>
-    apiCall(`/api/payment/status/${transactionId}`, { method: 'GET' }, timeout || PAYMENT_TIMEOUT), 
+    apiCall(`/api/payment/status/${transactionId}`, { method: 'GET' }, timeout || PAYMENT_TIMEOUT),
+  stkPushByPhone: (data: { phone: string; amount: number; description?: string }, timeout?: number) =>
+    apiCall('/api/payment/stk-push-by-phone', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }, timeout || PAYMENT_TIMEOUT),
 };
 
 // ========================================

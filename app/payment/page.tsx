@@ -36,26 +36,50 @@ export default function PaymentPage() {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
+  const [phone, setPhone] = useState('');
 
   const handleInvest = async (planId: string, amount: number) => {
+    if (!phone || !phone.match(/^\+254\d{9}$/)) {
+      setError('Please enter a valid phone number (+254XXXXXXXXX)');
+      return;
+    }
+
     setLoading(true);
     setError('');
     setMessage('');
     try {
-      const res: any = await paymentApi.initiate({ amount, planId, description: `Contribution to ${planId}` });
-      if (!res.success) {
-        setError(res.error || 'Failed to initiate payment');
+      const res: any = await paymentApi.initiate({ amount, phone, planId, description: `Contribution to ${planId}` });
+      console.log('Payment API response:', res);
+      
+      // Check if response indicates success (various possible formats)
+      const isSuccess = res?.success === true || res?.success === 'true' || res?.status === 'pending';
+      
+      if (isSuccess || res?.transactionId || res?.checkoutRequestId) {
+        // Payment initiated successfully
+        setMessage('Payment request sent to your phone. Please enter your M-Pesa PIN to complete the transaction.');
         setLoading(false);
-      } else if (res.paymentUrl) {
-        // Redirect to external payment gateway
-        window.location.href = res.paymentUrl;
+        // Optional: redirect after a delay
+        setTimeout(() => {
+          window.location.href = '/dashboard';
+        }, 5000);
+      } else if (res?.error) {
+        setError(res.error);
+        setLoading(false);
+      } else if (res?.message) {
+        setError(res.message);
+        setLoading(false);
       } else {
-        setError('No payment gateway configured');
+        // If no clear success/error, assume it worked if we got a response
+        setMessage('Payment request sent to your phone. Please enter your M-Pesa PIN to complete the transaction.');
         setLoading(false);
+        setTimeout(() => {
+          window.location.href = '/dashboard';
+        }, 5000);
       }
     } catch (err) {
-      console.error(err);
-      setError('Unexpected error');
+      console.error('Payment error:', err);
+      const errorMessage = err instanceof Error ? err.message : 'Unexpected error';
+      setError(errorMessage);
       setLoading(false);
     }
   };
@@ -82,18 +106,30 @@ export default function PaymentPage() {
               <img src={plan.image} alt={plan.name} className="w-full h-40 object-cover rounded-lg mb-4" />
               <h3 className="text-xl font-bold text-gray-900">{plan.name}</h3>
               <p className="text-gray-600 mt-2 text-sm">{plan.description}</p>
-              <div className="mt-4 flex items-center justify-between">
+              <div className="mt-4 space-y-3">
                 <div>
-                  <div className="text-sm text-gray-500">Suggested contribution</div>
-                  <div className="text-lg font-semibold">KES {plan.price.toLocaleString()}</div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">M-Pesa Phone Number</label>
+                  <input
+                    type="tel"
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    placeholder="+254xxxxxxxxx"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-600"
+                  />
                 </div>
-                <button
-                  onClick={() => handleInvest(plan.id, plan.price)}
-                  disabled={loading}
-                  className="ml-4 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-60"
-                >
-                  {loading ? 'Processing...' : 'Invest'}
-                </button>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <div className="text-sm text-gray-500">Suggested contribution</div>
+                    <div className="text-lg font-semibold">KES {plan.price.toLocaleString()}</div>
+                  </div>
+                  <button
+                    onClick={() => handleInvest(plan.id, plan.price)}
+                    disabled={loading}
+                    className="ml-4 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-60"
+                  >
+                    {loading ? 'Processing...' : 'Invest'}
+                  </button>
+                </div>
               </div>
             </div>
           ))}

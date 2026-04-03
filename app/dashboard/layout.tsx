@@ -99,8 +99,8 @@ export default function DashboardLayout({
     checkAuth();
   }, [router]);
 
-  // Determine user type from pathname
-  const userType = pathname?.includes("/admin") ? "admin" : "customer";
+  // Determine user type from authenticated user role, not pathname
+  const userType = user?.role === "admin" ? "admin" : "customer";
 
   if (loading) {
     return (

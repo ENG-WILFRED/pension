@@ -1,3 +1,4 @@
+///home/hp/JERE/autonest frontend/AutoNest/app/components/ui/index.tsx
 import { ReactNode } from 'react';
 import { DESIGN_TOKENS, CARD_STYLE } from '@/app/lib/design-tokens';
 
@@ -9,6 +10,26 @@ interface CardProps {
 
 export function Card({ children, className = '' }: CardProps) {
   return <div className={`${CARD_STYLE} ${className}`}>{children}</div>;
+}
+
+export function CardHeader({ children, className = '' }: CardProps) {
+  return <div className={`p-6 border-b border-gray-200 dark:border-gray-600 ${className}`}>{children}</div>;
+}
+
+export function CardTitle({ children, className = '' }: { children: ReactNode; className?: string }) {
+  return <h3 className={`text-lg font-semibold text-gray-900 dark:text-white ${className}`}>{children}</h3>;
+}
+
+export function CardDescription({ children, className = '' }: { children: ReactNode; className?: string }) {
+  return <p className={`text-sm text-gray-600 dark:text-gray-400 mt-1 ${className}`}>{children}</p>;
+}
+
+export function Label({ children, htmlFor, className = '' }: { children: ReactNode; htmlFor?: string; className?: string }) {
+  return (
+    <label htmlFor={htmlFor} className={`block text-sm font-medium text-gray-700 dark:text-gray-300 ${className}`}>
+      {children}
+    </label>
+  );
 }
 
 // Section Component
@@ -157,7 +178,7 @@ interface LabelProps {
   required?: boolean;
 }
 
-export function Label({ children, htmlFor, required = false }: LabelProps) {
+export function FormLabel({ children, htmlFor, required = false }: LabelProps) {
   return (
     <label htmlFor={htmlFor} className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
       {children} {required && <span className="text-red-600">*</span>}

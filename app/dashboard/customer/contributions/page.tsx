@@ -4,7 +4,8 @@ import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import { accountsApi } from "@/app/lib/api-client";
-import { CreditCard, DollarSign, TrendingUp, X, AlertCircle } from "lucide-react";
+import { stkPushProcessor, type StkPushResponse } from "@/app/lib/stk-push-processor";
+import { CreditCard, DollarSign, TrendingUp, X, AlertCircle, Loader } from "lucide-react";
 import { PageLoader, ButtonLoader } from "@/app/components/loaders";
 
 interface Account {
@@ -25,6 +26,8 @@ function DepositModal({ isOpen, onClose, account, onSuccess }: DepositModalProps
   const [amount, setAmount] = useState("");
   const [phone, setPhone] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [checkingStatus, setCheckingStatus] = useState(false);
+  const [transactionId, setTransactionId] = useState<string | null>(null);
 
   if (!isOpen || !account) return null;
 
@@ -42,6 +45,7 @@ function DepositModal({ isOpen, onClose, account, onSuccess }: DepositModalProps
     }
 
     setSubmitting(true);
+    setCheckingStatus(true);
 
     try {
       let accountIdentifier: string | undefined = account.accountNumber || account.id;
@@ -67,26 +71,45 @@ function DepositModal({ isOpen, onClose, account, onSuccess }: DepositModalProps
       if (!accountIdentifier) {
         toast.error('No account number available for deposit');
         setSubmitting(false);
+        setCheckingStatus(false);
         return;
       }
 
-      const payload = {
+      // Initiate STK push
+      const response = await stkPushProcessor.initiateStkPush({
+        accountId: accountIdentifier,
         amount: parseFloat(amount),
-        phone,
+        phoneNumber: phone,
         description: 'Deposit to pension account',
-      } as const;
+      });
 
-      const response = await accountsApi.deposit(accountIdentifier, payload);
-
-      if (response.success) {
+      if (response.success && response.transactionId) {
+        setTransactionId(response.transactionId);
         toast.success('📱 M-Pesa STK Push initiated! Check your phone.');
-        onClose();
-        setAmount("");
-        setPhone("");
         
-        setTimeout(() => {
-          onSuccess();
-        }, 2000);
+        // Poll payment status for up to 2 minutes
+        const statusResponse = await stkPushProcessor.pollPaymentStatus(response.transactionId);
+        
+        if (statusResponse.status === 'completed') {
+          toast.success('✅ Payment confirmed! Deposit processed.');
+          stkPushProcessor.clearTransactionData(response.transactionId);
+          onClose();
+          setAmount("");
+          setPhone("");
+          setTransactionId(null);
+          
+          setTimeout(() => {
+            onSuccess();
+          }, 2000);
+        } else if (statusResponse.status === 'failed') {
+          toast.error('❌ Payment failed. Please try again.');
+          stkPushProcessor.clearTransactionData(response.transactionId);
+          setTransactionId(null);
+        } else {
+          toast.warning('⏱️ Payment timeout. Check your transaction history.');
+          stkPushProcessor.clearTransactionData(response.transactionId);
+          setTransactionId(null);
+        }
       } else {
         toast.error(response.error || 'Failed to initiate payment');
       }
@@ -95,6 +118,7 @@ function DepositModal({ isOpen, onClose, account, onSuccess }: DepositModalProps
       toast.error('Failed to initiate payment');
     } finally {
       setSubmitting(false);
+      setCheckingStatus(false);
     }
   };
 
@@ -166,19 +190,20 @@ function DepositModal({ isOpen, onClose, account, onSuccess }: DepositModalProps
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 py-3 px-4 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition font-semibold"
+              disabled={submitting || checkingStatus}
+              className="flex-1 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 py-3 px-4 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 disabled:bg-gray-100 dark:disabled:bg-gray-800 disabled:text-gray-400 disabled:cursor-not-allowed transition font-semibold"
             >
               Cancel
             </button>
             <button
               type="submit"
-              disabled={submitting}
+              disabled={submitting || checkingStatus}
               className="flex-1 bg-green-600 dark:bg-green-500 text-white py-3 px-4 rounded-xl hover:bg-green-700 dark:hover:bg-green-600 disabled:bg-gray-400 dark:disabled:bg-gray-600 disabled:cursor-not-allowed transition font-semibold flex items-center justify-center gap-2"
             >
               {submitting ? (
                 <>
                   <ButtonLoader />
-                  Processing...
+                  {checkingStatus ? 'Verifying Payment...' : 'Processing...'}
                 </>
               ) : (
                 <>
@@ -189,6 +214,17 @@ function DepositModal({ isOpen, onClose, account, onSuccess }: DepositModalProps
             </button>
           </div>
         </form>
+
+        {checkingStatus && (
+          <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+            <div className="flex gap-2 items-center">
+              <Loader className="animate-spin text-blue-600" size={18} />
+              <p className="text-sm text-blue-700 dark:text-blue-300">
+                Checking payment status... This may take up to 2 minutes.
+              </p>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -288,14 +324,171 @@ export default function CustomerContributionsPage() {
     return <PageLoader />;
   }
 
-  // Contributions/deposits temporarily disabled — show placeholder
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950 px-4 sm:px-6 lg:px-8 py-20 flex items-center justify-center">
-      <div className="max-w-2xl w-full bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-10 text-center">
-        <h1 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">Contributions Temporarily Disabled</h1>
-        <p className="text-gray-600 dark:text-gray-300 mb-6">The deposit and contribution features are temporarily disabled — they will return in a future release.</p>
-        <button onClick={() => router.push('/dashboard')} className="px-6 py-3 rounded-lg bg-orange-600 text-white font-semibold">Back to Dashboard</button>
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950 px-4 sm:px-6 lg:px-8 py-20">
+      <div className="max-w-4xl mx-auto">
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">Deposits</h1>
+          <p className="text-gray-600 dark:text-gray-300">Add funds to your pension account via M-Pesa</p>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          {/* Contribution Form - Temporarily Disabled */}
+          {/*
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6">
+            <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
+              <TrendingUp className="text-orange-600 dark:text-orange-500" size={24} />
+              Add Contribution
+            </h2>
+
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                  Select Account
+                </label>
+                <select
+                  value={selectedAccountId}
+                  onChange={(e) => setSelectedAccountId(e.target.value)}
+                  className="w-full border border-gray-300 dark:border-gray-600 rounded-xl p-3 focus:ring-2 focus:ring-orange-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 transition-colors duration-300"
+                  required
+                >
+                  <option value="">Select an account</option>
+                  {accounts.map((account) => (
+                    <option key={account.id} value={account.id}>
+                      {account.accountType.name} - {account.accountNumber || account.id}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                    Employee Amount (KES)
+                  </label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    value={formData.employeeAmount}
+                    onChange={(e) => setFormData(prev => ({ ...prev, employeeAmount: e.target.value }))}
+                    placeholder="0.00"
+                    className="w-full border border-gray-300 dark:border-gray-600 rounded-xl p-3 focus:ring-2 focus:ring-orange-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 transition-colors duration-300"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                    Employer Amount (KES)
+                  </label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    value={formData.employerAmount}
+                    onChange={(e) => setFormData(prev => ({ ...prev, employerAmount: e.target.value }))}
+                    placeholder="0.00"
+                    className="w-full border border-gray-300 dark:border-gray-600 rounded-xl p-3 focus:ring-2 focus:ring-orange-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 transition-colors duration-300"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                  Description (Optional)
+                </label>
+                <input
+                  type="text"
+                  value={formData.description}
+                  onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+                  placeholder="Regular contribution"
+                  className="w-full border border-gray-300 dark:border-gray-600 rounded-xl p-3 focus:ring-2 focus:ring-orange-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 transition-colors duration-300"
+                />
+              </div>
+
+              <button
+                type="submit"
+                disabled={submitting}
+                className="w-full bg-orange-600 dark:bg-orange-500 text-white py-3 px-4 rounded-xl hover:bg-orange-700 dark:hover:bg-orange-600 disabled:bg-gray-400 dark:disabled:bg-gray-600 disabled:cursor-not-allowed transition font-semibold flex items-center justify-center gap-2"
+              >
+                {submitting ? (
+                  <>
+                    <ButtonLoader />
+                    Adding Contribution...
+                  </>
+                ) : (
+                  <>
+                    <TrendingUp size={20} />
+                    Add Contribution
+                  </>
+                )}
+              </button>
+            </form>
+          </div>
+          */}
+
+          {/* Deposit Section */}
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6">
+            <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
+              <CreditCard className="text-green-600 dark:text-green-500" size={24} />
+              Quick Deposit
+            </h2>
+
+            <div className="space-y-4">
+              <p className="text-gray-600 dark:text-gray-300">
+                Make instant deposits to your pension account using M-Pesa STK Push.
+              </p>
+
+              <div className="bg-gray-50 dark:bg-gray-700 rounded-xl p-4">
+                <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">Selected Account:</p>
+                {selectedAccountId ? (
+                  <p className="font-semibold text-gray-900 dark:text-gray-100">
+                    {accounts.find(a => a.id === selectedAccountId)?.accountType.name}
+                  </p>
+                ) : (
+                  <p className="text-gray-500 dark:text-gray-500">No account selected</p>
+                )}
+              </div>
+
+              <button
+                onClick={handleDepositClick}
+                disabled={!selectedAccountId}
+                className="w-full bg-green-600 dark:bg-green-500 text-white py-3 px-4 rounded-xl hover:bg-green-700 dark:hover:bg-green-600 disabled:bg-gray-400 dark:disabled:bg-gray-600 disabled:cursor-not-allowed transition font-semibold flex items-center justify-center gap-2"
+              >
+                <DollarSign size={20} />
+                Deposit via M-Pesa
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Account Balances */}
+        <div className="mt-8 bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6">
+          <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-6">Account Balances</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {accounts.map((account) => (
+              <div key={account.id} className="bg-gray-50 dark:bg-gray-700 rounded-xl p-4">
+                <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">
+                  {account.accountType.name}
+                </h3>
+                {account.accountNumber && (
+                  <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
+                    Account: {account.accountNumber}
+                  </p>
+                )}
+                <p className="text-2xl font-bold text-orange-600 dark:text-orange-400">
+                  KES {(account.totalBalance ?? 0).toLocaleString()}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
+
+      {/* Deposit Modal */}
+      <DepositModal
+        isOpen={depositModalOpen}
+        onClose={() => setDepositModalOpen(false)}
+        account={accounts.find(a => a.id === selectedAccountId) || null}
+        onSuccess={() => loadAccounts()}
+      />
     </div>
   );
 }

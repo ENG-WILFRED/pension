@@ -37,6 +37,11 @@ export default function Sidebar({ userType, firstName, lastName }: SidebarProps)
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const { theme, toggleTheme } = useTheme();
 
+  // Close mobile sidebar when route changes
+  useEffect(() => {
+    setIsOpen(false);
+  }, [pathname]);
+
   const handleLogout = async () => {
     setIsLoggingOut(true);
     try {
@@ -77,6 +82,7 @@ export default function Sidebar({ userType, firstName, lastName }: SidebarProps)
   const customerNavItems = [
     { name: "Dashboard", icon: LayoutDashboard, href: "/dashboard/customer" },
     { name: "My Pension", icon: Wallet, href: "/dashboard/customer/pension" },
+    { name: "Deposits", icon: CreditCard, href: "/dashboard/customer/contributions" },
     { name: "Investments", icon: TrendingUp, href: "/dashboard/customer/investments" },
     { name: "Portfolio", icon: PieChart, href: "/dashboard/customer/portfolio" },
     { name: "Reports", icon: FileText, href: "/dashboard/customer/reports" },
@@ -131,6 +137,7 @@ export default function Sidebar({ userType, firstName, lastName }: SidebarProps)
         <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
           {navItems.map((item) => {
             const Icon = item.icon;
+            // Only highlight exact pathname matches
             const isActive = pathname === item.href;
             return (
               <Link
