@@ -130,7 +130,7 @@ export interface SafaricomStkCallback {
     stkCallback: {
       MerchantRequestID: string;
       CheckoutRequestID: string;
-      ResultCode: number; // 0 = success, others = failure
+      ResultCode: number; 
       ResultDesc: string;
       CallbackMetadata?: {
         Item: Array<{
@@ -323,5 +323,5 @@ export type PaymentCompletionListener = (
 
 export type PaymentFailureListener = (
   transactionId: string,
-  reason?: string
+  reason?: string 
 ) => void;
