@@ -6,6 +6,13 @@ import { NextRequest, NextResponse } from 'next/server';
 // the Edge/Turbopack environment. The middleware only checks presence of
 // the `auth` cookie and redirects when missing. Full token verification
 // happens inside API routes (server runtime).
+//
+// SESSION EXPIRATION HANDLING:
+// - When a session expires (token TTL reached), the backend returns 401
+// - The apiCall function in api-client.ts detects this and calls handleSessionExpiration()
+// - handleSessionExpiration() clears localStorage and triggers redirect to /login
+// - TokenRefreshProvider also periodically checks token_expiry in localStorage
+// - Before expiry, users get warning toast with option to extend session
 
 export function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;

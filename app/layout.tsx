@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { Toaster } from "sonner";
 import "./globals.css";
 import { ThemeProvider } from "./components/ThemeProvider";
+import TokenRefreshProvider from "./components/TokenRefreshProvider";
 
 export const metadata: Metadata = {
   title: "AutoNest Pension Fund",
@@ -37,7 +38,9 @@ export default function RootLayout({
       </head>
       <body className="antialiased">
         <ThemeProvider>
-          {children}
+          <TokenRefreshProvider>
+            {children}
+          </TokenRefreshProvider>
           <Toaster position="top-center" richColors />
         </ThemeProvider>
       </body>

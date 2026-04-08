@@ -20,7 +20,40 @@ import { parseAccount, parseAccounts } from './account-schemas';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'https://autonest-backend.onrender.com';
 const DEFAULT_TIMEOUT = 120000;  
-const PAYMENT_TIMEOUT = 180000; 
+const PAYMENT_TIMEOUT = 180000;
+
+// Session expiration handler - called when 401/403 response is detected
+let sessionExpiredHandler: (() => void) | null = null;
+
+export function setSessionExpiredHandler(handler: () => void) {
+  sessionExpiredHandler = handler;
+}
+
+function handleSessionExpiration() {
+  if (typeof window === 'undefined') return;
+  
+  console.log('[API] handleSessionExpiration called - clearing auth data and redirecting');
+  
+  // Clear all auth data
+  localStorage.removeItem('auth_token');
+  localStorage.removeItem('refresh_token');
+  localStorage.removeItem('token_expiry');
+  localStorage.removeItem('user');
+  
+  // Show toast and redirect immediately
+  // Import toast dynamically to avoid circular imports
+  import('sonner').then(({ toast }) => {
+    toast.error("🔐 Session expired. Please login again.");
+  });
+  
+  // Force redirect to login page
+  setTimeout(() => {
+    if (typeof window !== 'undefined') {
+      console.log('[API] Redirecting to /login via window.location.replace');
+      window.location.replace('/login');
+    }
+  }, 100);
+} 
 
 interface ApiResponse<T = any> {
   success: boolean;
@@ -127,6 +160,18 @@ export async function apiCall<T = any>(
         rawData: data,
         dataKeys: Object.keys(data),
       });
+    }
+
+    // Handle session expiration (401 Unauthorized, 403 Forbidden)
+    if (response.status === 401 || response.status === 403) {
+      console.warn(`[API] Session expired (${response.status}). Redirecting to login.`);
+      handleSessionExpiration();
+      return {
+        success: false,
+        error: 'Session expired. Please login again.',
+        status: response.status,
+        ...data,
+      };
     }
 
     if (!response.ok) {
